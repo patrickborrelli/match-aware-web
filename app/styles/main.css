@@ -1,0 +1,19 @@
+
+.row-content {
+    margin: 0px auto;
+    padding: 20px 0px;
+    min-height: 200px;
+}
+#mynavbutton  {
+    width: 110px;
+    margin-top:14px;
+    margin-right: 10px;
+}
+
+#tabContent {
+    padding: 20px;
+    min-height: 600px;
+    border-right: 1px solid Gainsboro;
+    border-left: 1px solid Gainsboro;
+    border-bottom: 1px solid Gainsboro;
+}

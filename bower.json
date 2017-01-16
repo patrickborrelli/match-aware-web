@@ -1,0 +1,34 @@
+{
+  "name": "match-aware-web",
+  "homepage": "https://github.com/patrickborrelli/match-aware-web",
+  "authors": [
+    "Patrick Borrelli <patrickborrelli@gmail.com>"
+  ],
+  "description": "web front end for MatchAware application",
+  "main": "index.html",
+  "keywords": [
+    "MatchAware",
+    "facilities",
+    "scheduling",
+    "youth",
+    "soccer"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "font-awesome": "^4.7.0",
+    "angular": "^1.6.1",
+    "angular-ui-router": "^0.3.2",
+    "angular-route": "^1.6.1",
+    "ng-dialog": "^0.6.6",
+    "ui-bootstrap": "^2.4.0"
+  }
+}

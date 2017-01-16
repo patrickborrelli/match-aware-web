@@ -1,0 +1,12 @@
+<div class="row" id="user">
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-primary btn-sm">Get All Users</button>
+    </div>
+    <hr>
+    <div id="user-content" ng-if="!error">
+        <p>successful response</p>
+    </div>
+    <div id="user-error" ng-if="error">
+        <p>{{errorText}}</p>
+    </div>
+</div> 
