@@ -169,6 +169,10 @@ angular.module('ma-app')
             return $rootScope.accessRequests.length > 0;
         };
         
+        $scope.areTeams = function() {
+            return $rootScope.teams.length > 0;
+        };
+        
         $scope.arePendingUserInvites = function() {
             return $rootScope.userInvites.length > 0;
         };
@@ -179,6 +183,11 @@ angular.module('ma-app')
             console.log($scope.invite); 
             userService.sendUserInvite($scope.invite);
         };
+        
+        $scope.addTeam = function() {
+            console.log("\n\nOpening dialog to add team");
+            ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
+        }; 
         
         $scope.openUpdate = function(user) {
             console.log("\n\nOpening dialog to update user: ");

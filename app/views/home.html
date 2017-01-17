@@ -228,7 +228,7 @@
                             </div>
                         </div>
                         <hr />
-                        <h4 style="text-align: center; padding: 0px; margin:0px;">Pending Invites</h4>
+                        <h4 style="text-align: center;">Pending Invites</h4>
                         <div class="row row-content">
                             <div class="col-xs-12">
                                 <h4 ng-show="!arePendingUserInvites()">No user invites pending.</h4>
@@ -251,7 +251,56 @@
                 </div>
             </div>
             <div id="tabContent" class="tab-pane fade in active" ng-show="isSelected(2)">
-                Teams
+                <div class="row">
+                    <div class="col-xs-12">
+                        <form class="form-inline">
+                            <button type="button" class="btn btn-success" ng-click="addTeam()">Add Team</button>
+                            <button type="button" class="btn btn-success" ng-click="">Import Teams</button>
+                            <div class="form-group">
+                                <label class="sr-only" for="sort">Sort By</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">Sort By</div>
+                                    <select class="form-control" id="sort">
+                                        <option></option>
+                                        <option>Age Group</option>
+                                        <option>Program</option>
+                                        <option>Name</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="sr-only" for="sort">Filter By</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">Filter By</div>
+                                    <select class="form-control"  id="filter">
+                                        <option></option>
+                                        <option>Travel</option>
+                                        <option>Recreational</option>
+                                        <option>Clinic</option>
+                                    </select>
+                                </div>
+                            </div>                            
+                        </form>
+                    </div>
+                </div>
+                <hr />
+                <div class="row row-content">                    
+                    <div class="col-xs-12">
+                        <h4 ng-show="!areTeams()">No current teams.</h4>
+                        <ul class="media-list" ng-show="areTeams()">
+                            <li class="media" ng-repeat="team in teams" style="padding:10px; background: lightGray;">
+                                <div class="media-left media-top" >
+                                    <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{team.club.image_url}} alt="club logo">
+                                </div>
+                                <div class="media-body">
+                                    <h3 class="media-heading">{{team.name}}</h3>
+                                    <p>{{team.age_group.birth_year}}/{{team.age_group.soccer_year}}<br />
+                                    {{team.club.name}}</p>            
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div id="tabContent" class="tab-pane fade in active" ng-show="isSelected(3)">
                 <ul class="nav nav-tabs" role="tablist">
