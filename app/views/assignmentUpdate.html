@@ -1,0 +1,61 @@
+<div class="ngdialog-message">
+    <div class="">
+        <h3>Update Roles</h3>
+    </div>
+    <div class="">&nbsp;</div>
+    <div class="">
+        <ul class="media-list">
+            <li class="media" style="padding:10px; background: lightGray;">
+                <div class="media-left media-top" >
+                    <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{currentAssignmentUser.profile_image}} alt="user photo">
+                </div>
+                <div class="media-body">
+                    <div class="col-xs-4">
+                        <h3 class="media-heading">{{currentAssignmentUser.first_name}} {{currentAssignmentUser.last_name}}</h3>
+                        <p>{{currentAssignmentUser.email_address}}<br />{{currentAssignmentUser.mobile}}</p>  
+                    </div>
+                    <div class="col-xs-8">
+                        <form ng-submit="updateUserRoles(currentAssignmentUser)">
+                            <div class="col-xs-9 form-group">
+                                <div class="form-check"> 
+                                    <label class="form-check-label small">
+                                        <input class="form-check-input" type="checkbox" ng-model="myUser.caCheck" ng-checked="userHasRoleActive('CLUB_ADMIN', currentAssignmentUser)" name="caCheck" value="CLUB_ADMIN"> Club Admin
+                                    </label>
+                                    <label class="form-check-label small">
+                                        <input class="form-check-input" type="checkbox" ng-model="myUser.faCheck" ng-checked="userHasRoleActive('FIELD_ADMIN', currentAssignmentUser)" name="faCheck" value="FIELD_ADMIN"> Field Admin
+                                    </label>
+                                    <label class="form-check-label small">
+                                        <input class="form-check-input" type="checkbox" ng-model="myUser.raCheck" ng-checked="userHasRoleActive('REFEREE_ASSIGNOR', currentAssignmentUser)" name="raCheck" value="REFEREE_ASSIGNOR"> Ref Assignor
+                                    </label>
+                                    <label class="form-check-label small">
+                                        <input class="form-check-input" type="checkbox" ng-model="myUser.taCheck" ng-checked="userHasRoleActive('TRAINING_ADMIN', currentAssignmentUser)" name="taCheck" value="TRAINING_ADMIN"> Training Admin
+                                    </label>
+                                    <label class="form-check-label small">
+                                        <input class="form-check-input" type="checkbox" ng-model="myUser.coCheck" ng-checked="userHasRoleActive('COACH', currentAssignmentUser)" name="coCheck" value="COACH"> Coach
+                                    </label>
+                                    <label class="form-check-label small">
+                                        <input class="form-check-input" type="checkbox" ng-model="myUser.trCheck" ng-checked="userHasRoleActive('TRAINER', currentAssignmentUser)" name="trCheck" value="TRAINER"> Trainer
+                                    </label>
+                                    <label class="form-check-label small">
+                                        <input class="form-check-input" type="checkbox" ng-model="myUser.reCheck" ng-checked="userHasRoleActive('REFEREE', currentAssignmentUser)" name="reCheck" value="REFEREE"> Referee
+                                    </label>
+                                    <label class="form-check-label small">
+                                        <input class="form-check-input" type="checkbox" ng-model="myUser.plCheck" ng-checked="userHasRoleActive('PLAYER', currentAssignmentUser)" name="plCheck" value="PLAYER"> Player
+                                    </label>
+                                    <label class="form-check-label small">
+                                        <input class="form-check-input" type="checkbox" ng-model="myUser.paCheck" ng-checked="userHasRoleActive('PARENT', currentAssignmentUser)" name="paCheck" value="PARENT"> Parent
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-xs-3 form-group">
+                                <button type="submit" class="btn btn-sm btn-success">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div>
+    </div>
+</div>

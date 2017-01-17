@@ -42,7 +42,207 @@ angular.module('ma-app')
         var teamsLoaded = false;
         var usersLoaded = false;
         var userInvitesLoaded = false;  
-        var accessRequestsLoaded = false;        
+        var accessRequestsLoaded = false;     
+        
+        this.cleanupOnLogout = function() {
+            $rootScope.clubs = {};
+            $rootScope.roles = {};   
+            $rootScope.ageGroups = {};
+            $rootScope.events = {};
+            $rootScope.facilities = {}; 
+            $rootScope.fields = {}; 
+            $rootScope.fieldSizes = {};
+            $rootScope.genders = {};
+            $rootScope.leagues = {}; 
+            $rootScope.leagueTypes = {};
+            $rootScope.messages = {};
+            $rootScope.notifications = {};
+            $rootScope.organizations = {};
+            $rootScope.rules = {}; 
+            $rootScope.teams = {};
+            $rootScope.users = {}; 
+            $rootScope.userInvites = {};
+            $rootScope.accessRequests = {};
+
+            clubsLoaded = false;
+            rolesLoaded = false;
+            ageGroupsLoaded = false;
+            eventsLoaded = false;
+            facilitiesLoaded = false;
+            fieldsLoaded = false;
+            fieldSizesLoaded = false;
+            genderLoaded = false;
+            leaguesLoaded = false;
+            leagueTypesLoaded = false;
+            messagesLoaded = false;
+            notificationsLoaded = false;
+            organizationsLoaded = false;
+            rulesLoaded = false;
+            teamsLoaded = false;
+            usersLoaded = false;
+            userInvitesLoaded = false;  
+            accessRequestsLoaded = false; 
+        };
+        
+        this.processAccessRequestAccept = function(request) {
+            var hasTeam = false;
+            var userId = request.user._id;
+            var clubId = request.club._id;
+            var roleId = request.role._id;
+            var teamId;
+            var inClub = false;
+            
+            var postString = '{"club": "' + clubId + '", "user": "' + userId + '"}';
+            var teamPostString = '{"team": "' + teamId + '", "member": "' + userId + '", "role": "' + roleId + '"}';
+            
+            if(request.team != null) {
+                hasTeam = true;
+                teamId = request.team._id;
+            }
+            
+            //if user is not already affiliated with the club, add them:
+            $http({
+                url: baseURL + 'club_members/findClubMemberships/' + userId,
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                if(response.data.length > 0) {
+                    for(var i = 0; i < response.data.length; i++) {
+                        if(response.data[i]._id == clubId) {
+                            inClub = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if(!inClub) {
+                    $http({
+                        url: baseURL + 'club_members/',
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json' 
+                        },
+                        data: postString
+                    }).then(function(response) {
+                        console.log("User added to club");
+                        console.log(response);
+                    }, function(errResponse) {
+                        console.log("Failed to add user to club");
+                        console.log(errResponse);
+                    });
+                }
+            });
+            
+            //next, if user is being granted team access, add them to the team:
+            if(hasTeam) {
+                $http({
+                    url: baseURL + 'team_members/',
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json' 
+                    },
+                    data: teamPostString
+                }).then(function(response) {
+                    console.log("User added to team");
+                    console.log(response);
+                }, function(errResponse) {
+                    console.log("Failed to add user to team");
+                    console.log(errResponse);
+                });
+            }
+            
+            //next, if user is not already affiliated with the role, add them:
+            var userAlreadyInRole = false;
+            for(var i = 0; i < request.user.roles.length; i++) {
+                if(request.user.roles[i]._id == roleId) {
+                    userAlreadyInRole = true;
+                    break;
+                }
+            }
+            
+            if(!userAlreadyInRole) {
+                $http({
+                    url: baseURL + 'users/addUserRole/' + userId + '/'+ roleId,
+                    method: 'PUT',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("User added to role");
+                    console.log(response);
+                }, function(errResponse) {
+                    console.log("Failed to add user to role");
+                    console.log(errResponse);
+                });
+            }
+            
+            //finally, change access request status and reload access requests for this user:
+            $http({
+                url: baseURL + 'access_requests/' + request._id,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: '{"status": "ACCEPTED"}'
+            }).then(function(response) {
+                console.log("Successfully marked access request ACCEPTED");
+                console.log(response);
+                //so, reload the access requests for this user:
+                //retrieve access requests:
+                $http({
+                    url: baseURL + 'access_requests/findByApprover/' + $rootScope.currentUser._id,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("Retrieved the access requests from the API: ");
+                    console.log(response);
+                    $rootScope.accessRequests = response.data;
+                    accessRequestsLoaded = true;
+                });
+            }, function(errResponse) {
+                console.log("Failed to mark access request ACCEPTED");
+                console.log(errResponse);
+            });          
+            //TODO: send email/notification/text
+        };
+        
+        this.processAccessRequestDecline = function(request) {
+            //change access request status and reload access requests for this user:
+            $http({
+                url: baseURL + 'access_requests/' + request._id,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: '{"status": "REJECTED"}'
+            }).then(function(response) {
+                console.log("Successfully marked access request REJECTED");
+                console.log(response);
+                //so, reload the access requests for this user:
+                //retrieve access requests:
+                $http({
+                    url: baseURL + 'access_requests/findByApprover/' + $rootScope.currentUser._id,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("Retrieved the access requests from the API: ");
+                    console.log(response);
+                    $rootScope.accessRequests = response.data;
+                    accessRequestsLoaded = true;
+                });
+            }, function(errResponse) {
+                console.log("Failed to mark access request REJECTED");
+                console.log(errResponse);
+            });     
+            
+            //TODO: send email/notification/text
+        };
         
         this.getRolePrettyName = function(roleName) {
             var prettyName = roleName;
@@ -92,7 +292,7 @@ angular.module('ma-app')
             return prettyName;
         };
         
-        this.appDataLoad = function() {
+        this.appDataLoad = function(curUser) {
             if(!rolesLoaded) {
                 //retrieve roles:
                 $http({
@@ -368,7 +568,7 @@ angular.module('ma-app')
             if(!accessRequestsLoaded) {
                 //retrieve access requests:
                 $http({
-                    url: baseURL + 'access_requests/',
+                    url: baseURL + 'access_requests/findByApprover/' + curUser._id,
                     method: 'GET',
                     headers: {
                         'content-type': 'application/json' 
@@ -378,17 +578,203 @@ angular.module('ma-app')
                     console.log(response);
                     $rootScope.accessRequests = response.data;
                     accessRequestsLoaded = true;
+                    //now update all access requests as seen by this user (change state to PENDING)
+                    var putString = '{"status": "PENDING"}';
+                    for(var i = 0; i < response.data.length; i++) {
+                        console.log("Attempting to send " + baseURL + "access_requests/" + response.data[i]._id);
+                        $http({
+                            url: baseURL + 'access_requests/' + response.data[i]._id,
+                            method: 'PUT',
+                            headers: {
+                                'content-type': 'application/json' 
+                            },
+                            data: putString
+                        }).then(function(response) {
+                            ;
+                        },function(errResponse) {
+                            console.log(errResponse);
+                        });
+                    }
                 }); 
             }
-        };        
+        };
+        
+        this.getCurrentClubUsers = function() {
+            console.log("Entering getCurrentClubUsers");
+            //retrieve users:
+            $http({
+                url: baseURL + 'club_members/findClubMembers/' + $rootScope.currentClub._id,
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Retrieved the users from the API: ");
+                console.log(response);
+                $rootScope.users = response.data;
+                usersLoaded = true;
+            }); 
+        };
+        
+        this.refreshUserInvites = function() {
+            //retrieve invites:
+            $http({
+                url: baseURL + 'user_invites/',
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Retrieved the user invites from the API: ");
+                console.log(response);
+                $rootScope.user_invites = response.data;
+                userInvitesLoaded = true;
+            }); 
+        };
+        
+        this.getRoleIdByName = function(roleName) {
+            for(var i = 0; i < $rootScope.roles.length; i++) {
+                if(String($rootScope.roles[i].name) == String(roleName)) {
+                    return $rootScope.roles[i]._id;
+                }
+            }  
+        };
         
     }])
 
-    .service('userService', ['$http', 'baseURL', '$rootScope', function($http,baseURL, $rootScope) {
+    .service('userService', ['$http', 'baseURL', '$rootScope', 'ngDialog', 'coreDataService', function($http,baseURL, $rootScope, ngDialog, coreDataService) {
         $rootScope.usersClubs = [];
         $rootScope.userHasClub = false;
         $rootScope.userHasMultipleClubs = false;
         $rootScope.currentClub;
+        
+        this.sendUserInvite = function(formData) {
+            //create invite then update rootscope userinvites
+            
+            //build postString
+            var postString = '{ "invite_key" : "';
+            var inviteKey = new Date().getTime();
+            var role = coreDataService.getRoleIdByName(formData.role);
+            
+            postString += inviteKey + '", ';
+            if(formData.email != null && formData.email != '') {
+                postString += '"email" : "' + formData.email + '", ';
+            }
+            
+            if(formData.mobile != null && formData.mobile != '') {
+                postString += '"mobile" : "' + formData.mobile + '", ';
+            }
+            
+            postString += '"role" : "' + role + '", ';
+            postString += '"status" : "SENT"}';
+            
+            console.log("Creating invite with post string: " + postString);
+            
+            //make http request:
+            $http({
+                url: baseURL + 'user_invites/',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Successfully created invite");
+                console.log(response.data);
+                coreDataService.refreshUserInvites();
+            }, function(errResponse) {
+                console.log("Failed to create invite");
+                console.log(errResponse);
+            });
+        };
+        
+        this.sendAccessRequest = function(formData) {
+            
+            console.log("Received access request with form data:" );
+            console.log(formData);
+            var clubId = formData.selectedClub._id;
+            var roleId = formData.selectedRole._id;
+            var teamId = null;
+            var postString = '';
+            
+            if(formData.selectedTeam) {
+                teamId = formData.team._id;
+            }
+            
+            determineAccessRequestApprover(formData)
+            .then(function(response) {
+                console.log("Successfully retrieved club admin.");
+                console.log(response);
+                postString = '{"user": "' + $rootScope.currentUser._id + '", "club": "' + clubId + '", "role": "' + roleId + '", "status": "SENT", "approver": "' + response.data._id + '"';
+                if(teamId != null) {
+                    postString += ', "team": "' + teamId + '"';
+                }
+                postString += '}';
+                console.log("Using post string: " + postString);
+
+                //send access request:
+                //make http request:
+                $http({
+                    url: baseURL + 'access_requests/',
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json' 
+                    },
+                    data: postString
+                }).then(function(response) {
+                    console.log("Successfully send access request.");
+                    console.log(response);
+                    var message = '\
+                    <div class="ngdialog-message">\
+                    <div><h3>Access Request Delivered</h3></div>' +
+                    '<div><p>Successfully sent access request for ' + $rootScope.currentUser.first_name + ' ' + $rootScope.currentUser.last_name +
+                    ' - as ' + coreDataService.getRolePrettyName(formData.selectedRole.name);
+
+                    if(teamId != null) {
+                        message += ' with team ' + formData.selectedClub.name + ' ' + formData.selectedTeam.name +'</p></div>';
+                    } else {
+                        message += ' with club ' + formData.selectedClub.name + '</p></div>';
+                    }
+                    message += '<div class="ngdialog-buttons"><button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm("OK")>OK</button></div>';
+
+                    ngDialog.openConfirm({ template: message, plain: 'true'});
+                }, function(errResponse) {
+                    console.log("Got an error");
+                    console.log(errResponse);
+                    var message = '\
+                    <div class="ngdialog-message">\
+                    <div><h3>Access Request Creation Failed</h3></div>' +
+                    '<div><p>Failed to send access request for ' + $rootScope.currentUser.first_name + ' ' + $rootScope.currentUser.last_name +
+                    ' - as ' + coreDataService.getRolePrettyName(formData.selectedRole.name);
+
+                    if(teamId != null) {
+                        message += ' with team ' + formData.selectedClub.name + ' ' + formData.selectedTeam.name +'</p></div>';
+                    } else {
+                        message += ' with club ' + formData.selectedClub.name + '</p></div>';
+                    }
+                    message += '<div class="ngdialog-buttons"><button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm("OK")>OK</button></div>';
+                    ngDialog.openConfirm({ template: message, plain: 'true'});
+                });
+            }, function(errReponse) {
+                console.log("Failed to retrieve club admin.");
+                var message = '\
+                    <div class="ngdialog-message">\
+                    <div><h3>Access Request Creation Failed</h3></div>' +
+                    '<div><p>Failed to send access request for ' + $rootScope.currentUser.first_name + ' ' + $rootScope.currentUser.last_name +
+                    ' - as ' + coreDataService.getRolePrettyName(formData.selectedRole.name) + '</p></div><div><p>' +  errResponse.data.err.message + '</p><p>' +
+                        errResponse.data.err.name + '</p></div>';
+
+                    if(teamId != null) {
+                        message += ' with team ' + formData.selectedClub.name + ' ' + formData.selectedTeam.name +'</p></div>';
+                    } else {
+                        message += ' with club ' + formData.selectedClub.name + '</p></div>';
+                    }
+                    message += '<div class="ngdialog-buttons"><button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm("OK")>OK</button></div>';
+                ngDialog.openConfirm({ template: message, plain: 'true'});
+                console.log(errReponse);
+            });
+                        
+        };
         
         this.getUsers = function(){
             return $http.get(baseURL+"users");
@@ -399,6 +785,23 @@ angular.module('ma-app')
             return $http({
                 url: baseURL + 'users/addUserRole/' + userId + '/' + roleId,
                 method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            });
+        };
+            
+        function determineAccessRequestApprover(formData) {
+            //TODO: correct this for more accurate future use:
+            //for now, get the club and send to the club administrator:
+            
+            console.log("Determining Approver for access request:");
+            console.log(formData);
+            
+            //make http request:
+            return $http({
+                url: baseURL + 'club_members/findClubAdmin/' + formData.selectedClub._id,
+                method: 'GET',
                 headers: {
                     'content-type': 'application/json' 
                 }
@@ -444,6 +847,80 @@ angular.module('ma-app')
             }
             
             console.log("userHasClub = " + $rootScope.userHasClub + " and userHasMultipleClubs = " + $rootScope.userHasMultipleClubs);
+        };
+        
+        this.updateUserRoles = function(user, formData) {
+            //PUT the user's new ROLES, then update the current object and close the dialog.
+            var newRoles = '{"roles":[';
+            if(formData.caCheck) {
+                newRoles += '"' + coreDataService.getRoleIdByName("CLUB_ADMIN") + '", ';
+            }
+            
+            if(formData.faCheck) {
+                newRoles += '"' + coreDataService.getRoleIdByName("FIELD_ADMIN") + '", ';
+            }
+            
+            if(formData.raCheck) {
+                newRoles += '"' + coreDataService.getRoleIdByName("REFEREE_ASSIGNOR") + '", ';
+            }
+            
+            if(formData.taCheck) {
+                newRoles += '"' + coreDataService.getRoleIdByName("TRAINING_ADMIN") + '", ';
+            }
+            
+            if(formData.coCheck) {
+                newRoles += '"' + coreDataService.getRoleIdByName("COACH") + '", ';
+            }
+            
+            if(formData.trCheck) {
+                newRoles += '"' + coreDataService.getRoleIdByName("TRAINER") + '", ';
+            }
+            
+            if(formData.reCheck) {
+                newRoles += '"' + coreDataService.getRoleIdByName("REFEREE") + '", ';
+            }
+            
+            if(formData.paCheck) {
+                newRoles += '"' + coreDataService.getRoleIdByName("PARENT") + '", ';
+            }
+            
+            if(formData.plCheck) {
+                newRoles += '"' + coreDataService.getRoleIdByName("PLAYER") + '", ';
+            }
+            //remove trailing comma
+            newRoles = newRoles.slice(0, -2);
+            newRoles += ']}';
+            
+            console.log("New Roles contains");
+            console.log(newRoles);
+            
+            //make http request:
+            $http({
+                url: baseURL + 'users/' + user._id,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                }, 
+                data: newRoles
+            }).then(function(response) {
+                console.log("Updated user" );
+                console.log(response.data);
+                //now, update the user in case that is where the change occured:
+                $http({
+                    url: baseURL + 'users/' + user._id,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    $rootScope.currentUser = response.data;
+                    //finally update all club users:
+                    coreDataService.getCurrentClubUsers();
+                })
+            }, function(errResponse) {
+                console.log("Error when trying to update");
+                console.log(errResponse);
+            });
         };
         
     }])
@@ -493,6 +970,8 @@ angular.module('ma-app')
         var loggedIn = false;
         var userId = '';
         var user = {};
+        $rootScope.currentUser = {};
+        $rootScope.currentUser = {};
         var clubAdmin = false;
         var fieldAdmin = false;
         var refereeAssignor = false;
@@ -559,7 +1038,10 @@ angular.module('ma-app')
                     console.log("Retrieved the user from the API with value: ");
                     console.log(response);
                     user = response.data;
+                    $rootScope.currentUser = response.data;
                     internalPopulateUserRoles(response.data.roles);
+                    //do app data load:
+                    coreDataService.appDataLoad(user);
                     //determine if user has any club affiliations:
                     //retrieve clubs:
                     userService.getUserClubs(userId)
@@ -571,8 +1053,7 @@ angular.module('ma-app')
                             console.log("Encountered error when trying to retrieve users clubs.")
                             console.log(errResponse);
                     });
-                    //do app data load:
-                    coreDataService.appDataLoad();
+                    
                 });   
                 
                 $state.go("app.home");
@@ -639,6 +1120,7 @@ angular.module('ma-app')
         
         this.setCurrentUser = function(currentUser) {
             user = currentUser;
+            $rootScope.currentUser = currentUser;
         };
         
         this.setCurrentUserStale = function() {
@@ -708,6 +1190,7 @@ angular.module('ma-app')
             loggedIn = false;
             $rootScope.fullname = '';
             $rootScope.username = '';
+            $rootScope.currentUser = {};
             userId = '';
             
             user = {};
@@ -726,6 +1209,7 @@ angular.module('ma-app')
             
             clubService.clearCurrentClub();
             userService.cleanupLoggedOutUser();
+            coreDataService.cleanupOnLogout();
 
             // Set the token as header for your requests!
             $http.defaults.headers.common['x-access-token'] = authToken;

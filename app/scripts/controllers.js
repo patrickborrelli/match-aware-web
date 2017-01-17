@@ -30,8 +30,7 @@ angular.module('ma-app')
         };
     }])
 
-    .controller('ClubController', ['$scope', '$rootScope', 'ngDialog', '$state', 'clubService', 'authService', 'userService', function($scope, $rootScope, ngDialog, $state, clubService, authService, userService) {
-        
+    .controller('ClubController', ['$scope', '$rootScope', 'ngDialog', '$state', 'clubService', 'authService', 'userService', function($scope, $rootScope, ngDialog, $state, clubService, authService, userService) {        
         
         $scope.createClub = function() {
             console.log('Creating club', $scope.createClubData); 
@@ -98,11 +97,12 @@ angular.module('ma-app')
         };        
     }])
 
-    .controller('UserController', ['$scope', '$rootScope', 'ngDialog', '$state', function($scope, $rootScope, ngDialog, $state) {
+    .controller('UserController', ['$scope', '$rootScope', 'ngDialog', '$state', 'userService', function($scope, $rootScope, ngDialog, $state, userService) {
         
         $scope.joinClub = function() {
             console.log('Joining club', $scope.join); 
             console.log('Selected role ' + $scope.join.selectedRole.name);
+            userService.sendAccessRequest($scope.join);
             ngDialog.close();
         };
         
@@ -128,15 +128,73 @@ angular.module('ma-app')
         };
     }])
 
-    .controller('HomeController', ['$scope', 'ngDialog', '$state', 'authService', 'coreDataService', function($scope, ngDialog, $state, authService, coreDataService) {
+    .controller('HomeController', ['$scope', 'ngDialog', '$state', 'authService', 'coreDataService', 'userService', '$rootScope', function($scope, ngDialog, $state, authService, coreDataService, userService, $rootScope) {
         $scope.tab = 1;
         $scope.subTab = 1;
         $scope.currentRoleName = '';
+        $scope.emailHidden = false;
+        $scope.mobileHidden = true;
+        
+        $scope.myUser = {
+            caCheck: false,
+            faCheck: false,
+            raCheck: false,
+            taCheck: false,
+            coCheck: false,
+            trCheck: false,
+            reCheck: false,
+            plCheck: false,
+            paCheck: false
+        };
+        
+        $scope.invite = {
+            email: '',
+            mobile: '',
+            method: 'email',
+            role: ''
+        };
+        
+        $scope.$watch('invite.method', function(method) {
+            console.log("Selected " + method);
+            if(method === 'email') {
+                $scope.emailHidden = false;
+                $scope.mobileHidden = true;
+            } else {
+                $scope.emailHidden = true;
+                $scope.mobileHidden = false;
+            }
+        });
+        
+        $scope.arePendingAccessRequests = function() {
+            return $rootScope.accessRequests.length > 0;
+        };
+        
+        $scope.arePendingUserInvites = function() {
+            return $rootScope.userInvites.length > 0;
+        };
+        
+        $scope.sendInvite = function() {
+            console.log("Received invite for: " + $scope.invite.email + " " + $scope.invite.mobile);            
+            console.log("data is ");
+            console.log($scope.invite); 
+            userService.sendUserInvite($scope.invite);
+        };
+        
+        $scope.openUpdate = function(user) {
+            console.log("\n\nOpening dialog to update user: ");
+            console.log(user);
+            $scope.currentAssignmentUser = user;
+            ngDialog.open({ template: 'views/assignmentUpdate.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
+        }; 
         
         $scope.subSelect = function (setTab) {
             $scope.subTab = setTab;
         };
         
+        $scope.loadClubUsers = function() {
+            console.log("Attemtping to load all users for this club");
+            coreDataService.getCurrentClubUsers();
+        };        
         
         $scope.select = function (setTab) {
             $scope.tab = setTab;
@@ -153,16 +211,25 @@ angular.module('ma-app')
         $scope.subIsSelected = function (checkTab) {
             return ($scope.subTab === checkTab);
         };
+                
+        $scope.userHasRoleActive = function(roleName, user) {
+            //console.log("User " + user.first_name + " " + user.last_name + " has " + user.roles.length + " roles.");
+            //console.log(user.roles);
+            var result = false;
+            for(var i = 0; i < user.roles.length; i++)  {
+                if(user.roles[i].name === roleName) {
+                    result = true;
+                }                   
+            }
+            return result;
+        };
         
-        $scope.registerUser = function() {
-            console.log('Doing registration', $scope.registration);        
+        $scope.updateUserRoles = function(user) {
+            console.log("Received update for user: " + user._id);            
+            console.log("data is ");
+            console.log($scope.myUser); 
+            userService.updateUserRoles(user, $scope.myUser);
             ngDialog.close();
-            $state.go("app.home");
-        }
-        
-        $scope.userHasRole = function(role) {
-            console.log("Got role: " + role);
-            
         };
         
         $scope.userHasRoles = function() {
@@ -175,14 +242,12 @@ angular.module('ma-app')
             return coreDataService.getRolePrettyName(roleName);            
         };
         
-        $scope.acceptRequest = function(accessRequest) {
-            console.log("Handling acceptance of access request.");
-            console.log(accessRequest);
+        $scope.acceptAccess = function(accessRequest) {
+            coreDataService.processAccessRequestAccept(accessRequest);            
         };
         
-        $scope.declineRequest = function(accessRequest) {
-            console.log("Handling decline of access request.");
-            console.log(accessRequest);
+        $scope.declineAccess = function(accessRequest) {            
+            coreDataService.processAccessRequestDecline(accessRequest);  
         };
     }])
 ;

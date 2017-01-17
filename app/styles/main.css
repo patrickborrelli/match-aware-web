@@ -17,3 +17,11 @@
     border-left: 1px solid Gainsboro;
     border-bottom: 1px solid Gainsboro;
 }
+
+.form-inline > * {
+    margin-right:45px !important;
+}
+
+.ngdialog.ngdialog-theme-default.custom-width-800 .ngdialog-content {
+    width: 800px;
+}
