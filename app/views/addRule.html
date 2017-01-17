@@ -1,0 +1,137 @@
+<div class="ngdialog-message">
+    <div class="">
+        <h3>Add New Rule</h3>
+    </div>
+    <div class="">&nbsp;</div>
+    <div class="">
+        <form class="form-horizontal" ng-submit="addRule()">
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="league">League Name</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">League</div>
+                        <select id="league" class="form-control" ng-model="ruleForm.league" ng-options="league as league.name for league in leagues"></select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="age">Age Group</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Age Group</div>
+                        <select id="age" class="form-control" ng-model="ruleForm.age" ng-options="ageGroup as ageGroup.name for ageGroup in ageGroups"></select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="duration">Game Duration</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Duration</div>
+                        <input type="text" id="duration" class="form-control" ng-model="ruleForm.duration">
+                        <div class="input-group-addon custom-width-50">min</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="players">Players Fielded</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Players</div>
+                        <select id="players" class="form-control" ng-model="ruleForm.players">
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="11">11</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding">   
+                <label class="sr-only" for="maxFieldLen">Maximum Field Length</label>
+                <div class="col-xs-12 col-sm-6" style="padding-right:0px; margin-right: 0px;">                    
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Field Size</div>
+                        <input type="text" class="form-control" id="maxFieldLen" placeholder="max length" ng-model="ruleForm.maxFieldLen"> 
+                    </div> 
+                </div>
+                <label class="sr-only" for="maxFieldWidth">Maximum Field Width</label>
+                <div class="col-xs-12 col-sm-6" style="padding-left:0px; margin-left: 0px;">                    
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="maxFieldWidth" placeholder="max width" ng-model="ruleForm.maxFieldWidth">                        
+                        <div class="input-group-addon custom-width-50">ft</div>
+                    </div> 
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding">  
+                <label class="sr-only" for="goalHeight">Goal Height</label>
+                <div class="col-xs-12 col-sm-6" style="padding-right:0px; margin-right: 0px;">                    
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Goal Size</div>
+                        <input type="text" class="form-control" id="goalHeight" placeholder="height" ng-model="ruleForm.goalHeight"> 
+                    </div> 
+                </div>
+                <label class="sr-only" for="goalWidth">Goal Width</label>
+                <div class="col-xs-12 col-sm-6" style="padding-left:0px; margin-left: 0px;">                    
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="goalWidth" placeholder="width" ng-model="ruleForm.goalWidth">                        
+                        <div class="input-group-addon custom-width-50">ft</div>
+                    </div> 
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding-bottom">    
+                <label class="sr-only" for="periods">Number of Periods</label>
+                <div class="col-xs-12 col-sm-6" style="padding-right:0px; margin-right: 0px;">                    
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Format</div>
+                        <input type="text" class="form-control" id="periods" placeholder="periods" ng-model="ruleForm.periods"> 
+                    </div> 
+                </div>
+                <label class="sr-only" for="periodDuration">Period Duration</label>
+                <div class="col-xs-12 col-sm-6" style="padding-left:0px; margin-left: 0px;">                    
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="periodDuration" placeholder="duration" ng-model="ruleForm.periodDuration">                        
+                        <div class="input-group-addon custom-width-50">min</div>
+                    </div> 
+                </div>
+            </div>        
+            
+            <div class="form-group">    
+                <label class="sr-only" for="goalkeeper">Uses Goalkeepers</label>
+                <div class="col-xs-12 col-sm-6" style="text-align: center;">  
+                    <input type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-size="small" data-onstyle="success" data-offstyle="danger" ng-model="ruleForm.goalkeeper" id="goalkeeper"> Goalkeeper 
+                </div>
+                <label class="sr-only" for="buildout">Uses Buildout Line</label>
+                <div class="col-xs-12 col-sm-6" style="text-align: center;">  
+                    <input type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-size="small" data-onstyle="success" data-offstyle="danger" ng-model="ruleForm.buildout" id="buildout"> Buildout Line 
+                </div>
+            </div>  
+            
+            <div class="form-group">    
+                <label class="sr-only" for="offside">Enforces Offside</label>
+                <div class="col-xs-12 col-sm-6" style="text-align: center;">  
+                    <input type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-size="small" data-onstyle="success" data-offstyle="danger" ng-model="ruleForm.offside" id="offside"> Offside 
+                </div>
+                <label class="sr-only" for="header">Allows Heading the Ball</label>
+                <div class="col-xs-12 col-sm-6" style="text-align: center;">  
+                    <input type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-size="small" data-onstyle="success" data-offstyle="danger" ng-model="ruleForm.header" id="header"> Heading 
+                </div>
+            </div>
+            
+            
+            <button type="submit" class="btn btn-info">Add</button>
+            <button type="button" class="btn btn-default" ng-click=closeThisDialog("Cancel")>Cancel</button>
+        </form>
+    </div>
+    <div>&nbsp;</div>
+</div>

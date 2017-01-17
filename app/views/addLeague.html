@@ -1,0 +1,81 @@
+<div class="ngdialog-message">
+    <div>
+        <h3>Add a New League</h3>
+    </div>
+    <div>&nbsp;</div>
+    <div>
+        <form class="form-horizontal" ng-submit="addLeague()">
+            <div class="form-group">
+                <label class="sr-only" for="name">League Name</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input type="text" class="form-control" id="name" placeholder="league name" ng-model="leagueForm.name">
+                </div>
+                <label class="sr-only" for="shortname">League Abbreviation</label>
+                <div class="col-xs-12 col-sm-6">
+                    <input type="text" class="form-control" id="shortname" placeholder="league abbreviation" ng-model="leagueForm.shortname">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="sr-only" for="minage">Minimum Age Group</label>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="input-group">
+                        <div class="input-group-addon">Min Age Group</div>
+                        <select id="minage" class="form-control" ng-model="leagueForm.minAgeGroup" ng-options="ageGroup as ageGroup.name for ageGroup in ageGroups"></select>
+                    </div>
+                </div>
+                <label class="sr-only" for="maxage">Maximum Age Group</label>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="input-group">
+                        <div class="input-group-addon">Max Age Group</div>
+                        <select id="maxage" class="form-control" ng-model="leagueForm.maxAgeGroup" ng-options="ageGroup as ageGroup.name for ageGroup in ageGroups"></select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="sr-only" for="type">League Type</label>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="input-group">
+                        <div class="input-group-addon">Type</div>
+                        <select id="type" class="form-control" ng-model="leagueForm.type" ng-options="leagueType as leagueType.name for leagueType in leagueTypes"></select>
+                    </div>
+                </div>
+                <label class="sr-only" for="days">Day to Reschedule</label>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="days" placeholder="days to reschedule" ng-model="leagueForm.rescheduleDays">                        
+                        <div class="input-group-addon">Days</div>
+                    </div>                    
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="sr-only" for="consequence">Missed Reschedule Date Consequence</label>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="input-group">
+                        <div class="input-group-addon">Consequence</div>
+                        <select id="consequence" class="form-control" ng-model="leagueForm.consequence">
+                            <option value =""></option>
+                            <option value="NONE">N/A</option>
+                            <option value="FORFEIT">Forfeit</option>
+                            <option value="FINE">Fine</option>
+                        </select>
+                    </div>
+                </div>                
+                <div class="col-xs-12 col-sm-6">
+                    <div class="input-group" ng-show="!fineHidden">
+                        <label class="sr-only" for="fine">Fine</label>
+                        <div class="input-group-addon">$</div>
+                        <input type="text" class="form-control" id="fine" placeholder="fine" ng-model="leagueForm.fine">
+                        <div class="input-group-addon">.00</div>
+                    </div>                    
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-info">Add</button>
+            <button type="button" class="btn btn-default" ng-click=closeThisDialog("Cancel")>Cancel</button>
+        </form>
+    </div>
+    <div>&nbsp;</div>
+</div>

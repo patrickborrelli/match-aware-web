@@ -632,6 +632,80 @@ angular.module('ma-app')
             }); 
         };
         
+        this.refreshTeams = function() {
+            //retrieve teams:
+            
+            $http({
+                url: baseURL + 'teams/',
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Retrieved the teams from the API: ");
+                console.log(response);
+                $rootScope.teams = response.data;
+                teamsLoaded = true;
+            }); 
+        };
+        
+        this.refreshAgeGroups = function() {
+            //retrieve age groups:
+            
+            $http({
+                url: baseURL + 'age_groups/',
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Retrieved the age groups from the API: ");
+                console.log(response);
+                $rootScope.ageGroups = response.data;
+                ageGroupsLoaded = true;
+            }); 
+        };
+        
+        var localRefreshAgeGroups = this.refreshAgeGroups;
+        
+        this.refreshLeagues = function() {
+            //retrieve leagues:
+            
+            $http({
+                url: baseURL + 'leagues/',
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Retrieved the leagues from the API: ");
+                console.log(response);
+                $rootScope.leagues = response.data;
+                leaguesLoaded = true;
+            }); 
+        };
+        
+        var localRefreshLeagues = this.refreshLeagues;
+        
+        this.refreshRules = function() {
+            //retrieve rules:
+            
+            $http({
+                url: baseURL + 'rules/',
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Retrieved the rules from the API: ");
+                console.log(response);
+                $rootScope.rules = response.data;
+                rulesLoaded = true;
+            }); 
+        };
+        
+        var localRefreshRules = this.refreshRules;
+        
         this.getRoleIdByName = function(roleName) {
             for(var i = 0; i < $rootScope.roles.length; i++) {
                 if(String($rootScope.roles[i].name) == String(roleName)) {
@@ -640,14 +714,200 @@ angular.module('ma-app')
             }  
         };
         
+        this.addAgeGroup = function(formData) {
+            //post age group:            
+            var postString = '{ "birth_year": "' + formData.birthyear + '", "soccer_year": "U' + formData.socceryear + '", "name": "' + formData.name + '" }';
+            console.log("Posting age group with string: " + postString);
+            $http({
+                url: baseURL + 'age_groups/',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Successfully added age group: ");
+                console.log(response);
+                localRefreshAgeGroups();
+            }, function(errResponse) {
+                console.log("Failed on attempt to add age group:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.addLeague = function(formData) {
+            //post league:            
+            var postString = '{ "name": "' + formData.name + '", "short_name": "' + formData.shortname + '", ';
+            
+            if(formData.minAgeGroup != null) {
+                postString += '"min_age_group": "' + formData.minAgeGroup._id + '", ';
+            }
+            
+            if(formData.maxAgeGroup != null) {
+                postString += '"max_age_group": "' + formData.maxAgeGroup._id + '", ';
+            }
+            
+            if(formData.rescheduleRuleId != null) {
+                postString += '"reschedule_rule": "' + formData.rescheduleRuleId + '", ';
+            }
+            
+            if(formData.logoURL != '') {
+                postString += '"logo_url": "' + formData.logoURL + '", ';
+            }
+            
+            postString += '"type": "' + formData.type._id + '" }';   
+            console.log("Posting league with string: " + postString);
+            
+            $http({
+                url: baseURL + 'leagues/',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Successfully added league: ");
+                console.log(response);
+                localRefreshLeagues();
+            }, function(errResponse) {
+                console.log("Failed on attempt to add league:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.addRescheduleRule = function(days, consequence, fine) {
+            var postString = '{ ';
+            
+            if(consequence != '') {
+                postString += '"consequence": "' + consequence + '", ';
+            }
+            
+            if(fine != '') {
+                postString += '"fine": "' + fine + '", ';
+            }
+            
+            postString += '"timespan_days": "' + days + '" }';
+            
+            console.log("Creating reschedule rule with string " + postString);
+            
+            return $http({
+                url: baseURL + 'reschedule_rules/',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            });
+        };
+        
+        this.editAgeGroup = function(formData, ageGroupId) {
+            //edit age group:   
+            var putString = '{ "birth_year": "' + formData.birthyear + '", "soccer_year": "U' + formData.socceryear + '", "name": "' + formData.name + '" }';
+            console.log("Updating age group with string: " + putString);
+            $http({
+                url: baseURL + 'age_groups/' + ageGroupId,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: putString
+            }).then(function(response) {
+                console.log("Successfully updated age group: ");
+                console.log(response);
+                localRefreshAgeGroups();
+            }, function(errResponse) {
+                console.log("Failed on attempt to update age group:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.deleteAgeGroup = function(ageGroup) {
+            //delete age group:            
+            $http({
+                url: baseURL + 'age_groups/' + ageGroup._id,
+                method: 'DELETE',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Successfully deleted age group: ");
+                console.log(response);
+                localRefreshAgeGroups();
+            }, function(errResponse) {
+                console.log("Failed on attempt to delete age group:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.addRule = function(formData) {
+            //post rule:            
+            var postString = '{ "league": "' + formData.league._id + '", ';
+            
+            if(formData.duration != '') {
+                postString += '"duration_minutes": ' + formData.duration + ', ';
+            }
+            
+            if(formData.players != '') {
+                postString += '"fielded_players": ' + formData.players + ', ';
+            }
+            
+            if(formData.maxFieldLen != '') {
+                postString += '"max_field_length": ' + formData.maxFieldLen + ', ';
+            }
+            
+            if(formData.maxFieldWidth != '') {
+                postString += '"max_field_width": ' + formData.maxFieldWidth + ', ';
+            }
+            
+            if(formData.goalHeight != '') {
+                postString += '"goal_height_ft": ' + formData.goalHeight + ', ';
+            }
+            if(formData.goalWidth != '') {
+                postString += '"goal_width_ft": ' + formData.goalWidth + ', ';
+            }
+            if(formData.periods != '') {
+                postString += '"num_periods": ' + formData.periods + ', ';
+            }
+            if(formData.periodDuration != '') {
+                postString += '"period_duration_minutes": ' + formData.periodDuration + ', ';
+            }
+            
+            postString += '"goalkeeper": "' + formData.goalkeeper + '", ';   
+            postString += '"offside": "' + formData.offside + '", ';
+            postString += '"heading": "' + formData.header + '", ';
+            postString += '"build_out_line": "' + formData.buildout + '", ';
+            postString += '"age_group": "' + formData.age._id + '" }';
+            
+            console.log("Posting rule with string: " + postString);
+            
+            $http({
+                url: baseURL + 'rules/',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Successfully added rule: ");
+                console.log(response);
+                localRefreshRules();
+            }, function(errResponse) {
+                console.log("Failed on attempt to add rule:");
+                console.log(errResponse);
+            });
+        };
+        
+        /*
+            age: null,
+            */
+        
     }])
 
     .service('userService', ['$http', 'baseURL', '$rootScope', 'ngDialog', 'coreDataService', function($http,baseURL, $rootScope, ngDialog, coreDataService) {
         $rootScope.usersClubs = [];
         $rootScope.userHasClub = false;
         $rootScope.userHasMultipleClubs = false;
-        $rootScope.currentClub;
-        
+                
         this.sendUserInvite = function(formData) {
             //create invite then update rootscope userinvites
             
@@ -925,15 +1185,75 @@ angular.module('ma-app')
         
     }])
 
-    .service('clubService', ['$http', 'baseURL', 'ngDialog', '$rootScope', '$state', function($http, baseURL, ngDialog, $rootScope, $state) {        
-        var currentClub = {};
+    .service('clubService', ['$http', 'baseURL', 'ngDialog', '$rootScope', '$state', 'coreDataService', function($http, baseURL, ngDialog, $rootScope, $state, coreDataService) {        
+        $rootScope.currentClub;
         
         this.getCurrentClubId = function() {
-            return currentClub._id;
+            return $rootScope.currentClub._id;
+        };
+        
+        this.setCurrentClub = function(club) {
+            $rootScope.currentClub = club;
         };
         
         this.clearCurrentClub = function() {
-            currentClub = {};
+            $rootScope.currentClub = {};
+        };
+        
+        this.addTeam = function(formData) {            
+            //add team object, then add team to league if one is specified:
+            var leagueAdd = false;
+            var postString = '{ "name": "' + formData.name + '", ';
+            
+            if(formData.gender != null && formData.gender._id != null) {
+                postString += '"gender": "' + formData.gender._id + '", ';
+            }
+            
+            if(formData.ageGroup != null && formData.ageGroup._id != null) {
+                postString += '"age_group": "' + formData.ageGroup._id + '", ';
+            }
+            
+            if(formData.league != null && formData.league._id != null) {
+                leagueAdd = true;
+                postString += '"league": "' + formData.league._id + '", ';
+            }
+            
+            postString += '"club": "' + $rootScope.currentClub._id + '" }';
+            
+            console.log("Creating team with string: " + postString);
+            
+            $http({
+                url: baseURL + 'teams/',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Created team successfully: ");
+                console.log(response);
+                //now add team to the league if there is one:
+                if(leagueAdd) {
+                    $http({
+                        url: baseURL + 'league_teams/',
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json' 
+                        },
+                        data: '{ "league": "' + formData.league._id + '", "team": "' + response.data._id + '" }'
+                    }).then(function(leagueResponse) {
+                        console.log("Successfully entered team into league: ");
+                        console.log(leagueResponse);
+                    }, function(leagueErr) {
+                        console.log("Failure entering team into league: ");
+                        console.log(leagueErr);
+                    });
+                }
+                coreDataService.refreshTeams();
+            }, function(errResponse) {
+                console.log("Failed creating team: ");
+                console.log(errResponse);
+            });            
         };
         
         this.createClub = function(createClubData) {

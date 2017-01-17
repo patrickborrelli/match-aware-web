@@ -128,12 +128,51 @@ angular.module('ma-app')
         };
     }])
 
-    .controller('HomeController', ['$scope', 'ngDialog', '$state', 'authService', 'coreDataService', 'userService', '$rootScope', function($scope, ngDialog, $state, authService, coreDataService, userService, $rootScope) {
+    .controller('HomeController', ['$scope', 'ngDialog', '$state', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', function($scope, ngDialog, $state, authService, coreDataService, userService, $rootScope, clubService) {
         $scope.tab = 1;
-        $scope.subTab = 1;
-        $scope.currentRoleName = '';
+        $scope.subTab = 1;       
+        $scope.faTab = 1;
+        $scope.faSubTab = 1;
+        
+        $scope.select = function (setTab) {
+            $scope.tab = setTab;
+        };
+        
+        $scope.subSelect = function (setTab) {
+            $scope.subTab = setTab;
+        };
+        
+        $scope.faSelect = function (setTab) {
+            $scope.faTab = setTab;
+        };
+        
+        $scope.faSubSelect = function (setTab) {
+            $scope.faSubTab = setTab;
+        };        
+
+        $scope.isSelected = function (checkTab) {
+            return ($scope.tab === checkTab);
+        };
+        
+        $scope.subIsSelected = function (checkTab) {
+            return ($scope.subTab === checkTab);
+        };
+        
+        $scope.faIsSelected = function (checkTab) {
+            return ($scope.faTab === checkTab);
+        };
+        
+        $scope.faSubIsSelected = function (checkTab) {
+            return ($scope.faSubTab === checkTab);
+        };
+        
+        
+        //initialize all form data:
         $scope.emailHidden = false;
         $scope.mobileHidden = true;
+        $scope.fineHidden = true;
+        $scope.editingAgeGroupId;        
+        $scope.currentRoleName = ''; 
         
         $scope.myUser = {
             caCheck: false,
@@ -154,8 +193,56 @@ angular.module('ma-app')
             role: ''
         };
         
+        $scope.teamForm = {
+            name: '',
+            ageGroup: null,
+            gender: null,
+            league: null
+        };
+        
+        $scope.ageGroupForm = {
+            name: '',
+            birthyear: '',
+            socceryear: ''
+        };
+        
+        $scope.editAgeGroupForm = {
+            name: '',
+            birthyear: '',
+            socceryear: ''
+        };
+        
+        $scope.ruleForm = {
+            league: null,
+            age: null,
+            duration: '',
+            players: '',
+            maxFieldLen: '',
+            maxFieldWidth: '',
+            goalHeight: '',
+            goalWidth: '',
+            periods: '',
+            periodDuration: '',
+            goalkeeper: false,
+            buildout: false,
+            offside: false,
+            header: false
+        };
+        
+        $scope.leagueForm = {
+            name: '',
+            shortname: '',
+            minAgeGroup: null,
+            maxAgeGroup: null,
+            type: null,
+            rescheduleDays: '',
+            consequence: '',
+            fine: '',
+            rescheduleRuleId: null,
+            logoURL: ''
+        };
+        
         $scope.$watch('invite.method', function(method) {
-            console.log("Selected " + method);
             if(method === 'email') {
                 $scope.emailHidden = false;
                 $scope.mobileHidden = true;
@@ -165,12 +252,32 @@ angular.module('ma-app')
             }
         });
         
+        $scope.$watch('leagueForm.consequence', function(consequence) {
+            if(consequence === 'FINE') {
+                $scope.fineHidden = false;
+            } else {                
+                $scope.fineHidden = true;
+            }
+        });
+        
         $scope.arePendingAccessRequests = function() {
             return $rootScope.accessRequests.length > 0;
         };
         
         $scope.areTeams = function() {
             return $rootScope.teams.length > 0;
+        };
+        
+        $scope.areAgeGroups = function() {
+            return $rootScope.ageGroups.length > 0;
+        };
+        
+        $scope.areLeagues = function() {
+            return $rootScope.leagues.length > 0;
+        };
+        
+        $scope.areRules = function() {
+            return $rootScope.rules.length > 0;
         };
         
         $scope.arePendingUserInvites = function() {
@@ -184,41 +291,117 @@ angular.module('ma-app')
             userService.sendUserInvite($scope.invite);
         };
         
-        $scope.addTeam = function() {
-            console.log("\n\nOpening dialog to add team");
-            ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
+        $scope.openAddLeague = function() {
+            console.log("\n\nOpening dialog to add league");
+            ngDialog.open({ template: 'views/addLeague.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
         }; 
+        
+        $scope.addLeague = function() {
+            console.log("\n\nAdding league");
+            console.log($scope.leagueForm);
+            
+            //first pull data and add the reschedule rule:
+            var days = $scope.leagueForm.rescheduleDays;
+            var consequence = $scope.leagueForm.consequence;
+            var fine = $scope.leagueForm.fine;
+            
+            if(days == '') {
+                //no reschedule rule created, so just add the league:
+                coreDataService.addLeague($scope.leagueForm);
+            } else {
+                coreDataService.addRescheduleRule(days, consequence, fine)
+                .then(function(response) {
+                    $scope.leagueForm.rescheduleDays = response.data.timespan_days;
+                    $scope.leagueForm.consequence = response.data.consequence;
+                    $scope.leagueForm.fine = response.data.fine;
+                
+                    coreDataService.addLeague($scope.leagueForm);
+                }, function(errResponse) {
+                    console.log("Failed to add reschedule rule, so league could not be added:");
+                    console.log(errResponse);                
+                });
+            }           
+            
+            ngDialog.close();
+        };
+        
+        $scope.openAddTeam = function() {
+            console.log("\n\nOpening dialog to add team");
+            ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
+        }; 
+        
+        $scope.addTeam = function() {
+            console.log("\n\nAdding team");
+            console.log($scope.teamForm);
+            clubService.addTeam($scope.teamForm);
+            ngDialog.close();
+        };
+        
+        $scope.openAddAgeGroup = function() {
+            console.log("\n\nOpening dialog to add age group");
+            ngDialog.open({ template: 'views/addAgeGroup.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
+        };
+        
+        $scope.addAgeGroup = function() {
+            console.log("\n\nAdding age group");
+            console.log($scope.ageGroupForm);
+            coreDataService.addAgeGroup($scope.ageGroupForm);
+            ngDialog.close();
+        };
+        
+        $scope.openEditAgeGroup = function(ageGroup) {
+            console.log("\n\nOpening dialog to edit age group");
+            console.log(ageGroup);
+            $scope.editingAgeGroupId = ageGroup._id;
+            $scope.editAgeGroupForm.name = ageGroup.name;
+            $scope.editAgeGroupForm.birthyear = ageGroup.birth_year;
+            $scope.editAgeGroupForm.socceryear = ageGroup.soccer_year;
+                
+            console.log("Current entries include: ");
+            console.log($scope.editAgeGroupForm);
+            ngDialog.open({ template: 'views/editAgeGroup.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
+        };
+        
+        $scope.editAgeGroup = function() {
+            console.log("\n\nEditing age group");
+            console.log($scope.ageGroupForm);
+            coreDataService.editAgeGroup($scope.editAgeGroupForm, $scope.editingAgeGroupId);
+            ngDialog.close();
+        };
+        
+        $scope.deleteAgeGroup = function(ageGroup) {
+            console.log("\n\nDeleting age group");
+            console.log(ageGroup);
+            coreDataService.deleteAgeGroup(ageGroup);
+            ngDialog.close();
+        };
+        
+        $scope.openAddRule = function() {
+            console.log("\n\nOpening dialog to add rule");
+            ngDialog.open({ template: 'views/addRule.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
+        }; 
+        
+        $scope.addRule = function() {
+            console.log("\n\nAdding rule");
+            console.log($scope.ruleForm);
+            coreDataService.addRule($scope.ruleForm);
+            ngDialog.close();
+        };
         
         $scope.openUpdate = function(user) {
             console.log("\n\nOpening dialog to update user: ");
             console.log(user);
             $scope.currentAssignmentUser = user;
             ngDialog.open({ template: 'views/assignmentUpdate.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
-        }; 
-        
-        $scope.subSelect = function (setTab) {
-            $scope.subTab = setTab;
         };
         
         $scope.loadClubUsers = function() {
             console.log("Attemtping to load all users for this club");
             coreDataService.getCurrentClubUsers();
-        };        
-        
-        $scope.select = function (setTab) {
-            $scope.tab = setTab;
-        };
+        };      
         
         $scope.getCurrentRole = function() {
             return authService.getCurrentRole();
-        };
-
-        $scope.isSelected = function (checkTab) {
-            return ($scope.tab === checkTab);
-        };
-        
-        $scope.subIsSelected = function (checkTab) {
-            return ($scope.subTab === checkTab);
         };
                 
         $scope.userHasRoleActive = function(roleName, user) {

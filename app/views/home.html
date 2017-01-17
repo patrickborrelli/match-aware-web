@@ -6,7 +6,7 @@
 </div>
 
 <div class="row row-content" ng-show="userHasClub && !userHasMultipleClubs && getCurrentRole() == 'CLUB_ADMIN'">    
-    <div class="col-xs-12" ng-if="!showMenu">
+    <div class="col-xs-12">
         <h4>Club Administration</h4>
     </div>
     <div class="col-xs-12">
@@ -254,7 +254,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <form class="form-inline">
-                            <button type="button" class="btn btn-success" ng-click="addTeam()">Add Team</button>
+                            <button type="button" class="btn btn-success" ng-click="openAddTeam()">Add Team</button>
                             <button type="button" class="btn btn-success" ng-click="">Import Teams</button>
                             <div class="form-group">
                                 <label class="sr-only" for="sort">Sort By</label>
@@ -290,11 +290,11 @@
                         <ul class="media-list" ng-show="areTeams()">
                             <li class="media" ng-repeat="team in teams" style="padding:10px; background: lightGray;">
                                 <div class="media-left media-top" >
-                                    <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{team.club.image_url}} alt="club logo">
+                                    <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{team.club.logo_url}} alt="club logo">
                                 </div>
                                 <div class="media-body">
                                     <h3 class="media-heading">{{team.name}}</h3>
-                                    <p>{{team.age_group.birth_year}}/{{team.age_group.soccer_year}}<br />
+                                    <p>{{team.age_group.birth_year}}/{{team.age_group.soccer_year}} {{team.gender.name}}<br />
                                     {{team.club.name}}</p>            
                                 </div>
                             </li>
@@ -319,13 +319,510 @@
                 </ul>
                 <div class="tab-content">
                     <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(1)">
-                        Age groups
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form class="form-inline">
+                                    <button type="button" class="btn btn-success" ng-click="openAddAgeGroup()">Add Age Group</button>                  
+                                </form>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row row-content">                    
+                            <div class="col-xs-12">
+                                <h4 ng-show="!areAgeGroups()">No current age groups.</h4>
+                                <ul class="media-list" ng-show="areAgeGroups()">
+                                    <li class="media" ng-repeat="ageGroup in ageGroups" style="padding:10px; background: lightGray;">
+                                        <div class="media-left media-top" >
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src="./images/trfc.png" alt="club logo">
+                                        </div>
+                                        <div class="media-body">
+                                            <h3 class="media-heading" style="padding-top: 20px;">{{ageGroup.name}}</h3>
+                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditAgeGroup(ageGroup)">Edit</button>
+                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;" ng-click="deleteAgeGroup(ageGroup)">Delete</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                     <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(2)">
-                        leagues
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form class="form-inline">
+                                    <button type="button" class="btn btn-success" ng-click="openAddLeague()">Add League</button>                  
+                                </form>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row row-content">                    
+                            <div class="col-xs-12">
+                                <h4 ng-show="!areLeagues()">No current leagues.</h4>
+                                <ul class="media-list" ng-show="areLeagues()">
+                                    <li class="media" ng-repeat="league in leagues" style="padding:10px; background: lightGray;">
+                                        <div class="media-left media-top" >
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{league.logo_url}} alt="league logo">
+                                        </div>
+                                        <div class="media-body">
+                                            <h3 class="media-heading" style="padding-top: 20px;">{{league.name}} - {{league.short_name}}</h3>
+                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="addTeam()">Edit</button>
+                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="addTeam()">Delete</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                     <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(3)">
-                        rules
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form class="form-inline">
+                                    <button type="button" class="btn btn-success" ng-click="openAddRule()">Add Rule</button>                  
+                                </form>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row row-content">                    
+                            <div class="col-xs-12">
+                                <h4 ng-show="!areRules()">No current rules.</h4>
+                                <ul class="media-list" ng-show="areRules()">
+                                    <li class="media" ng-repeat="rule in rules" style="padding:10px; background: lightGray;">
+                                        <div class="media-left media-top" >
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{rule.league.logo_url}} alt="league logo">
+                                        </div>
+                                        <div class="media-body">
+                                            <div class="col-xs-12 col-sm-4">
+                                                <h3 class="media-heading" style="padding-top: 20px;">{{rule.league.name}} - {{rule.league.short_name}}</h3>
+                                                <p>{{rule.age_group.birth_year}}/{{rule.age_group.soccer_year}}<br /></p>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-8">
+                                                <p>
+                                                    Game Duration: {{rule.duration_minutes}} - {{rule.num_periods}} x {{rule.period_duration_minutes}}<br />
+                                                    Fielded Players: {{rule.fielded_players}}  Ball Size: {{rule.ball_size}}<br />
+                                                    Goalkeeper: {{rule.goalkeeper}}  Offside: {{rule.offside}}  Heading: {{rule.heading}}  Build-out Line: {{rule.build_out_line}}
+                                                    Max Field Dimensions: {{rule.max_field_length}} x {{rule.max_field_width}}  Goal: {{rule.goal_width_ft}} x {{rule.goal_height_ft}}    
+                                                </p>
+                                            </div>
+                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="addTeam()">Edit</button>
+                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="addTeam()">Delete</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(4)">
+                        organizations
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row row-content" ng-show="userHasClub && !userHasMultipleClubs && getCurrentRole() == 'FIELD_ADMIN'">    
+    <div class="col-xs-12">
+        <h4>Field Administration</h4>
+    </div>
+    <div class="col-xs-12">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" ng-class="{active:faIsSelected(1)}">
+                <a ng-click="faSelect(1); faSubSelect(1)" aria-controls="users" role="tab">Faciliy Closures</a>
+            </li>
+            <li role="presentation" ng-class="{active:faIsSelected(2)}">
+                <a ng-click="faSelect(2); faSubSelect(1)" aria-controls="teams" role="tab">Scheduling</a>
+            </li>
+            <li role="presentation" ng-class="{active:faIsSelected(3)}">
+                <a ng-click="faSelect(3); faSubSelect(1)" aria-controls="configuration" role="tab">Configuration</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="tabContent" class="tab-pane fade in active" ng-show="isSelected(1)">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" ng-class="{active:subIsSelected(1)}">
+                        <a ng-click="subSelect(1)" aria-controls="users" role="tab">Requests</a>
+                    </li>
+                    <li role="presentation" ng-class="{active:subIsSelected(2)}">
+                        <a ng-click="subSelect(2); loadClubUsers();" aria-controls="teams" role="tab">Assign Roles</a>
+                    </li>
+                    <li role="presentation" ng-class="{active:subIsSelected(3)}">
+                        <a ng-click="subSelect(3)" aria-controls="configuration" role="tab">Invite Users</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(1)">
+                        <div class="row row-content">
+                            <div class="col-xs-12">
+                                <h4 ng-show="!arePendingAccessRequests()">No pending access requests for review</h4>
+                                <ul class="media-list" ng-show="arePendingAccessRequests()">
+                                    <li class="media" ng-repeat="request in accessRequests" style="padding:10px; background: lightGray;">
+                                        <div class="media-left media-top" >
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{request.user.profile_image}} alt="user photo">
+                                        </div>
+                                        <div class="media-body">
+                                            <h3 class="media-heading">{{request.user.first_name}} {{request.user.last_name}}</h3>
+                                            <p>{{getRolePrettyName(request.role.name)}}<br />
+                                            {{request.user.email_address}}</p>            
+                                        </div>
+                                        <button type="button" class="btn btn-primary btn-sm" ng-click="acceptAccess(request)">Accept</button>
+                                        <button type="button" class="btn btn-danger btn-sm" ng-click="declineAccess(request)">Decline</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(2)">
+                        <div class="row row-content">
+                            <div class="col-xs-12">
+                                <ul class="media-list">
+                                    <li class="media" ng-repeat="user in users" style="padding:10px; background: lightGray;">
+                                        <div class="media-left media-top" >
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{user.profile_image}} alt="user photo">
+                                        </div>
+                                        <div class="media-body">
+                                            <div class="col-sm-3">
+                                                <h3 class="media-heading">{{user.first_name}} {{user.last_name}}</h3>
+                                                <p>{{user.email_address}}<br />{{user.mobile}}</p>  
+                                            </div>
+                                            <div class="col-sm-9" style="padding-top: 10px;">
+                                                <form class="form-inline" ng-submit="openUpdate(user)">
+                                                    <div class="form-group">
+                                                        <div class="form-check form-check-inline">
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.caCheck" ng-checked="userHasRoleActive('CLUB_ADMIN', user)" name="caCheck" value="CLUB_ADMIN"> Club Admin
+                                                                </label>
+                                                            </div>
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.faCheck" ng-checked="userHasRoleActive('FIELD_ADMIN', user)" name="faCheck" value="FIELD_ADMIN"> Field Admin
+                                                                </label>
+                                                            </div>
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.raCheck" ng-checked="userHasRoleActive('REFEREE_ASSIGNOR', user)" name="raCheck" value="REFEREE_ASSIGNOR"> Ref Assignor
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="form-check form-check-inline">
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.taCheck" ng-checked="userHasRoleActive('TRAINING_ADMIN', user)" name="taCheck" value="TRAINING_ADMIN"> Training Admin
+                                                                </label>
+                                                            </div>
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.coCheck" ng-checked="userHasRoleActive('COACH', user)" name="coCheck" value="COACH"> Coach
+                                                                </label>
+                                                            </div>
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.trCheck" ng-checked="userHasRoleActive('TRAINER', user)" name="trCheck" value="TRAINER"> Trainer
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="form-check form-check-inline">
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.reCheck" ng-checked="userHasRoleActive('REFEREE', user)" name="reCheck" value="REFEREE"> Referee
+                                                                </label>
+                                                            </div>
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.plCheck" ng-checked="userHasRoleActive('PLAYER', user)" name="plCheck" value="PLAYER"> Player
+                                                                </label>
+                                                            </div>
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.paCheck" ng-checked="userHasRoleActive('PARENT', user)" name="paCheck" value="PARENT"> Parent
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-sm btn-success" >Update</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(3)">
+                        <div class="row" style="background: lightGray; padding: 0px; margin: 0px; height: 100px;">
+                            <div class="col-xs-2" style="margin-top: 8px;">
+                                <div>
+                                    <h4 style="text-align: center;">Invite User</h4>
+                                </div>
+                            </div>
+                            <div class="col-xs-10">
+                                <form ng-submit="sendInvite()">
+                                    <div class="row">
+                                        <div class="col-xs-4" style="padding-top: 12px;">
+                                            <div class="form-group" ng-show="!emailHidden">
+                                                <label class="sr-only" for="email">Email address</label>
+                                                <input type="email" ng-model="invite.email" class="form-control" id="email" placeholder="email address">
+                                            </div>
+                                            <div class="form-group" ng-show="!mobileHidden">
+                                                <label class="sr-only" for="mobile">Password</label>
+                                                <input type="tel" ng-model="invite.mobile" class="form-control" id="mobile" placeholder="mobile">
+                                            </div>
+                                            <div class="radio">
+                                                <label class="radio-inline">
+                                                    <input type="radio" ng-model="invite.method" id="emailSelected" value="email" checked>email
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="mobileSelected" ng-model="invite.method" id="mobileSelected" value="mobile">mobile
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <div class="radio">
+                                                <label style="font-size: 13px;">
+                                                    <input type="radio" ng-model="invite.role" id="optionscclubcheckheckboxs1" value="CLUB_ADMIN" checked>Club Admin
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label style="font-size: 13px;">
+                                                    <input type="radio" ng-model="invite.role" id="fieldcheck" value="FIELD_ADMIN">Field Admin
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label style="font-size: 13px;">
+                                                    <input type="radio" ng-model="invite.role" id="optionsradios3" value="REFEREE_ASSIGNOR">Ref Assignor
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">                                            
+                                            <div class="radio">
+                                                <label style="font-size: 13px;">
+                                                    <input type="radio" ng-model="invite.role" id="optionscclubcheckheckboxs1" value="TRAINING_ADMIN">Training Admin
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label style="font-size: 13px;">
+                                                    <input type="radio" ng-model="invite.role" id="fieldcheck" value="COACH">Coach
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label style="font-size: 13px;">
+                                                    <input type="radio" ng-model="invite.role" id="optionsradios3" value="TRAINER">Trainer
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">                                            
+                                            <div class="radio">
+                                                <label style="font-size: 13px;">
+                                                    <input type="radio" ng-model="invite.role" id="optionscclubcheckheckboxs1" value="REFEREE">Referee
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label style="font-size: 13px;">
+                                                    <input type="radio" ng-model="invite.role" id="fieldcheck" value="PLAYER">Player
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label style="font-size: 13px;">
+                                                    <input type="radio" ng-model="invite.role" id="optionsradios3" value="PARENT">Parent
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2" style="padding-top:30px;">  
+                                            <button type="submit" class="btn btn-success">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <hr />
+                        <h4 style="text-align: center;">Pending Invites</h4>
+                        <div class="row row-content">
+                            <div class="col-xs-12">
+                                <h4 ng-show="!arePendingUserInvites()">No user invites pending.</h4>
+                                <ul class="media-list" ng-show="arePendingUserInvites()">
+                                    <li class="media" ng-repeat="invite in userInvites" style="padding:10px; background: lightGray;">
+                                        <div class="media-left media-top" >
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src="./images/defaultUser.png" alt="user photo">
+                                        </div>
+                                        <div class="media-body">
+                                            <h3 class="media-heading">{{getRolePrettyName(invite.role.name)}}</h3>
+                                            <p>{{invite.mobile}}<br />
+                                            {{invite.email}}<br />
+                                            Invite Key: {{invite.invite_key}}</p>            
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="tabContent" class="tab-pane fade in active" ng-show="isSelected(2)">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <form class="form-inline">
+                            <button type="button" class="btn btn-success" ng-click="openAddTeam()">Add Team</button>
+                            <button type="button" class="btn btn-success" ng-click="">Import Teams</button>
+                            <div class="form-group">
+                                <label class="sr-only" for="sort">Sort By</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">Sort By</div>
+                                    <select class="form-control" id="sort">
+                                        <option></option>
+                                        <option>Age Group</option>
+                                        <option>Program</option>
+                                        <option>Name</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="sr-only" for="sort">Filter By</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">Filter By</div>
+                                    <select class="form-control"  id="filter">
+                                        <option></option>
+                                        <option>Travel</option>
+                                        <option>Recreational</option>
+                                        <option>Clinic</option>
+                                    </select>
+                                </div>
+                            </div>                            
+                        </form>
+                    </div>
+                </div>
+                <hr />
+                <div class="row row-content">                    
+                    <div class="col-xs-12">
+                        <h4 ng-show="!areTeams()">No current teams.</h4>
+                        <ul class="media-list" ng-show="areTeams()">
+                            <li class="media" ng-repeat="team in teams" style="padding:10px; background: lightGray;">
+                                <div class="media-left media-top" >
+                                    <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{team.club.logo_url}} alt="club logo">
+                                </div>
+                                <div class="media-body">
+                                    <h3 class="media-heading">{{team.name}}</h3>
+                                    <p>{{team.age_group.birth_year}}/{{team.age_group.soccer_year}} {{team.gender.name}}<br />
+                                    {{team.club.name}}</p>            
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="tabContent" class="tab-pane fade in active" ng-show="isSelected(3)">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" ng-class="{active:subIsSelected(1)}">
+                        <a ng-click="subSelect(1)" aria-controls="users" role="tab">Age Groups</a>
+                    </li>
+                    <li role="presentation" ng-class="{active:subIsSelected(2)}">
+                        <a ng-click="subSelect(2)" aria-controls="teams" role="tab">Leagues</a>
+                    </li>
+                    <li role="presentation" ng-class="{active:subIsSelected(3)}">
+                        <a ng-click="subSelect(3)" aria-controls="configuration" role="tab">Rules</a>
+                    </li>
+                    <li role="presentation" ng-class="{active:subIsSelected(4)}">
+                        <a ng-click="subSelect(4)" aria-controls="configuration" role="tab">Organizations</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(1)">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form class="form-inline">
+                                    <button type="button" class="btn btn-success" ng-click="openAddAgeGroup()">Add Age Group</button>                  
+                                </form>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row row-content">                    
+                            <div class="col-xs-12">
+                                <h4 ng-show="!areAgeGroups()">No current age groups.</h4>
+                                <ul class="media-list" ng-show="areAgeGroups()">
+                                    <li class="media" ng-repeat="ageGroup in ageGroups" style="padding:10px; background: lightGray;">
+                                        <div class="media-left media-top" >
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src="./images/trfc.png" alt="club logo">
+                                        </div>
+                                        <div class="media-body">
+                                            <h3 class="media-heading" style="padding-top: 20px;">{{ageGroup.name}}</h3>
+                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditAgeGroup(ageGroup)">Edit</button>
+                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;" ng-click="deleteAgeGroup(ageGroup)">Delete</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(2)">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form class="form-inline">
+                                    <button type="button" class="btn btn-success" ng-click="openAddLeague()">Add League</button>                  
+                                </form>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row row-content">                    
+                            <div class="col-xs-12">
+                                <h4 ng-show="!areLeagues()">No current leagues.</h4>
+                                <ul class="media-list" ng-show="areLeagues()">
+                                    <li class="media" ng-repeat="league in leagues" style="padding:10px; background: lightGray;">
+                                        <div class="media-left media-top" >
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{league.logo_url}} alt="league logo">
+                                        </div>
+                                        <div class="media-body">
+                                            <h3 class="media-heading" style="padding-top: 20px;">{{league.name}} - {{league.short_name}}</h3>
+                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="addTeam()">Edit</button>
+                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="addTeam()">Delete</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(3)">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form class="form-inline">
+                                    <button type="button" class="btn btn-success" ng-click="openAddRule()">Add Rule</button>                  
+                                </form>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row row-content">                    
+                            <div class="col-xs-12">
+                                <h4 ng-show="!areRules()">No current rules.</h4>
+                                <ul class="media-list" ng-show="areRules()">
+                                    <li class="media" ng-repeat="rule in rules" style="padding:10px; background: lightGray;">
+                                        <div class="media-left media-top" >
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{rule.league.logo_url}} alt="league logo">
+                                        </div>
+                                        <div class="media-body">
+                                            <div class="col-xs-12 col-sm-4">
+                                                <h3 class="media-heading" style="padding-top: 20px;">{{rule.league.name}} - {{rule.league.short_name}}</h3>
+                                                <p>{{rule.age_group.birth_year}}/{{rule.age_group.soccer_year}}<br /></p>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-8">
+                                                <p>
+                                                    Game Duration: {{rule.duration_minutes}} - {{rule.num_periods}} x {{rule.period_duration_minutes}}<br />
+                                                    Fielded Players: {{rule.fielded_players}}  Ball Size: {{rule.ball_size}}<br />
+                                                    Goalkeeper: {{rule.goalkeeper}}  Offside: {{rule.offside}}  Heading: {{rule.heading}}  Build-out Line: {{rule.build_out_line}}
+                                                    Max Field Dimensions: {{rule.max_field_length}} x {{rule.max_field_width}}  Goal: {{rule.goal_width_ft}} x {{rule.goal_height_ft}}    
+                                                </p>
+                                            </div>
+                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="addTeam()">Edit</button>
+                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="addTeam()">Delete</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                     <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(4)">
                         organizations
