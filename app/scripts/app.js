@@ -49,4 +49,10 @@ angular.module('ma-app', ['ui.router', 'ngDialog'])
             });
             $urlRouterProvider.otherwise('/');     
             
-});
+})
+.config(['$sceDelegateProvider', function($sceDelegateProvider) {
+    $sceDelegateProvider.resourceUrlWhitelist([
+        'self',
+        'https://www.google.com/**'
+    ]);
+}]);

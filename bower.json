@@ -29,7 +29,6 @@
     "angular-ui-router": "^0.3.2",
     "angular-route": "^1.6.1",
     "ng-dialog": "^0.6.6",
-    "ui-bootstrap": "^2.4.0",
-    "bootstrap-toggle": "^2.2.2"
+    "ui-bootstrap": "^2.4.0"
   }
 }

@@ -1,6 +1,11 @@
 'use strict';
 
 angular.module('ma-app')
+    .filter('trustUrl', function ($sce) {
+        return function(url) {
+            return $sce.trustAsResourceUrl(url);
+        };
+    })
     .controller('HeaderController', ['$scope', 'ngDialog', 'authService',  function($scope, ngDialog, authService) {
         $scope.openRegister = function () {
             ngDialog.open({ template: 'views/register.html', scope: $scope, className: 'ngdialog-theme-default custom-width', controller:"RegisterController" });
@@ -170,6 +175,8 @@ angular.module('ma-app')
         //initialize all form data:
         $scope.emailHidden = false;
         $scope.mobileHidden = true;
+        $scope.addressHidden = false;
+        $scope.gpsHidden = true;
         $scope.fineHidden = true;
         $scope.editingAgeGroupId;        
         $scope.currentRoleName = ''; 
@@ -242,6 +249,34 @@ angular.module('ma-app')
             logoURL: ''
         };
         
+        $scope.facilityForm = {
+            name: '',
+            shortname: '',
+            club: null,
+            address: '',
+            city: '',
+            state: '',
+            zip: '',
+            lat: '',
+            lon: '',
+            sunStart: '',
+            sunStop: '',
+            monStart: '',
+            monStop: '',
+            tueStart: '',
+            tueStop: '',
+            wedStart: '',
+            wedStop: '',
+            thuStart: '',
+            thuStop: '',
+            friStart: '',
+            friStop: '',
+            satStart: '',
+            satStop: '',
+            indoor: false,
+            method: 'address'
+        };
+        
         $scope.$watch('invite.method', function(method) {
             if(method === 'email') {
                 $scope.emailHidden = false;
@@ -252,6 +287,17 @@ angular.module('ma-app')
             }
         });
         
+        $scope.$watch('facilityForm.method', function(method) {
+            console.log("Value of method switched to : " + method);
+            if(method == 'address') {
+                $scope.addressHidden = false;
+                $scope.gpsHidden = true;
+            } else {
+                $scope.addressHidden = true;
+                $scope.gpsHidden = false;
+            }
+        });
+        
         $scope.$watch('leagueForm.consequence', function(consequence) {
             if(consequence === 'FINE') {
                 $scope.fineHidden = false;
@@ -259,6 +305,11 @@ angular.module('ma-app')
                 $scope.fineHidden = true;
             }
         });
+        
+        $scope.getGoogleEmbedURL = function(formattedAddress) {
+            var url =  coreDataService.getGoogleMapURL(formattedAddress);
+            console.log("Returing map URL: " + url);
+        };
         
         $scope.arePendingAccessRequests = function() {
             return $rootScope.accessRequests.length > 0;
@@ -284,6 +335,14 @@ angular.module('ma-app')
             return $rootScope.userInvites.length > 0;
         };
         
+        $scope.areFacilities = function() {
+            return $rootScope.facilities.length > 0;
+        };
+        
+        $scope.areFields = function() {
+            return $rootScope.fields.length > 0;
+        };
+        
         $scope.sendInvite = function() {
             console.log("Received invite for: " + $scope.invite.email + " " + $scope.invite.mobile);            
             console.log("data is ");
@@ -294,6 +353,11 @@ angular.module('ma-app')
         $scope.openAddLeague = function() {
             console.log("\n\nOpening dialog to add league");
             ngDialog.open({ template: 'views/addLeague.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
+        }; 
+        
+        $scope.openAddFacility = function() {
+            console.log("\n\nOpening dialog to add facility");
+            ngDialog.open({ template: 'views/addFacility.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
         }; 
         
         $scope.addLeague = function() {
@@ -385,6 +449,13 @@ angular.module('ma-app')
             console.log("\n\nAdding rule");
             console.log($scope.ruleForm);
             coreDataService.addRule($scope.ruleForm);
+            ngDialog.close();
+        };
+        
+        $scope.addFacility = function() {
+            console.log("\n\nAdding facility");
+            console.log($scope.facilityForm);
+            coreDataService.addFacility($scope.facilityForm);
             ngDialog.close();
         };
         

@@ -1,0 +1,279 @@
+<div class="ngdialog-message">
+    <div class="">
+        <h3>Add New Facility</h3>
+    </div>
+    <div class="">&nbsp;</div>
+    <div class="">
+        <form class="form-horizontal" ng-submit="addFacility()">
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="name">Facility Name</label>
+                <div class="col-xs-12, col-sm-9" style="padding-right:0px; margin-right: 0px;">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Name</div>
+                        <input type="text" id="name" class="form-control" ng-model="facilityForm.name" placeholder="full name">
+                    </div>
+                </div>
+                <label class="sr-only" for="shortname">Facility Abbreviation</label>
+                <div class="col-xs-12 col-sm-3" style="padding-left:0px; margin-left: 0px;">
+                    <input type="text" id="shortname" class="form-control" ng-model="facilityForm.shortname" placeholder="abbreviation">
+                </div>                    
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="club">Club Affiliation</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Club</div>
+                        <select id="club" class="form-control" ng-model="facilityForm.club" ng-options="club as club.name for club in clubs"></select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding">
+                <div class="radio" style="text-align:center; padding-top: 0px;">
+                    <label class="radio-inline">
+                        <input type="radio" ng-model="facilityForm.method" value="address">Address
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" ng-model="facilityForm.method" value="gps">GPS Coordinates
+                    </label>
+                </div>
+            </div>
+            
+            <div ng-show="!gpsHidden">
+                <div class="form-group custom-padding"> 
+                    <label class="sr-only" for="lat">Latitude</label>
+                    <div class="col-xs-12">  
+                        <div class="input-group">
+                            <div class="input-group-addon custom-width-100">Latitude</div>
+                            <input type="text" id="lat" class="form-control" ng-model="facilityForm.lat" placeholder="39.9727">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group custom-padding-bottom"> 
+                    <label class="sr-only" for="lon">Longitude</label>
+                    <div class="col-xs-12">  
+                        <div class="input-group">
+                            <div class="input-group-addon custom-width-100">Longitude</div>
+                            <input type="text" id="lon" class="form-control" ng-model="facilityForm.lon" placeholder="-74.1479">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div ng-show="!addressHidden">
+                <div class="form-group custom-padding"> 
+                    <label class="sr-only" for="address">Street Address</label>
+                    <div class="col-xs-12">  
+                        <div class="input-group">
+                            <div class="input-group-addon custom-width-100">Address</div>
+                            <input type="text" id="address" class="form-control" ng-model="facilityForm.address">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group custom-padding-bottom"> 
+                    <label class="sr-only" for="city">City</label>
+                    <div class="col-xs-12, col-sm-6" style="padding-right:0px; margin-right: 0px;">  
+                        <div class="input-group">
+                            <div class="input-group-addon custom-width-100">City</div>
+                            <input type="text" id="city" class="form-control" ng-model="facilityForm.city">
+                        </div>
+                    </div>
+                    <label class="sr-only" for="state">State</label>
+                    <div class="col-xs-6, col-sm-3" style="padding-right:0px; margin-right: 0px; padding-left:0px; margin-left: 0px;">  
+                        <div class="input-group">
+                            <div class="input-group-addon">State</div>
+                            <select id="state" class="form-control" ng-model="facilityForm.state">
+                                <option value=""></option>
+                                <option value="AK">AK</option>
+                                <option value="AL">AL</option>
+                                <option value="AR">AR</option>
+                                <option value="AZ">AZ</option>
+                                <option value="CA">CA</option>
+                                <option value="CO">CO</option>
+                                <option value="CT">CT</option>
+                                <option value="DC">DC</option>
+                                <option value="DE">DE</option>
+                                <option value="FL">FL</option>
+                                <option value="GA">GA</option>
+                                <option value="HI">HI</option>
+                                <option value="IA">IA</option>
+                                <option value="ID">ID</option>
+                                <option value="IL">IL</option>
+                                <option value="IN">IN</option>
+                                <option value="KS">KS</option>
+                                <option value="KY">KY</option>
+                                <option value="LA">LA</option>
+                                <option value="MA">MA</option>
+                                <option value="MD">MD</option>
+                                <option value="ME">ME</option>
+                                <option value="MI">MI</option>
+                                <option value="MN">MN</option>
+                                <option value="MO">MO</option>
+                                <option value="MS">MS</option>
+                                <option value="MT">MT</option>
+                                <option value="NC">NC</option>
+                                <option value="ND">ND</option>
+                                <option value="NE">NE</option>
+                                <option value="NH">NH</option>
+                                <option value="NJ">NJ</option>
+                                <option value="NM">NM</option>
+                                <option value="NV">NV</option>
+                                <option value="NY">NY</option>
+                                <option value="OH">OH</option>
+                                <option value="OK">OK</option>
+                                <option value="OR">OR</option>
+                                <option value="PA">PA</option>
+                                <option value="PR">PR</option>
+                                <option value="RI">RI</option>
+                                <option value="SC">SC</option>
+                                <option value="SD">SD</option>
+                                <option value="TN">TN</option>
+                                <option value="TX">TX</option>
+                                <option value="UT">UT</option>
+                                <option value="VA">VA</option>
+                                <option value="VT">VT</option>
+                                <option value="WA">WA</option>
+                                <option value="WI">WI</option>
+                                <option value="WV">WV</option>
+                                <option value="WY">WY</option>
+                            </select>
+                        </div>
+                    </div>  
+                    <label class="sr-only" for="zip">Postal Code</label>
+                    <div class="col-xs-6, col-sm-3" style="padding-left:0px; margin-left: 0px;">  
+                        <div class="input-group">
+                            <div class="input-group-addon">ZIP</div>
+                            <input type="text" id="zip" class="form-control" ng-model="facilityForm.zip">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group" style="padding-bottom: 0px; margin-bottom: 0px;"> 
+                <div class="col-xs-1" style="padding-right:0px; margin-right: 0px;"> </div>
+                <div class="col-xs-3" style="padding:0px; margin: 0px;"></div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <div class="input-group">
+                        <div class="input-group-addon">Sun</div>
+                    </div>
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <div class="input-group">
+                        <div class="input-group-addon">Mon</div>
+                    </div>
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <div class="input-group">
+                        <div class="input-group-addon">Tue</div>
+                    </div>
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <div class="input-group">
+                        <div class="input-group-addon">Wed</div>
+                    </div>
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <div class="input-group">
+                        <div class="input-group-addon">Thu</div>
+                    </div>
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <div class="input-group">
+                        <div class="input-group-addon">Fri</div>
+                    </div>
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <div class="input-group">
+                        <div class="input-group-addon">Sat</div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" style="padding-bottom: 0px; margin-bottom: 0px;">  
+                <div class="col-xs-1" style="padding-right:0px; margin-right: 0px;"> </div>
+                <div class="col-xs-3" style="padding-right:0px; margin-right: 0px;">
+                    <div class="input-group">
+                        <div class="input-group-addon">Start Time</div>
+                    </div>
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="sunStart">Sunday Start Time</label>
+                    <input type="text" id="sunStart" class="form-control input-sm" ng-model="facilityForm.sunStart">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="monStart">Monday Start Time</label>
+                    <input type="text" id="monStart" class="form-control input-sm" ng-model="facilityForm.monStart">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="tueStart">Tuesday Start Time</label>
+                    <input type="text" id="ztueStartip" class="form-control input-sm" ng-model="facilityForm.tueStart">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="wedStart">Wednesday Start Time</label>
+                    <input type="text" id="wedStart" class="form-control input-sm" ng-model="facilityForm.wedStart">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="thuStart">Thursday Start Time</label>
+                    <input type="text" id="thuStart" class="form-control input-sm" ng-model="facilityForm.thuStart">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="friStart">Friday Start Time</label>
+                    <input type="text" id="friStart" class="form-control input-sm" ng-model="facilityForm.friStart">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="satStart">Saturday Start Time</label>
+                    <input type="text" id="satStart" class="form-control input-sm" ng-model="facilityForm.satStart">
+                </div>
+            </div>
+            <div class="form-group" style="padding-bottom: 5px; margin-bottom: 0px;"> 
+                <div class="col-xs-1" style="padding-right:0px; margin-right: 0px;"> </div>
+                <div class="col-xs-3" style="padding-right:0px; margin-right: 0px;">
+                    <div class="input-group">
+                        <div class="input-group-addon">Stop Time</div>
+                    </div>
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="sunStop">Sunday Stop Time</label>
+                    <input type="text" id="sunStop" class="form-control input-sm" ng-model="facilityForm.sunStop">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="monStop">Monday Stop Time</label>
+                    <input type="text" id="monStop" class="form-control input-sm" ng-model="facilityForm.monStop">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="tueStop">Tuesday Stop Time</label>
+                    <input type="text" id="tueStop" class="form-control input-sm" ng-model="facilityForm.tueStop">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="wedStop">Wednesday Stop Time</label>
+                    <input type="text" id="wedStop" class="form-control input-sm" ng-model="facilityForm.wedStop">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="thuStop">Thursday Stop Time</label>
+                    <input type="text" id="thuStop" class="form-control input-sm" ng-model="facilityForm.thuStop">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="friStop">Friday Stop Time</label>
+                    <input type="text" id="friStop" class="form-control input-sm" ng-model="facilityForm.friStop">
+                </div>
+                <div class="col-xs-1" style="padding:0px; margin: 0px;">
+                    <label class="sr-only" for="satStop">Saturday Stop Time</label>
+                    <input type="text" id="satStop" class="form-control input-sm" ng-model="facilityForm.satStop">
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding-bottom">    
+                <label class="sr-only" for="indoor">Indoor Facility</label>
+                <div class="col-xs-12" style="text-align: center;">  
+                    <input type="checkbox" checked ng-model="facilityForm.indoor" id="indoor"> Indoor 
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-info">Add</button>
+            <button type="button" class="btn btn-default" ng-click=closeThisDialog("Cancel")>Cancel</button>
+        </form>
+    </div>
+    <div>&nbsp;</div>
+</div>

@@ -2,10 +2,11 @@
 
 angular.module('ma-app')
     .constant("baseURL","https://matchaware-rest.herokuapp.com/")
-    .constant("googleGeocodeKey", "&key=AIzaSyCpClStUy156rFgjGJsYLBdKfBUEBZ1iLU")
-    .constant("googleGeolocateBaseURL", "https://maps.googleapis.com/maps/api/geocode/json?address=")
+    .constant("googleGeocodeKey", "key=AIzaSyCpClStUy156rFgjGJsYLBdKfBUEBZ1iLU")
+    .constant("googleGeolocateBaseURL", "https://maps.googleapis.com/maps/api/geocode/json?")
+    .constant("googleMapsBaseURL", "https://www.google.com/maps/embed/v1/place?")
 
-    .service('coreDataService', ['$http', 'baseURL', '$rootScope', function($http, baseURL, $rootScope) {
+    .service('coreDataService', ['$http', 'baseURL', '$rootScope', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL',  function($http, baseURL, $rootScope, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL) {
         $rootScope.clubs = {};
         $rootScope.roles = {};   
         $rootScope.ageGroups = {};
@@ -83,6 +84,14 @@ angular.module('ma-app')
             userInvitesLoaded = false;  
             accessRequestsLoaded = false; 
         };
+        
+        this.getGoogleMapURL = function(formattedAddress) {
+            var url = googleMapsBaseURL + googleGeocodeKey +
+                '&q=' + formattedAddress;            
+            return url;
+        };
+        
+        var localGoogleMapURL = this.getGoogleMapURL;
         
         this.processAccessRequestAccept = function(request) {
             var hasTeam = false;
@@ -293,6 +302,7 @@ angular.module('ma-app')
         };
         
         this.appDataLoad = function(curUser) {
+            
             if(!rolesLoaded) {
                 //retrieve roles:
                 $http({
@@ -357,7 +367,7 @@ angular.module('ma-app')
                 }); 
             }
             
-            if(facilitiesLoaded) {
+            if(!facilitiesLoaded) {
                 //retrieve facilities:
                 $http({
                     url: baseURL + 'facilities/',
@@ -368,7 +378,18 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the facilities from the API: ");
                     console.log(response);
-                    $rootScope.facilities = response.data;
+                    
+                    //attempt to build the google map url dynamically here and store it in the facilities objects before putting them in the root scope:
+                    var fac = response.data;
+                    console.log("Trying to pull out the data...length is " + fac.length);
+                    console.log(fac);
+                    var mapString;
+                    for(var i = 0; i < fac.length; i++) {
+                        mapString = localGoogleMapURL(fac[i].google_maps_address);
+                        fac[i].google_map_string = mapString;
+                        console.log(fac[i]);
+                    }         
+                    $rootScope.facilities = fac;
                     facilitiesLoaded = true;
                 }); 
             }
@@ -706,6 +727,36 @@ angular.module('ma-app')
         
         var localRefreshRules = this.refreshRules;
         
+        this.refreshFacilities = function() {
+            //retrieve facilities:
+            
+            $http({
+                url: baseURL + 'facilities/',
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Retrieved the facilities from the API: ");
+                console.log(response);
+
+                //attempt to build the google map url dynamically here and store it in the facilities objects before putting them in the root scope:
+                var fac = response.data;
+                console.log("Trying to pull out the data...length is " + fac.length);
+                console.log(fac);
+                var mapString;
+                for(var i = 0; i < fac.length; i++) {
+                    mapString = localGoogleMapURL(fac[i].google_maps_address);
+                    fac[i].google_map_string = mapString;
+                    console.log(fac[i]);
+                }         
+                $rootScope.facilities = fac;
+                facilitiesLoaded = true;
+            }); 
+        };
+        
+        var localRefreshFacilities = this.refreshFacilities;
+        
         this.getRoleIdByName = function(roleName) {
             for(var i = 0; i < $rootScope.roles.length; i++) {
                 if(String($rootScope.roles[i].name) == String(roleName)) {
@@ -897,10 +948,227 @@ angular.module('ma-app')
             });
         };
         
-        /*
-            age: null,
-            */
+        function formatAddress(street, city, state, zip) {
+            var plainAddress = street + ", " + city + ", " + state;
+            console.log("Received address: " + plainAddress);
+            var encodedAddress = plainAddress.replace(/\s+/g, "+");
+            console.log("Converted address: " + encodedAddress);
+            return encodedAddress;           
+        };
         
+        function buildFacilityPostString(form, google_maps_address) {
+            var ps = '{ "name": "' + form.name + '", ';
+            
+            if(form.club != null) {
+                ps += '"club_affiliation": "' + form.club._id + '", ';
+            }
+            
+            if(form.address != '') {
+                ps += '"address": "' + form.address + '", ';
+            }
+            
+            if(form.city != '') {
+                ps += '"city": "' + form.city + '", ';
+            }
+            
+            if(form.state != '') {
+                ps += '"state": "' + form.state + '", ';
+            }
+            
+            if(form.zip != '') {
+                ps += '"postal_code": "' + form.zip + '", ';
+            }
+            
+            if(form.lat != '') {
+                ps += '"latitude": ' + form.lat + ', ';
+            }
+            
+            if(form.lon != '') {
+                ps += '"longitude": ' + form.lon + ', ';
+            }
+            
+            if(form.sunStart != '') {
+                ps += '"sun_start_time": "' + form.sunStart + '", ';
+            }
+            
+            if(form.sunStop != '') {
+                ps += '"sun_stop_time": "' + form.sunStop + '", ';
+            }
+            
+            if(form.monStart != '') {
+                ps += '"mon_start_time": "' + form.monStart + '", ';
+            }
+            
+            if(form.monStop != '') {
+                ps += '"mon_stop_time": "' + form.monStop + '", ';
+            }
+            
+            if(form.tueStart != '') {
+                ps += '"tue_start_time": "' + form.tueStart + '", ';
+            }
+            
+            if(form.tueStop != '') {
+                ps += '"tue_stop_time": "' + form.tueStop + '", ';
+            }
+            
+            if(form.wedStart != '') {
+                ps += '"wed_start_time": "' + form.wedStart + '", ';
+            }
+            
+            if(form.wedStop != '') {
+                ps += '"wed_stop_time": "' + form.wedStop + '", ';
+            }
+            
+            if(form.thuStart != '') {
+                ps += '"thu_start_time": "' + form.thuStart + '", ';
+            }
+            
+            if(form.thuStop != '') {
+                ps += '"thu_stop_time": "' + form.thuStop + '", ';
+            }
+            
+            if(form.friStart != '') {
+                ps += '"fri_start_time": "' + form.friStart + '", ';
+            }
+            
+            if(form.friStop != '') {
+                ps += '"fri_stop_time": "' + form.friStop + '", ';
+            }
+            
+            if(form.satStart != '') {
+                ps += '"sat_start_time": "' + form.satStart + '", ';
+            }
+            
+            if(form.satStop != '') {
+                ps += '"sat_stop_time": "' + form.satStop + '", ';
+            }
+            
+            ps += '"indoor": ' + form.indoor + ', ';
+            ps += '"short_name": "' + form.shortname + '", ';
+            ps += '"google_maps_address": "' + google_maps_address + '" }';
+            
+            return ps;            
+        };
+        
+        this.addFacility = function(formData) {
+            var haveAddress = false;
+            var lat;
+            var lon;
+            var address;
+            var city;
+            var state;
+            var zip;
+            var formattedAddress;
+            var formattedLatLon;
+            var postString;
+            
+            //first, if method is address, get geocode coordinates:
+            if(formData.method == 'address') {
+                console.log("Address is provided, requesting geocode coordinates.");
+                haveAddress = true;
+                formattedAddress = 
+                formatAddress(formData.address, formData.city, formData.state, formData.zip);
+            } else {
+                haveAddress = false;
+                formattedLatLon = formData.lat + "," + formData.lon;
+            }          
+            
+            if(haveAddress) {
+                //first send a geocode request:
+                $http({
+                    url: googleGeolocateBaseURL + 'address=' + formattedAddress + '&' + googleGeocodeKey,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json',
+                        'x-access-token': undefined
+                    }
+                }).then(function(response) {
+                    console.log("Successfully retrieved geocode: ");
+                    console.log(response);
+                    
+                    //get the lat/lon:
+                    lat = response.data.results[0].geometry.location.lat;
+                    lon = response.data.results[0].geometry.location.lng;
+                    formData.lat = lat;
+                    formData.lon = lon;
+                    postString = buildFacilityPostString(formData, formattedAddress);
+                    console.log("Sending facility post with string: \n" + postString);
+                    
+                    //post the facility:
+                    $http({
+                        url: baseURL + 'facilities/',
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json' 
+                        },
+                        data: postString
+                    }).then(function(response) {
+                        console.log("Successfully added facility: ");
+                        console.log(response);
+                        localRefreshFacilities();
+                    }, function(errResponse) {
+                        console.log("Failed on attempt to add facility:");
+                        console.log(errResponse);
+                    });  
+                }, function(errResponse) {
+                    console.log("Failed on attempt to retrieve geocode:");
+                    console.log(errResponse);
+                });
+                
+            } else {
+                //fist send a reverse geocode request:
+                $http({
+                    url: googleGeolocateBaseURL + 'latlng=' + formattedLatLon + '&' + googleGeocodeKey,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json',
+                        'x-access-token': undefined
+                    }
+                }).then(function(response) {
+                    console.log("Successfully retrieved address: ");
+                    console.log(response);
+                    console.log("Retrieved address: " + response.data.results[0].formatted_address);
+                    
+                    //get the address components and add them back to the form:
+                    address = response.data.results[0].address_components[0].long_name + " " + 
+                        response.data.results[0].address_components[1].long_name;
+                    city = response.data.results[0].address_components[2].long_name;
+                    state = response.data.results[0].address_components[4].short_name;
+                    zip = response.data.results[0].address_components[6].long_name;
+                    
+                    formData.address = address;
+                    formData.city = city;
+                    formData.state = state;
+                    formData.zip = zip;
+                    
+                    formattedAddress = 
+                        formatAddress(formData.address, formData.city, formData.state, formData.zip);
+                    
+                    postString = buildFacilityPostString(formData, formattedAddress);
+                    console.log("Sending facility post with string: \n" + postString);
+                    
+                    //post the facility:
+                    $http({
+                        url: baseURL + 'facilities/',
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json' 
+                        },
+                        data: postString
+                    }).then(function(response) {
+                        console.log("Successfully added facility: ");
+                        console.log(response);
+                        localRefreshFacilities();
+                    }, function(errResponse) {
+                        console.log("Failed on attempt to add facility:");
+                        console.log(errResponse);
+                    });  
+                }, function(errResponse) {
+                    console.log("Failed on attempt to retrieve geocode:");
+                    console.log(errResponse);
+                });
+            }           
+        };        
     }])
 
     .service('userService', ['$http', 'baseURL', '$rootScope', 'ngDialog', 'coreDataService', function($http,baseURL, $rootScope, ngDialog, coreDataService) {
