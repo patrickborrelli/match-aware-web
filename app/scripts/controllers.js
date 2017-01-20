@@ -133,7 +133,7 @@ angular.module('ma-app')
         };
     }])
 
-    .controller('HomeController', ['$scope', 'ngDialog', '$state', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', function($scope, ngDialog, $state, authService, coreDataService, userService, $rootScope, clubService) {
+    .controller('HomeController', ['$scope', 'ngDialog', '$state', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', 'schedulingService', function($scope, ngDialog, $state, authService, coreDataService, userService, $rootScope, clubService, schedulingService) {
         $scope.tab = 1;
         $scope.subTab = 1;       
         $scope.faTab = 1;
@@ -176,6 +176,11 @@ angular.module('ma-app')
         $scope.emailHidden = false;
         $scope.mobileHidden = true;
         $scope.addressHidden = false;
+        
+        $rootScope.rangeShown = true;        
+        $rootScope.futureShown = false;        
+        $rootScope.currentShown = true;
+        
         $scope.gpsHidden = true;
         $scope.fineHidden = true;
         $scope.editingAgeGroupId;        
@@ -277,6 +282,49 @@ angular.module('ma-app')
             method: 'address'
         };
         
+        $scope.fieldForm = {
+            name: '',
+            facility: {},
+            size: {},
+            lights: false,
+            game: false,
+            practice: false,
+            tournament: false,
+            training: false,
+            condition: '',
+            surface: ''
+        };
+        
+        $rootScope.fuForm = {
+            duration: '8',
+            enddate: '',
+            endtime: '',
+            timespan: 'current',
+            futureStartDate: '',
+            futureStartTime: '',
+            futureEndDate: '',
+            futureEndTime: '',
+            entity: null
+        };
+        
+        $scope.$watch('fuForm.timespan', function(duration) {
+            if(duration === 'current') {
+                $scope.currentShowm = true;
+                $scope.futureShown = false;
+            } else if(duration === 'future') {
+                $scope.currentShowm = false;
+                $scope.futureShown = true;  
+            }
+        });
+        
+        $scope.$watch('fuForm.duration', function(duration) {
+            if(duration === 'other') {
+                $scope.rangeShown = true;
+            } else {
+                $scope.rangeShown = false;  
+            }
+        });
+        
         $scope.$watch('invite.method', function(method) {
             if(method === 'email') {
                 $scope.emailHidden = false;
@@ -343,6 +391,14 @@ angular.module('ma-app')
             return $rootScope.fields.length > 0;
         };
         
+        $scope.hasFields = function(facility) {
+            if(!(null == facility.fields)) {
+                return facility.fields.length > 0;
+            } else { 
+                return false;
+            }
+        };
+        
         $scope.sendInvite = function() {
             console.log("Received invite for: " + $scope.invite.email + " " + $scope.invite.mobile);            
             console.log("data is ");
@@ -393,6 +449,24 @@ angular.module('ma-app')
             console.log("\n\nOpening dialog to add team");
             ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
         }; 
+        
+        $scope.openAddField = function(facility) {
+            console.log("\nOpening dialog to add field");
+            $rootScope.short_name = facility.short_name;
+            $rootScope.facilityName = facility.name;
+            $rootScope.tempFacility = facility;
+            console.log($scope.fieldForm);
+            
+            ngDialog.open({ template: 'views/addField.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:'HomeController'});
+        };
+        
+        $scope.addField = function() {
+            console.log("\n\nAdding field");
+            $scope.fieldForm.facility = $rootScope.tempFacility;
+            console.log($scope.fieldForm);
+            coreDataService.addField($scope.fieldForm);
+            ngDialog.close();
+        };
         
         $scope.addTeam = function() {
             console.log("\n\nAdding team");
@@ -459,6 +533,87 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
+         $scope.openFacilityStatus = function(facility) {
+            console.log("\n\nOpening dialog to change facility status");
+            $rootScope.facilityStatusName = facility.name;
+            $rootScope.facilityStatusEntity = facility;
+            $scope.fuForm.entity = facility;
+            ngDialog.open({ template: 'views/updateFacility.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
+        };
+        
+        $scope.openFieldStatus = function(field) {
+            console.log("\n\nOpening dialog to change field status");
+            $rootScope.fieldStatusName = field.name;
+            $rootScope.fieldStatusEntity = field;         
+            $scope.fuForm.entity = field;
+            ngDialog.open({ template: 'views/updateField.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
+        };
+        
+        $scope.closeFacility = function(facility) {
+            console.log("\n\Closing facility");            
+            console.log($rootScope.facilityStatusEntity);
+            $scope.fuForm.entity = $rootScope.facilityStatusEntity;
+            console.log($scope.fuForm);
+            schedulingService.closeFacility($scope.fuForm);
+            ngDialog.close();
+        };
+        
+        $scope.closeField = function(field) {
+            console.log("\n\Closing field");
+            console.log($rootScope.fieldStatusEntity);
+            $scope.fuForm.entity = $rootScope.fieldStatusEntity;
+            console.log($scope.fuForm);
+            schedulingService.closeField($scope.fuForm);
+            ngDialog.close();
+        };
+        
+        $scope.openFacility = function(facility) {
+            console.log("\n\Opening facility");
+            console.log($rootScope.facilityStatusEntity);
+            $scope.fuForm.entity = $rootScope.facilityStatusEntity;
+            console.log($scope.fuForm);
+            schedulingService.openFacility($scope.fuForm);
+            ngDialog.close();
+        };
+        
+        $scope.openField = function(field) {
+            console.log("\n\Opening field");
+            console.log($rootScope.fieldStatusEntity);
+            $scope.fuForm.entity = $rootScope.fieldStatusEntity;
+            console.log($scope.fuForm);
+            schedulingService.openField($scope.fuForm);
+            ngDialog.close();
+        };
+        
+        $scope.getFieldStatusString = function(entity) {
+            var result = "OPEN";
+            
+            if(entity.closure && entity.closure_type == "CURRENT") {
+                result = "CLOSED";
+            }
+            return result;                
+        };
+        
+        $scope.getFacilityStatusString = function(entity) {
+            var result = "OPEN";
+            var fields = entity.fields;
+            
+            if(!entity.closure || (entity.closure && entity.closure_type != "CURRENT")) {
+                //iterate through all fields:
+                for(var i = 0; i < fields.length; i++) {
+                    if(fields[i].closure && fields[i].closure_type == "CURRENT") {
+                        result = "PARTIAL";
+                        break;
+                    }
+                }
+            }
+            
+            if(entity.closure && entity.closure_type == "CURRENT") {
+                result = "CLOSED";
+            }
+            return result;                
+        };
+        
         $scope.openUpdate = function(user) {
             console.log("\n\nOpening dialog to update user: ");
             console.log(user);
@@ -503,6 +658,57 @@ angular.module('ma-app')
         
         $scope.getRolePrettyName = function(roleName) {
             return coreDataService.getRolePrettyName(roleName);            
+        };
+        
+        $scope.getFieldUsage = function(field) {
+            var use = '';
+            if(field.game) use += "Game - ";
+            if(field.practice) use += "Practice - ";
+            if(field.training) use += "Training - ";
+            if(field.tournament) use += "Tournament - ";
+            use = use.slice(0, -3);
+            return use;            
+        };
+        
+        $scope.hasLights = function(field) {
+            var lights = "No";
+            if(field.lights) 
+                lights = "Yes";
+            
+            return lights;          
+        };
+        
+        $scope.currentClosure = function(facility) {
+            var closed = false;
+            if(facility.closure && facility.closure_type == "CURRENT") {
+                closed = true;
+            }
+            return closed;
+        };
+        
+        $scope.partialClosure = function(facility) {
+            var partial = false;
+            var fields = facility.fields;
+            
+            //if the facility is open, but any of its fields are closed, the status is partial:
+            if(!facility.closure || (facility.closure && facility.closure_type != "CURRENT")) {
+                //iterate through all fields:
+                for(var i = 0; i < fields.length; i++) {
+                    if(fields[i].closure && fields[i].closure_type == "CURRENT") {
+                        partial = true;
+                        break;
+                    }
+                }
+            }
+            return partial;
+        };
+        
+        $scope.currentFieldClosure = function(field) {
+            var closed = false;
+            if(field.closure && field.closure_type == "CURRENT") {
+                closed = true;
+            }
+            return closed;
         };
         
         $scope.acceptAccess = function(accessRequest) {

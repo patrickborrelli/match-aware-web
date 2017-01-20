@@ -1,0 +1,107 @@
+<div class="ngdialog-message" style="min-height:340px;">
+    <div>
+        <h4> 
+            <button type="button" disabled ng-show="currentClosure(fieldStatusEntity)" class="btn btn-sm btn-danger" style="margin-right:40px; cursor: default;">CLOSED</button>
+            <button type="button" disabled ng-show="!currentClosure(fieldStatusEntity)" class="btn btn-sm btn-success" style="margin-right:40px; cursor: default;">OPEN</button>
+            Field Status - {{fieldStatusName}}
+        </h4>
+    </div>
+    <div class="row" style="margin-bottom: 10px; padding-bottom:10px;">
+        <div class="col-xs-11" style="text-align:center;">
+            <label class="radio-inline">
+                <input type="radio" ng-model="fuForm.timespan" value="current">Current
+            </label>
+            <label class="radio-inline">
+                <input type="radio" ng-model="fuForm.timespan" value="future">Future
+            </label>
+        </div> 
+        <div class="col-xs-1" style="text-align:center;"></div> 
+    </div>
+    
+    <form class="form-horizontal" style="min-height:250px">
+        <div class="row">
+            <div class="col-xs-1"></div>
+            <div class="col-xs-11">
+                <div ng-show="currentShown && !futureShown">
+                    <div class=""><p style="font-size: 16px;">Current Closure:</p></div>
+                    <div class="form-group custom-padding">
+                        <div class="col-xs-12">
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="fuForm.duration" value="8">8 hours
+                            </label>
+                            <label class="radio-inline">
+                                    <input type="radio" ng-model="fuForm.duration" value="12">12 hours
+                                </label>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="fuForm.duration" value="18">18 hours
+                            </label>
+                        </div> 
+                    </div>
+
+                    <div class="form-group custom-padding-bottom">
+                        <div class="col-xs-12">
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="fuForm.duration" value="24">24 hours
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="fuForm.duration" value="other">other
+                            </label>
+                        </div> 
+                    </div>
+
+                    <div ng-show="rangeShown" class="form-group custom-padding-bottom">
+                        <div class="form-group custom-padding"> 
+                            <label class="sr-only" for="enddate">End Date</label>
+                            <div class="col-xs-12">  
+                                <div class="input-group">
+                                    <div class="input-group-addon custom-width-65">End</div>
+                                    <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+                                    <input type="date" id="enddate" class="form-control" ng-model="fuForm.enddate">
+                                    <div class="input-group-addon"><i class="glyphicon glyphicon-time"></i></div>
+                                    <label class="sr-only" for="endtime">Start Time</label>
+                                    <input type="time" id="endtime" class="form-control" ng-model="fuForm.endtime">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="futureShown">
+                    <div class=""><p style="font-size: 16px;">Future Closure:</p></div>
+
+                    <div class="form-group custom-padding"> 
+                        <label class="sr-only" for="futureStartDate">Start Date for Future Closure</label>
+                        <div class="col-xs-12">  
+                            <div class="input-group">
+                                <span class="input-group-addon custom-width-65">Start</span>
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                <input type="date" id="futureStartDate" class="form-control" ng-model="fuForm.futureStartDate">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                <label class="sr-only" for="futureStartTime">Future Start Time</label>
+                                <input type="time" id="futureStartTime" class="form-control" ng-model="fuForm.futureStartTime">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-padding-bottom"> 
+                        <label class="sr-only" for="futureEndDate">Future End Date</label>
+                        <div class="col-xs-12">  
+                            <div class="input-group">
+                                <span class="input-group-addon custom-width-65">End</span>
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                <input type="date" id="futureEndDate" class="form-control" ng-model="fuForm.futureEndDate">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                <label class="sr-only" for="futureEndTime">Future End Time</label>
+                                <input type="time" id="futureEndTime" class="form-control" ng-model="fuForm.futureEndTime">
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+                
+            </div>
+        </div>
+    </form>
+    <button ng-show="currentClosure(fieldStatusEntity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=openField(fieldStatusEntity)>Reopen Field</button>
+    <button ng-show="currentShown && !futureShown" type="button" ng-click="closeField()" class="btn btn-sm btn-info btn-custom">Close Field</button>
+    <button ng-show="futureShown" type="submit" ng-click="closeField()" class="btn btn-sm btn-info btn-custom">Schedule Future Closure</button>
+    <button type="button" class="btn btn-sm btn-default btn-custom75" ng-click=closeThisDialog("Cancel")>Cancel</button>
+    <div>&nbsp;</div>
+</div>

@@ -438,7 +438,58 @@
 
         <div class="tab-content">
             <div id="tabContent" class="tab-pane fade in active" ng-show="faIsSelected(1)">
-                <h3 style="text-align:center;">Handle Field Closures</h3>
+                <div class="row row-content">                    
+                    <div class="col-xs-12">
+                        <h4 ng-show="!areFacilities()">No current facilities.</h4>
+                        <ul class="media-list" ng-show="areFacilities()">
+                            <li class="media" ng-repeat="facility in facilities" style="padding:10px; background: lightGray;">
+                                <div class="media-left media-top" >
+                                        <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{facility.club_affiliation.logo_url}} alt="club logo">
+                                        <button type="button" disabled style="cursor: default;" ng-show="currentClosure(facility)" class="btn btn-sm btn-danger btn-custom75">CLOSED</button>
+                                        <button type="button" disabled style="cursor: default;" ng-show="partialClosure(facility)" class="btn btn-sm btn-warning btn-custom75">PARTIAL</button>
+                                        <button type="button" disabled style="cursor: default;" ng-show="!currentClosure(facility) && !partialClosure(facility)" class="btn btn-sm btn-success btn-custom75">OPEN</button>
+                                        <button type="button" ng-click="openFacilityStatus(facility)" class="btn btn-sm btn-default btn-custom75">UPDATE</button>
+                                </div>
+                                <div class="media-body">
+                                    <div class="col-xs-12 col-sm-7">
+                                        <h3 class="media-heading" style="padding-top: 5px;">{{facility.name}} - {{facility.short_name}}</h3>
+                                        <p>{{facility.address}}<br/>{{facility.city}}, {{facility.state}}  {{facility.postal_code}}</p>
+                                        <div class="btn-group-vertical"> 
+                                            <button type="button" class="btn btn-xs btn-default" data-toggle="collapse" data-target="#sublist{{facility.short_name}}" aria-expanded="false" aria-controls="sublist{{facility.short_name}}">Show/Hide Fields</button> 
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-5">
+                                        <div class="embed-responsive embed-responsive-16by9">
+                                            <iframe frameborder="0" style="border:0" ng-src={{facility.google_map_string}} allowfullscreen></iframe>
+                                        </div>
+                                    </div>                                            
+                                </div>
+                                <ul class="media-list collapse" id="sublist{{facility.short_name}}">
+                                    <h4 ng-show="!hasFields(facility)">No current fields.</h4>
+                                    <li class="media" ng-repeat="field in facility.fields" style="padding:10px; margin-top: 10px; margin-left:50px; background: Gainsboro;">
+                                        <div class="media-left media-top" >                                                
+                                                <button type="button" disabled style="cursor: default;" ng-show="currentFieldClosure(field)" class="btn btn-sm btn-danger btn-custom75" style="margin-top: 0px;">CLOSED</button>
+                                                <button type="button" disabled style="cursor: default;" ng-show="!currentFieldClosure(field)" class="btn btn-sm btn-success btn-custom75"style="margin-top: 0px;">OPEN</button>
+                                                <button type="button" ng-click="openFieldStatus(field)" class="btn btn-sm btn-default btn-custom75">UPDATE</button>
+                                        </div>
+                                        <div class="media-body">
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-5">
+                                                    <h3 class="media-heading" style="padding-top: 0px; margin-top:0px;">{{facility.name}} - {{field.name}}</h3>
+                                                </div>  
+                                                <div class="col-xs-12 col-sm-7">
+                                                    <h5 style="padding-top: 0px; margin-top:0px;"><span style="font-weight: bold;">Usage:</span> {{getFieldUsage(field)}}</h5>
+                                                    <h5 style="padding-top: 0px; margin-top:0px;"><span style="font-weight: bold;">Has Lights:</span> {{hasLights(field)}}</h5>
+                                                    <h5 style="padding-top: 0px; margin-top:0px;"><span style="font-weight: bold;">Size:</span> {{field.size.name}}</h5>
+                                                </div>  
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div id="tabContent" class="tab-pane fade in active" ng-show="faIsSelected(2)">
                 <h3 style="text-align:center;">Handle Scheduling - need three tabs</h3>
@@ -449,7 +500,7 @@
                         <a ng-click="faSubSelect(1)" aria-controls="users" role="tab">Facilities</a>
                     </li>
                     <li role="presentation" ng-class="{active:faSubIsSelected(2)}">
-                        <a ng-click="faSubSelect(2)" aria-controls="teams" role="tab">Fields</a>
+                        <a ng-click="faSubSelect(2)" aria-controls="teams" role="tab">Field Sizes</a>
                     </li>
                 </ul>
                 <div class="tab-content">
@@ -474,15 +525,38 @@
                                             <div class="col-xs-12 col-sm-7">
                                                 <h3 class="media-heading" style="padding-top: 5px;">{{facility.name}} - {{facility.short_name}}</h3>
                                                 <p>{{facility.address}}<br/>{{facility.city}}, {{facility.state}}  {{facility.postal_code}}</p>
-                                                <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditAgeGroup(ageGroup)">Edit</button>
-                                                <button type="button" class="btn btn-xs btn-danger" style="width: 50px;" ng-click="deleteAgeGroup(ageGroup)">Delete</button> 
+                                                <div class="btn-group-vertical">
+                                                    <button type="button" class="btn btn-xs btn-default" ng-click="openEditFacility(facility)">Edit</button>
+                                                    <button type="button" class="btn btn-xs btn-default" ng-click="deleteFacility(facility)">Delete</button> 
+                                                    <button type="button" class="btn btn-xs btn-default" data-toggle="collapse" data-target="#configSublist{{facility.short_name}}" aria-expanded="false" aria-controls="configSublist{{facility.short_name}}">Show/Hide Fields</button> 
+                                                    <button type="button" class="btn btn-xs btn-default" ng-click="openAddField(facility)">Add Field</button>
+                                                </div>
                                             </div>
                                             <div class="col-xs-12 col-sm-5">
-                                                <div class="embed-responsive embed-responsive-4by3">
+                                                <div class="embed-responsive embed-responsive-16by9">
                                                     <iframe frameborder="0" style="border:0" ng-src={{facility.google_map_string}} allowfullscreen></iframe>
                                                 </div>
                                             </div>                                            
                                         </div>
+                                        <ul class="media-list collapse" id="configSublist{{facility.short_name}}">
+                                            <h4 ng-show="!hasFields(facility)">No current fields.</h4>
+                                            <li class="media" ng-repeat="field in facility.fields" style="padding:10px; margin-top: 10px; margin-left:50px; background: Gainsboro;">
+                                                <div class="media-body">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 col-sm-5">
+                                                            <h3 class="media-heading" style="padding-top: 0px; margin-top:0px;">{{facility.name}} - {{field.name}}</h3>
+                                                            <button type="button" class="btn btn-xs btn-default" style="width: 50px;" ng-click="openEditAgeGroup(ageGroup)">Edit</button>
+                                                            <button type="button" class="btn btn-xs btn-default" style="width: 50px;" ng-click="deleteAgeGroup(ageGroup)">Delete</button>
+                                                        </div>  
+                                                        <div class="col-xs-12 col-sm-7">
+                                                            <h5 style="padding-top: 0px; margin-top:0px;"><span style="font-weight: bold;">Usage:</span> {{getFieldUsage(field)}}</h5>
+                                                            <h5 style="padding-top: 0px; margin-top:0px;"><span style="font-weight: bold;">Has Lights:</span> {{hasLights(field)}}</h5>
+                                                            <h5 style="padding-top: 0px; margin-top:0px;"><span style="font-weight: bold;">Size:</span> {{field.size.name}}</h5>
+                                                        </div>  
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
                                     </li>
                                 </ul>
                             </div>
@@ -519,4 +593,4 @@
             </div>
         </div>
     </div>
-</div>
+ </div>

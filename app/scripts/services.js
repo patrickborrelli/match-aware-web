@@ -757,6 +757,23 @@ angular.module('ma-app')
         
         var localRefreshFacilities = this.refreshFacilities;
         
+        this.refreshFields = function() {
+            $http({
+                url: baseURL + 'fields/',
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Retrieved the fields from the API: ");
+                console.log(response);
+                $rootScope.fields = response.data;
+                fieldsLoaded = true;
+            }); 
+        };
+        
+        var localRefreshFields = this.refreshFields;     
+        
         this.getRoleIdByName = function(roleName) {
             for(var i = 0; i < $rootScope.roles.length; i++) {
                 if(String($rootScope.roles[i].name) == String(roleName)) {
@@ -886,6 +903,60 @@ angular.module('ma-app')
                 localRefreshAgeGroups();
             }, function(errResponse) {
                 console.log("Failed on attempt to delete age group:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.addField = function(formData) {
+            //build field post string:            
+            var postString = '{ "name": "' + formData.name + '", "facility": "' + formData.facility._id + '", ';
+            
+            if(formData.surface != null) {
+                postString += '"surface": "' + formData.surface + '", ';
+            }
+            
+            if(formData.condition != '') {
+                postString += '"condition": ' + formData.condition + ', ';
+            }
+            
+            postString += '"lights": "' + formData.lights + '", ';
+            postString += '"game": "' + formData.game + '", ';
+            postString += '"practice": "' + formData.practice + '", ';
+            postString += '"tournament": "' + formData.tournament + '", ';
+            postString += '"training": "' + formData.training + '", ';
+            postString += '"size": "' + formData.size._id + '" }';
+            
+            console.log("Posting rule with string: " + postString);
+            
+            $http({
+                url: baseURL + 'fields/',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Successfully added field: ");
+                console.log(response);
+                
+                //next add field to facility, then refresh facilities:
+                $http({
+                    url: baseURL + 'facilities/addField/' + formData.facility._id + '/' + response.data._id,
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(facResponse) {
+                    console.log("Successfully added field to facility: ");
+                    console.log(facResponse);
+                    localRefreshFacilities();
+                    localRefreshFields();
+                }, function(facErrResponse) {
+                    console.log("Failed on attempt to add field to facility:");
+                    console.log(facErrResponse);                    
+                });
+            }, function(errResponse) {
+                console.log("Failed on attempt to add field:");
                 console.log(errResponse);
             });
         };
@@ -1549,6 +1620,168 @@ angular.module('ma-app')
             });
         };        
         
+    }])
+    
+    .service('schedulingService', ['$http', 'baseURL', 'ngDialog', '$rootScope', '$state', 'coreDataService', 'datetimeService', function($http, baseURL, ngDialog, $rootScope, $state, coreDataService, datetimeService) {        
+    
+        this.closeField = function(form) {
+            console.log("Attempting to close field " + form.entity.name);
+            var startTime;
+            var endTime;
+            var startMilli;
+            var endMilli;
+            var type = "CURRENT";
+            
+            if(form.duration != "other" && form.duration != "future") {
+                startTime = new Date();
+                endTime = datetimeService.addHours(form.duration, startTime);
+            } else if(form.duration == "other") {
+                startTime = new Date();
+                endTime = datetimeService.combineDateTime(form.enddate, form.endtime);
+            } else if(form.duration == "future") {
+                startTime = datetimeService.combineDateTime(form.futureStartDate, form.futureStartTime);
+                endTime = datetimeService.combineDateTime(form.futureEndDate, form.futureEndTime);
+                type = "FUTURE";
+            }
+            
+            startMilli = startTime.getTime();
+            endMilli = endTime.getTime();
+            
+            var putString = '{ "closure": true, "close_start": ' + startMilli + ', "close_end": ' + endMilli + ', "closure_type": "' + type + '" }';
+            
+            $http({
+                url: baseURL + 'fields/' + form.entity._id,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: putString
+            }).then(function(response) {
+                console.log("Successfully closed field: ");
+                console.log(response);                
+                coreDataService.refreshFacilities();
+                coreDataService.refreshFields();
+            }, function(errResponse) {
+                console.log("Failed on attempt to close field:");
+                console.log(errResponse);
+            });            
+        };
+        
+        this.openField = function(form) {
+            console.log("Attempting to open field " + form.entity.name);
+            var putString = '{ "closure": false, "close_start": 0, "close_end": 0, "closure_type": "" }';
+            
+            $http({
+                url: baseURL + 'fields/' + form.entity._id,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: putString
+            }).then(function(response) {
+                console.log("Successfully opened field: ");
+                console.log(response);                
+                coreDataService.refreshFacilities();
+                coreDataService.refreshFields();
+            }, function(errResponse) {
+                console.log("Failed on attempt to open field:");
+                console.log(errResponse);
+            });            
+        };
+        
+        this.closeFacility = function(form) {
+            console.log("Attempting to close facility " + form.entity.name);
+            var startTime;
+            var endTime;
+            var startMilli;
+            var endMilli;
+            var type = "CURRENT";
+            
+            if(form.duration != "other" && form.duration != "future") {
+                startTime = new Date();
+                endTime = datetimeService.addHours(form.duration, startTime);
+            } else if(form.duration == "other") {
+                startTime = new Date();
+                endTime = datetimeService.combineDateTime(form.enddate, form.endtime);
+            } else if(form.duration == "future") {
+                startTime = datetimeService.combineDateTime(form.futureStartDate, form.futureStartTime);
+                endTime = datetimeService.combineDateTime(form.futureEndDate, form.futureEndTime);
+                type = "FUTURE";
+            }
+            
+            startMilli = startTime.getTime();
+            endMilli = endTime.getTime();
+            
+            var putString = '{ "closure": true, "close_start": ' + startMilli + ', "close_end": ' + endMilli + ', "closure_type": "' + type + '" }';
+            
+            $http({
+                url: baseURL + 'facilities/closeFacility/' + form.entity._id,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: putString
+            }).then(function(response) {
+                console.log("Successfully closed facility: ");
+                console.log(response);    
+                
+                coreDataService.refreshFacilities();
+                coreDataService.refreshFields();
+            }, function(errResponse) {
+                console.log("Failed on attempt to close facility:");
+                console.log(errResponse);
+            });            
+        };
+        
+        this.openFacility = function(form) {
+            console.log("Attempting to open facility " + form.entity.name);
+            
+            $http({
+                url: baseURL + 'facilities/openFacility/' + form.entity._id,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Successfully opened facility: ");
+                console.log(response);    
+                
+                coreDataService.refreshFacilities();
+                coreDataService.refreshFields();
+            }, function(errResponse) {
+                console.log("Failed on attempt to open facility:");
+                console.log(errResponse);
+            });            
+        };
+        
+    }])
+
+    .service('datetimeService', ['$rootScope', function($rootScope) { 
+        
+        this.addHours = function(hours, date) {
+            var returnMilis;
+            var returnDate;
+            var dateMilis = date.getTime();
+            
+            console.log("Updating date " + date.toISOString() + " by adding " + hours + " hours.");
+            
+            returnMilis = dateMilis + (hours * 60 * 60 * 1000);
+            returnDate = new Date(returnMilis);
+            
+            console.log("Converted date to " + returnDate.toISOString());
+            return returnDate;            
+        };
+        
+        this.combineDateTime = function(date, time) {
+            var returnMilis;
+            var returnDate;
+            
+            console.log("Combining date portion of " + date.toISOString() + " with time portion of " + date.toISOString());
+            returnDate = new Date(date.getFullYear(), date.getMonth() +1, date.getDate(), time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds());
+                        
+            console.log("Converted date to " + returnDate.toISOString());
+            return returnDate;            
+        };
     }])
                              
     .service('authService', ['$http', 'baseURL', 'ngDialog', '$rootScope', '$state', 'userService', 'coreDataService', 'clubService', function($http, baseURL, ngDialog, $rootScope, $state, userService, coreDataService, clubService) {

@@ -1,0 +1,105 @@
+<div class="ngdialog-message">
+    <div class="">
+        <h4>Add New Field</h4>
+    </div>
+    <div class="">&nbsp;</div>
+    <div class="">
+        <form class="form-horizontal" ng-submit="addField()">
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="facility">Facility</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Facility</div>
+                        <input type="text" id="facility" class="form-control" value="{{facilityName}} - {{short_name}}" disabled>
+                    </div>
+                </div>
+            </div>           
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="name">Field Name</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Name</div>
+                        <input type="text" id="name" class="form-control" ng-model="fieldForm.name" placeholder="{{short_name}}1">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="size">Field Size</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Size</div>
+                        <select id="size" class="form-control" ng-model="fieldForm.size" ng-options="size as size.name for size in fieldSizes"></select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="surface">Field Surface</label>
+                <div class="col-xs-12 col-sm-6" style="padding-right:0px; margin-right: 0px;">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Surface</div>
+                        <select id="surface" class="form-control" ng-model="fieldForm.surface">
+                            <option value='GRASS' selected>Grass</option>
+                            <option value='TURF'>Turf</option>
+                        </select>
+                    </div>
+                </div>
+                <label class="sr-only" for="condition">Field Condition</label>
+                <div class="col-xs-12 col-sm-6" style="padding-left:0px; margin-left: 0px;">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Condition</div>
+                        <select id="condition" class="form-control" ng-model="fieldForm.condition">
+                            <option value='10' selected>Excellent</option>
+                            <option value="8">Very Good</option>
+                            <option value="6">Good</option>
+                            <option value="4">Poor</option>
+                            <option value="2">Very Poor</option>
+                            <option value="1">Unusable</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding">
+                <div class="form-check col-xs-6 col-sm-2"></div>
+                <div class="form-check col-xs-6 col-sm-3"> 
+                    <label class="form-check-label" style="font-size: 14px; font-weight: normal;">
+                        <input class="form-check-input" type="checkbox" ng-model="fieldForm.lights" value=""> Lights
+                    </label>
+                </div>
+                <div class="form-check col-xs-6 col-sm-3"> 
+                    <label class="form-check-label" style="font-size: 14px; font-weight: normal;">
+                        <input class="form-check-input" type="checkbox" ng-model="fieldForm.game" value=""> Game
+                    </label>
+                </div>
+                <div class="form-check col-xs-6 col-sm-3"> 
+                    <label class="form-check-label" style="font-size: 14px; font-weight: normal;">
+                        <input class="form-check-input" type="checkbox" ng-model="fieldForm.practice" value=""> Practice
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding-bottom" style="padding-top:0px; margin-top:0px;">
+                <div class="form-check col-xs-0 col-sm-2"></div>
+                <div class="form-check col-xs-6 col-sm-3">
+                    <label class="form-check-label" style="font-size: 14px; font-weight: normal;">
+                        <input class="form-check-input" type="checkbox" ng-model="fieldForm.tournament" value=""> Tournament
+                    </label>
+                </div>
+                <div class="form-check col-xs-6 col-sm-3">
+                    <label class="form-check-label" style="font-size: 14px; font-weight: normal;">
+                        <input class="form-check-input" type="checkbox" ng-model="fieldForm.training" value=""> Training
+                    </label>
+                </div>
+            </div>           
+            
+            
+            
+            <button type="submit" class="btn btn-info">Add</button>
+            <button type="button" class="btn btn-default" ng-click=closeThisDialog("Cancel")>Cancel</button>
+        </form>
+    </div>
+    <div>&nbsp;</div>
+</div>
