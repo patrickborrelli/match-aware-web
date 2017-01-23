@@ -4,7 +4,7 @@
     </div>
     <div>&nbsp;</div>
     <div>
-        <form ng-submit="processLogin()">
+        <form ng-submit="showLoading(); processLogin()">
             <div class="form-group">
                 <label class="sr-only" for="username">Username</label>
                 <input type="text" class="form-control input-sm" id="username" placeholder="Username" ng-model="loginData.username">
@@ -22,5 +22,6 @@
             <button type="button" class="btn btn-default btn-sm" ng-click=closeThisDialog("Cancel")>Cancel</button>
         </form>
     </div>
+    <div ng-show="showLoader" class="loader"></div>
     <div>&nbsp;</div>
 </div>
