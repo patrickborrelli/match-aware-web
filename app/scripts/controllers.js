@@ -6,7 +6,7 @@ angular.module('ma-app')
             return $sce.trustAsResourceUrl(url);
         };
     })
-    .controller('HeaderController', ['$scope', 'ngDialog', 'authService',  function($scope, ngDialog, authService) {
+    .controller('HeaderController', ['$scope', 'ngDialog', 'authService', 'coreDataService',  function($scope, ngDialog, authService, coreDataService) {
         $scope.openRegister = function () {
             ngDialog.open({ template: 'views/register.html', scope: $scope, className: 'ngdialog-theme-default custom-width', controller:"RegisterController" });
         };    
@@ -20,7 +20,14 @@ angular.module('ma-app')
         }; 
         
         $scope.openJoinClub = function() {
-            authService.loadClubs();
+            //authService.loadClubs();
+            $scope.clubs = coreDataService.getClubs();
+            $scope.roles = coreDataService.getRoles();
+            console.log("\n\nLOADING CLUBS FROM SERVICE:");
+            console.log($scope.clubs);            
+            console.log("\n\nLOADING ROLES FROM SERVICE:");
+            console.log($scope.roles);
+            
             ngDialog.open({ template: 'views/joinClub.html', scope: $scope, className: 'ngdialog-theme-default', controller:"UserController" });
         }; 
         
@@ -55,41 +62,35 @@ angular.module('ma-app')
                         .then(function(response) {
                             console.log("Created a clubmember with value: ");
                             console.log(response);
-                            authService.getRoleId("CLUB_ADMIN")
+                            var roleId = authService.getRoleId("CLUB_ADMIN");
+                            console.log("Received ID:" + roleId);
+                            userService.addUserToRole(authService.getCurrentUserId(), response.data[0]._id)
                                 .then(function(response) {
-                                    console.log("Received response:");
+                                    console.log("Added user to role:");
                                     console.log(response);
-                                    userService.addUserToRole(authService.getCurrentUserId(), response.data[0]._id)
+                                    var currentUser = {};
+                                    authService.getCurrentUser()
                                         .then(function(response) {
-                                            console.log("Added user to role:");
-                                            console.log(response);
-                                            var currentUser = {};
-                                            authService.getCurrentUser()
-                                                .then(function(response) {
-                                                    console.log("GOT THE CURRENT USER DURING CLUB CREATION");
-                                                    console.log(response.data);
-                                                    currentUser = response.data;
-                                                    authService.setCurrentUser(response.data);
-                                                    console.log("Attempting to populate user roles for member: " + currentUser);
-                                                    console.log(currentUser);
-                                                    authService.populateUserRoles(currentUser.roles);                                                
-                                                    console.log("Attempting to add user to club:");
-                                                    console.log(clubResponse.data);
-                                                    var myClubs = [];
-                                                    myClubs.push(clubResponse);
-                                                    userService.populateUsersClubs(myClubs);
-                                                }, function(errResponse) {
-                                                    console.log("Failure when trying to retrieve current user.");
-                                                    console.log(errResponse);
-                                            });
-                                            
+                                            console.log("GOT THE CURRENT USER DURING CLUB CREATION");
+                                            console.log(response.data);
+                                            currentUser = response.data;
+                                            authService.setCurrentUser(response.data);
+                                            console.log("Attempting to populate user roles for member: " + currentUser);
+                                            console.log(currentUser);
+                                            authService.populateUserRoles(currentUser.roles);                                                
+                                            console.log("Attempting to add user to club:");
+                                            console.log(clubResponse.data);
+                                            var myClubs = [];
+                                            myClubs.push(clubResponse);
+                                            userService.populateUsersClubs(myClubs);
                                         }, function(errResponse) {
-                                            console.log("Error condition while adding user to role.");
+                                            console.log("Failure when trying to retrieve current user.");
                                             console.log(errResponse);
-                                        });
-                                    }, function(errResponse) {
-                                        console.log("Error condition while adding user to club.");
-                                        console.log(errResponse);
+                                    });
+
+                                }, function(errResponse) {
+                                    console.log("Error condition while adding user to role.");
+                                    console.log(errResponse);
                                 });
                         });
                             
@@ -114,6 +115,12 @@ angular.module('ma-app')
     }])
 
     .controller('RegisterController', ['$scope', '$rootScope', 'ngDialog', '$state', 'authService', function($scope, $rootScope, ngDialog, $state, authService) {
+        $scope.showLoader = false;
+        
+        $scope.showLoading = function() {
+            $scope.showLoader = true;
+        };
+        
         $scope.registerUser = function() {
             console.log('Doing registration', $scope.registration);        
             ngDialog.close();
@@ -122,8 +129,7 @@ angular.module('ma-app')
         
         $scope.processLogin = function() {
             console.log('Doing login', $scope.loginData);
-            authService.login($scope.loginData);
-            ngDialog.close();
+            authService.login($scope.loginData);            
         };
         
         $scope.processLogout = function() {
