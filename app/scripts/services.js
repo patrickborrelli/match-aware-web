@@ -7,8 +7,8 @@ angular.module('ma-app')
     .constant("googleMapsBaseURL", "https://www.google.com/maps/embed/v1/place?")
 
     .service('coreDataService', ['$http', 'baseURL', '$rootScope', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL',  function($http, baseURL, $rootScope, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL) {
-        $rootScope.clubs = {};
-        $rootScope.roles = {};   
+        var clubs = {};
+        var roles = {};   
         $rootScope.ageGroups = {};
         $rootScope.events = {};
         $rootScope.facilities = {}; 
@@ -46,8 +46,8 @@ angular.module('ma-app')
         var accessRequestsLoaded = false;     
         
         this.cleanupOnLogout = function() {
-            $rootScope.clubs = {};
-            $rootScope.roles = {};   
+            clubs = {};
+            roles = {};   
             $rootScope.ageGroups = {};
             $rootScope.events = {};
             $rootScope.facilities = {}; 
@@ -83,6 +83,14 @@ angular.module('ma-app')
             usersLoaded = false;
             userInvitesLoaded = false;  
             accessRequestsLoaded = false; 
+        };
+        
+        this.getClubs = function() {
+            return clubs;
+        };
+        
+        this.getRoles = function() {
+            return roles;
         };
         
         this.getGoogleMapURL = function(formattedAddress) {
@@ -314,7 +322,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the roles from the API: ");
                     console.log(response);
-                    $rootScope.roles = response.data;
+                    roles = response.data;
                     rolesLoaded = true;
                 });
             }
@@ -330,7 +338,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the clubs from the API: ");
                     console.log(response);
-                    $rootScope.clubs = response.data;
+                    clubs = response.data;
                     clubsLoaded = true;
                 }); 
             }
@@ -775,9 +783,9 @@ angular.module('ma-app')
         var localRefreshFields = this.refreshFields;     
         
         this.getRoleIdByName = function(roleName) {
-            for(var i = 0; i < $rootScope.roles.length; i++) {
-                if(String($rootScope.roles[i].name) == String(roleName)) {
-                    return $rootScope.roles[i]._id;
+            for(var i = 0; i < roles.length; i++) {
+                if(String(roles[i].name) == String(roleName)) {
+                    return roles[i]._id;
                 }
             }  
         };
@@ -1808,25 +1816,18 @@ angular.module('ma-app')
         var adminRoleId = '';   
         var currentUserStale = false;
         
-        //WHY DOESNT THIS WORK?
         this.getRoleId = function(rolename) {
-            /*console.log("Received role name: " + rolename);
-            $rootScope.roles.forEach(function(role) {
-                var role_name = role.name;
-                console.log("Comparing " + rolename + " to " + role_name + " or " + role.name);
-                if(rolename.equalsIgnoreCase(role_name)) {
+            console.log("Received role name: " + rolename);
+            var roles = coreDataService.getRoles();
+            
+            for(var i = 0; i < roles.length; i++) {
+                var role_name = roles[i].name;
+                console.log("Comparing " + rolename + " to " + role_name + " or " + roles[i].name);
+                if(String(rolename) == String(role_name)) {
                     console.log("Comparing " + rolename + " to " + role_name + " is successful");
-                    return role.id;
+                    return roles[i].id;
                 }
-            });*/
-            //make http request:
-            return $http({
-                url: baseURL + 'roles?name=' + rolename,
-                method: 'GET',
-                headers: {
-                    'content-type': 'application/json' 
-                }
-            });
+            }
         };
         
         this.getCurrentRole = function() {
@@ -1878,6 +1879,7 @@ angular.module('ma-app')
                 });   
                 
                 $state.go("app.home");
+                ngDialog.close();
             }, function(errResponse) {
                 isAuthenticated = false;            
                 var message = '\
