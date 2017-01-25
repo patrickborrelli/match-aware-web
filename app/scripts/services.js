@@ -1825,7 +1825,7 @@ angular.module('ma-app')
                 console.log("Comparing " + rolename + " to " + role_name + " or " + roles[i].name);
                 if(String(rolename) == String(role_name)) {
                     console.log("Comparing " + rolename + " to " + role_name + " is successful");
-                    return roles[i].id;
+                    return roles[i]._id;
                 }
             }
         };
@@ -1962,6 +1962,7 @@ angular.module('ma-app')
                 data: registerData
             }).then(function(response) {
                 console.log("successfully registered a user.");
+                ngDialog.close();
                 
                 console.log("will attempt to log user in with username: " + registerData.username + " and password: " + registerData.password);
                 internalLogin({username:registerData.username, password:registerData.password});

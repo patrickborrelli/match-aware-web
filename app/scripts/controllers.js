@@ -64,7 +64,7 @@ angular.module('ma-app')
                             console.log(response);
                             var roleId = authService.getRoleId("CLUB_ADMIN");
                             console.log("Received ID:" + roleId);
-                            userService.addUserToRole(authService.getCurrentUserId(), response.data[0]._id)
+                            userService.addUserToRole(authService.getCurrentUserId(), roleId)
                                 .then(function(response) {
                                     console.log("Added user to role:");
                                     console.log(response);
@@ -77,12 +77,16 @@ angular.module('ma-app')
                                             authService.setCurrentUser(response.data);
                                             console.log("Attempting to populate user roles for member: " + currentUser);
                                             console.log(currentUser);
-                                            authService.populateUserRoles(currentUser.roles);                                                
-                                            console.log("Attempting to add user to club:");
-                                            console.log(clubResponse.data);
-                                            var myClubs = [];
-                                            myClubs.push(clubResponse);
-                                            userService.populateUsersClubs(myClubs);
+                                            authService.populateUserRoles(currentUser.roles); 
+                                            userService.getUserClubs(authService.getCurrentUserId())
+                                                .then(function(response) {
+                                                    console.log("Retrieved the clubs the user belongs to: ");
+                                                    console.log(response);
+                                                    userService.populateUsersClubs(response.data);
+                                                }, function(errResponse) {
+                                                    console.log("Encountered error when trying to retrieve users clubs.")
+                                                    console.log(errResponse);
+                                            });
                                         }, function(errResponse) {
                                             console.log("Failure when trying to retrieve current user.");
                                             console.log(errResponse);
@@ -116,14 +120,18 @@ angular.module('ma-app')
 
     .controller('RegisterController', ['$scope', '$rootScope', 'ngDialog', '$state', 'authService', function($scope, $rootScope, ngDialog, $state, authService) {
         $scope.showLoader = false;
+        $scope.showRegLoader = false;
         
         $scope.showLoading = function() {
             $scope.showLoader = true;
         };
         
+        $scope.showRegLoading = function() {
+            $scope.showRegLoader = true;
+        };
+        
         $scope.registerUser = function() {
-            console.log('Doing registration', $scope.registration);        
-            ngDialog.close();
+            console.log('Doing registration', $scope.registration); 
             authService.register($scope.registration);
         };
         
