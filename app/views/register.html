@@ -4,7 +4,7 @@
     </div>
     <div class="">&nbsp;</div>
     <div class="">
-        <form class="form-horizontal" ng-submit="registerUser()">
+        <form class="form-horizontal" ng-submit="showRegLoading(); registerUser()">
             <div class="form-group">
                 <label class="sr-only" for="username">Username</label>
                 <div class="col-xs-12 col-sm-6">
@@ -65,5 +65,6 @@
             <button type="submit" class="btn btn-info">Register</button>
             <button type="button" class="btn btn-default" ng-click=closeThisDialog("Cancel")>Cancel</button>
         </form>
+        <div ng-show="showRegLoader" class="loader"></div>
     </div>
 </div>
