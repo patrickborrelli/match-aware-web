@@ -42,27 +42,22 @@ angular.module('ma-app')
         };
     }])
 
-    .controller('ClubController', ['$scope', '$rootScope', 'ngDialog', '$state', 'clubService', 'authService', 'userService', function($scope, $rootScope, ngDialog, $state, clubService, authService, userService) {        
+    .controller('ClubController', ['$scope', '$rootScope', 'ngDialog', '$state', 'clubService', 'authService', 'userService', 'coreDataService', function($scope, $rootScope, ngDialog, $state, clubService, authService, userService, coreDataService) {        
         
         $scope.createClub = function() {
             console.log('Creating club', $scope.createClubData); 
             
-            //TODO: 
-            // 1. make call to create club.
-            // 2. add current user as club member with current club.
-            // 3. add current user to CLUB_ADMIN role.
-                                   
             clubService.createClub($scope.createClubData)
                 .then(function(clubResponse) {
                     console.log("Created a club with value: ");
                     console.log(clubResponse);
                     authService.setCurrentUserStale();
-                    clubService.currentClub = clubResponse.data;
+                    clubService.setCurrentClub(clubResponse.data);
                     clubService.joinClub(authService.getCurrentUserId(), clubResponse.data._id)
                         .then(function(response) {
                             console.log("Created a clubmember with value: ");
                             console.log(response);
-                            var roleId = authService.getRoleId("CLUB_ADMIN");
+                            var roleId = coreDataService.getRoleIdByName("CLUB_ADMIN");
                             console.log("Received ID:" + roleId);
                             userService.addUserToRole(authService.getCurrentUserId(), roleId)
                                 .then(function(response) {
@@ -367,6 +362,14 @@ angular.module('ma-app')
                 $scope.fineHidden = true;
             }
         });
+        
+        $scope.userHasSingleClub = function() {
+            return userService.getUserHasClub();
+        };
+        
+        $scope.userHasMultipleClubs = function() {
+            return userService.getUserHasMultipleClubs();
+        };
         
         $scope.getGoogleEmbedURL = function(formattedAddress) {
             var url =  coreDataService.getGoogleMapURL(formattedAddress);

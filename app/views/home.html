@@ -1,11 +1,11 @@
 
-<div class="row row-content" ng-show="!userHasClub">
+<div class="row row-content" ng-show="!userHasSingleClub()">
     <div class="col-xs-12">
         <p align=center>You are not currently associated with any soccer club. Either join an existing club, or create your own.</p>
     </div>
 </div>
 
-<div class="row row-content" ng-show="userHasClub && !userHasMultipleClubs && getCurrentRole() == 'CLUB_ADMIN'">    
+<div class="row row-content" ng-show="userHasSingleClub() && !userHasMultipleClubs() && getCurrentRole() == 'CLUB_ADMIN'">    
     <div class="col-xs-12">
         <h4>Club Administration</h4>
     </div>
@@ -419,7 +419,7 @@
     </div>
 </div>
 
-<div class="row row-content" ng-show="userHasClub && !userHasMultipleClubs && getCurrentRole() == 'FIELD_ADMIN'">    
+<div class="row row-content" ng-show="userHasSingleClub() && !userHasMultipleClubs() && getCurrentRole() == 'FIELD_ADMIN'">    
     <div class="col-xs-12">
         <h4>Field Administration</h4>
     </div>

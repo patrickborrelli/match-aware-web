@@ -6,7 +6,7 @@ angular.module('ma-app')
     .constant("googleGeolocateBaseURL", "https://maps.googleapis.com/maps/api/geocode/json?")
     .constant("googleMapsBaseURL", "https://www.google.com/maps/embed/v1/place?")
 
-    .service('coreDataService', ['$http', 'baseURL', '$rootScope', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL',  function($http, baseURL, $rootScope, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL) {
+    .service('coreDataService', ['$http', 'baseURL', '$rootScope', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', function($http, baseURL, $rootScope, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL) {
         var clubs = {};
         var roles = {};   
         $rootScope.ageGroups = {};
@@ -632,7 +632,7 @@ angular.module('ma-app')
             console.log("Entering getCurrentClubUsers");
             //retrieve users:
             $http({
-                url: baseURL + 'club_members/findClubMembers/' + $rootScope.currentClub._id,
+                url: baseURL + 'club_members/findClubMembers/' + $rootScope.currentClubId,
                 method: 'GET',
                 headers: {
                     'content-type': 'application/json' 
@@ -782,6 +782,7 @@ angular.module('ma-app')
         
         var localRefreshFields = this.refreshFields;     
         
+        //TODO: first check if roles are loaded, if not refresh roles:
         this.getRoleIdByName = function(roleName) {
             for(var i = 0; i < roles.length; i++) {
                 if(String(roles[i].name) == String(roleName)) {
@@ -1250,10 +1251,18 @@ angular.module('ma-app')
         };        
     }])
 
-    .service('userService', ['$http', 'baseURL', '$rootScope', 'ngDialog', 'coreDataService', function($http,baseURL, $rootScope, ngDialog, coreDataService) {
-        $rootScope.usersClubs = [];
-        $rootScope.userHasClub = false;
-        $rootScope.userHasMultipleClubs = false;
+    .service('userService', ['$http', 'baseURL', '$rootScope', 'ngDialog', 'coreDataService', 'clubService', function($http,baseURL, $rootScope, ngDialog, coreDataService, clubService) {
+        var usersClubs = [];
+        var userHasClub = false;
+        var userHasMultipleClubs = false;
+        
+        this.getUserHasClub = function() {
+            return userHasClub;
+        };
+        
+        this.getUserHasMultipleClubs = function() {
+            return userHasMultipleClubs;
+        };
                 
         this.sendUserInvite = function(formData) {
             //create invite then update rootscope userinvites
@@ -1426,34 +1435,34 @@ angular.module('ma-app')
         };
         
         this.cleanupLoggedOutUser = function() {
-            $rootScope.usersClubs = [];
-            $rootScope.userHasClub = false;
-            $rootScope.userHasMultipleClubs = false;
-            $rootScope.currentClub = {};
+            usersClubs = [];
+            userHasClub = false;
+            userHasMultipleClubs = false;
+            clubService.setCurrentClub = {};
         };
         
-        this.populateUsersClubs = function(userClubs) {
+        this.populateUsersClubs = function(clubs) {
             console.log("Entering populate users clubs");
-            console.log(userClubs);
-            if(userClubs.length == 1) {
-                $rootScope.userHasClub = true;
-                $rootScope.currentClub = userClubs[0];
-                $rootScope.usersClubs.push(userClubs[0]);
-            } else if(userClubs.length > 1) {
-                $rootScope.userHasMultipleClubs = true;
-                $rootScope.userHasClub = true;
-                for(var i = 0; i < userClubs.length; i++) {
-                    $rootScope.usersClubs.push(userClubs[i]);
+            console.log(clubs);
+            if(clubs.length == 1) {
+                userHasClub = true;
+                clubService.setCurrentClub(userClubs[0]);
+                usersClubs.push(clubs[0]);
+            } else if(clubs.length > 1) {
+                userHasMultipleClubs = true;
+                userHasClub = true;
+                for(var i = 0; i < clubs.length; i++) {
+                    usersClubs.push(clubs[i]);
                 }
             }
-            if($rootScope.userHasClub && !$rootScope.userHasMultipleClubs) {
-                console.log("User belongs to " + $rootScope.currentClub.name);
-            } else if($rootScope.userHasMultipleClubs) {
+            if(userHasClub && !userHasMultipleClubs) {
+                console.log("User belongs to " + clubService.getCurrentClub().name);
+            } else if(userHasMultipleClubs) {
                 console.log("User belongs to multiple clubs:");
-                console.log($rootScope.usersClubs);
+                console.log(usersClubs);
             }
             
-            console.log("userHasClub = " + $rootScope.userHasClub + " and userHasMultipleClubs = " + $rootScope.userHasMultipleClubs);
+            console.log("userHasClub = " + userHasClub + " and userHasMultipleClubs = " + userHasMultipleClubs);
         };
         
         this.updateUserRoles = function(user, formData) {
@@ -1533,18 +1542,25 @@ angular.module('ma-app')
     }])
 
     .service('clubService', ['$http', 'baseURL', 'ngDialog', '$rootScope', '$state', 'coreDataService', function($http, baseURL, ngDialog, $rootScope, $state, coreDataService) {        
-        $rootScope.currentClub;
+        var currentClub = null;
+        $rootScope.currentClubId = '';
         
         this.getCurrentClubId = function() {
-            return $rootScope.currentClub._id;
+            return currentClub._id;
+        };
+        
+        this.getCurrentClub = function() {
+            return currentClub;
         };
         
         this.setCurrentClub = function(club) {
-            $rootScope.currentClub = club;
+            currentClub = club;
+            $rootScope.currentClubId = club._id;
         };
         
         this.clearCurrentClub = function() {
-            $rootScope.currentClub = {};
+            currentClub = null;
+            $rootScope.currentClubId = '';
         };
         
         this.addTeam = function(formData) {            
@@ -1565,7 +1581,7 @@ angular.module('ma-app')
                 postString += '"league": "' + formData.league._id + '", ';
             }
             
-            postString += '"club": "' + $rootScope.currentClub._id + '" }';
+            postString += '"club": "' + currentClub._id + '" }';
             
             console.log("Creating team with string: " + postString);
             
@@ -1815,21 +1831,7 @@ angular.module('ma-app')
         var currentRole = {};
         var adminRoleId = '';   
         var currentUserStale = false;
-        
-        this.getRoleId = function(rolename) {
-            console.log("Received role name: " + rolename);
-            var roles = coreDataService.getRoles();
-            
-            for(var i = 0; i < roles.length; i++) {
-                var role_name = roles[i].name;
-                console.log("Comparing " + rolename + " to " + role_name + " or " + roles[i].name);
-                if(String(rolename) == String(role_name)) {
-                    console.log("Comparing " + rolename + " to " + role_name + " is successful");
-                    return roles[i]._id;
-                }
-            }
-        };
-        
+                
         this.getCurrentRole = function() {
             return currentRole.name;  
         };
