@@ -16,12 +16,12 @@
                 <li><a ui-sref="app.forums">Forums</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><button type="button" ng-show="loggedIn" id="mynavbutton" class="btn btn-default btn-xs" ng-click="openJoinClub()">Join Existing Club</button></li>
-                <li><button type="button" ng-show="loggedIn" id="mynavbutton"  class="btn btn-default btn-xs" ng-click="openCreateClub()">Create Club</button></li>
-                <li><a href="#contact" ng-hide="loggedIn" ng-click="openRegister()">Register</a></li>
-                <li><a href="#contact" ng-hide="loggedIn" ng-click="openLogin()">Login</a></li>
-                <li><a href="#contact" ng-hide="!loggedIn" >{{fullname}}</a></li>
-                <li><a href="#contact" ng-hide="!loggedIn" ng-click="openLogout()">Logout</a></li>
+                <li><button type="button" ng-show="isAuthenticated()" id="mynavbutton" class="btn btn-default btn-xs" ng-click="openJoinClub()">Join Existing Club</button></li>
+                <li><button type="button" ng-show="isAuthenticated()" id="mynavbutton"  class="btn btn-default btn-xs" ng-click="openCreateClub()">Create Club</button></li>
+                <li><a href="#contact" ng-hide="isAuthenticated()" ng-click="openRegister()">Register</a></li>
+                <li><a href="#contact" ng-hide="isAuthenticated()" ng-click="openLogin()">Login</a></li>
+                <li><a href="#contact" ng-hide="!isAuthenticated()" >{{fullname}}</a></li>
+                <li><a href="#contact" ng-hide="!isAuthenticated()" ng-click="openLogout()">Logout</a></li>
             </ul>                    
         </div>
     </div>
