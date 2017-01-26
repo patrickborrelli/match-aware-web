@@ -40,6 +40,10 @@ angular.module('ma-app')
             var hasRole = authService.userHasRoles();
             return hasRole;
         };
+        
+        $scope.isAuthenticated = function() {
+            return authService.isUserAuthenticated();
+        };
     }])
 
     .controller('ClubController', ['$scope', '$rootScope', 'ngDialog', '$state', 'clubService', 'authService', 'userService', 'coreDataService', function($scope, $rootScope, ngDialog, $state, clubService, authService, userService, coreDataService) {        
@@ -51,29 +55,29 @@ angular.module('ma-app')
                 .then(function(clubResponse) {
                     console.log("Created a club with value: ");
                     console.log(clubResponse);
-                    authService.setCurrentUserStale();
+                    userService.setCurrentUserStale();
                     clubService.setCurrentClub(clubResponse.data);
-                    clubService.joinClub(authService.getCurrentUserId(), clubResponse.data._id)
+                    clubService.joinClub(userService.getCurrentUserId(), clubResponse.data._id)
                         .then(function(response) {
                             console.log("Created a clubmember with value: ");
                             console.log(response);
                             var roleId = coreDataService.getRoleIdByName("CLUB_ADMIN");
                             console.log("Received ID:" + roleId);
-                            userService.addUserToRole(authService.getCurrentUserId(), roleId)
+                            userService.addUserToRole(userService.getCurrentUserId(), roleId)
                                 .then(function(response) {
                                     console.log("Added user to role:");
                                     console.log(response);
                                     var currentUser = {};
-                                    authService.getCurrentUser()
+                                    userService.getCurrentUser()
                                         .then(function(response) {
                                             console.log("GOT THE CURRENT USER DURING CLUB CREATION");
                                             console.log(response.data);
                                             currentUser = response.data;
-                                            authService.setCurrentUser(response.data);
+                                            userService.setCurrentUser(response.data);
                                             console.log("Attempting to populate user roles for member: " + currentUser);
                                             console.log(currentUser);
                                             authService.populateUserRoles(currentUser.roles); 
-                                            userService.getUserClubs(authService.getCurrentUserId())
+                                            userService.getUserClubs(currentUser._id)
                                                 .then(function(response) {
                                                     console.log("Retrieved the clubs the user belongs to: ");
                                                     console.log(response);
@@ -729,11 +733,11 @@ angular.module('ma-app')
         };
         
         $scope.acceptAccess = function(accessRequest) {
-            coreDataService.processAccessRequestAccept(accessRequest);            
+            userService.processAccessRequestAccept(accessRequest);            
         };
         
         $scope.declineAccess = function(accessRequest) {            
-            coreDataService.processAccessRequestDecline(accessRequest);  
+            userService.processAccessRequestDecline(accessRequest);  
         };
     }])
 ;
