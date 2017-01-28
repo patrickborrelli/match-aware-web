@@ -535,6 +535,28 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
+        $scope.openEditLeague = function(league) {
+            console.log("\n\nOpening dialog to edit league");
+            console.log(league);
+            
+            $scope.leagueForm = {
+                name: league.name,
+                shortname: league.short_name,
+                minAgeGroup: league.min_age_group,
+                maxAgeGroup: league.max_age_group,
+                type: league.type,
+                rescheduleDays: league.reschedule_rule.timespan_days,
+                consequence: league.reschedule_rule.consequence,
+                fine: league.reschedule_rule.fine,
+                rescheduleRuleId: league.reschedule_rule._id,
+                logoURL: league.logo_url
+            };
+                
+            console.log("Current entries include: ");
+            console.log($scope.leagueForm);
+            ngDialog.open({ template: 'views/editLeague.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
+        };
+        
         $scope.openAddRule = function() {
             console.log("\n\nOpening dialog to add rule");
             ngDialog.open({ template: 'views/addRule.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
@@ -644,7 +666,7 @@ angular.module('ma-app')
         
         $scope.loadClubUsers = function() {
             console.log("Attemtping to load all users for this club");
-            coreDataService.getCurrentClubUsers();
+            coreDataService.storeCurrentClubUsers(clubService.getCurrentClubId());
         };      
         
         $scope.getCurrentRole = function() {

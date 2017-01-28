@@ -501,11 +501,11 @@ angular.module('ma-app')
             });
         };
         
-        this.getCurrentClubUsers = function() {
-            console.log("Entering getCurrentClubUsers");
+        this.storeCurrentClubUsers = function(clubId) {
+            console.log("Entering storeCurrentClubUsers");
             //retrieve users:
             $http({
-                url: baseURL + 'club_members/findClubMembers/' + $rootScope.currentClubId,
+                url: baseURL + 'club_members/findClubMembers/' + clubId,
                 method: 'GET',
                 headers: {
                     'content-type': 'application/json' 
@@ -1124,7 +1124,7 @@ angular.module('ma-app')
         };        
     }])
 
-    .service('userService', ['$http', 'baseURL', '$rootScope', 'ngDialog', 'coreDataService', 'clubService', function($http,baseURL, $rootScope, ngDialog, coreDataService, clubService) {
+    .service('userService', ['$http', 'baseURL', '$q', 'ngDialog', 'coreDataService', 'clubService', function($http,baseURL, $q, ngDialog, coreDataService, clubService) {
         var usersClubs = [];
         var userHasClub = false;
         var userHasMultipleClubs = false;
@@ -1148,7 +1148,8 @@ angular.module('ma-app')
                 });
                 
             } else {
-                return currentUser;
+                var response = $q.when(currentUser);
+                return response;
             }            
         };
         
@@ -1457,7 +1458,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     currentUser = response.data;
                     //finally update all club users:
-                    coreDataService.getCurrentClubUsers();
+                    coreDataService.storeCurrentClubUsers(clubService.getCurrentClubId());
                 })
             }, function(errResponse) {
                 console.log("Error when trying to update");
@@ -1625,9 +1626,9 @@ angular.module('ma-app')
         
     }])
 
-    .service('clubService', ['$http', 'baseURL', 'ngDialog', '$rootScope', '$state', 'coreDataService', function($http, baseURL, ngDialog, $rootScope, $state, coreDataService) {        
+    .service('clubService', ['$http', 'baseURL', 'ngDialog', '$state', 'coreDataService', function($http, baseURL, ngDialog, $state, coreDataService) {        
         var currentClub = null;
-        $rootScope.currentClubId = '';
+        var currentClubId = '';
         
         this.getCurrentClubId = function() {
             return currentClub._id;
@@ -1639,12 +1640,12 @@ angular.module('ma-app')
         
         this.setCurrentClub = function(club) {
             currentClub = club;
-            $rootScope.currentClubId = club._id;
+            currentClubId = club._id;
         };
         
         this.clearCurrentClub = function() {
             currentClub = null;
-            $rootScope.currentClubId = '';
+            currentClubId = '';
         };
         
         this.addTeam = function(formData) {            
@@ -1730,7 +1731,7 @@ angular.module('ma-app')
         
     }])
     
-    .service('schedulingService', ['$http', 'baseURL', 'ngDialog', '$rootScope', '$state', 'coreDataService', 'datetimeService', function($http, baseURL, ngDialog, $rootScope, $state, coreDataService, datetimeService) {        
+    .service('schedulingService', ['$http', 'baseURL', 'coreDataService', 'datetimeService', function($http, baseURL, coreDataService, datetimeService) {        
     
         this.closeField = function(form) {
             console.log("Attempting to close field " + form.entity.name);
@@ -1864,7 +1865,7 @@ angular.module('ma-app')
         
     }])
 
-    .service('datetimeService', ['$rootScope', function($rootScope) { 
+    .service('datetimeService', [function() { 
         
         this.addHours = function(hours, date) {
             var returnMilis;
