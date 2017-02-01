@@ -6,7 +6,7 @@ angular.module('ma-app')
             return $sce.trustAsResourceUrl(url);
         };
     })
-    .controller('HeaderController', ['$scope', 'ngDialog', 'userService', 'coreDataService',  function($scope, ngDialog, userService, coreDataService) {
+    .controller('HeaderController', ['$scope', 'ngDialog', 'userService', 'coreDataService', 'authService',  function($scope, ngDialog, userService, coreDataService, authService) {
         $scope.openRegister = function () {
             ngDialog.open({ template: 'views/register.html', scope: $scope, className: 'ngdialog-theme-default custom-width', controller:"RegisterController" });
         };    
@@ -44,9 +44,13 @@ angular.module('ma-app')
         $scope.isAuthenticated = function() {
             return authService.isUserAuthenticated();
         };
+        
+        $scope.getUserFullname = function() {
+            return userService.getUserFullname();
+        };
     }])
 
-    .controller('ClubController', ['$scope', '$rootScope', 'ngDialog', '$state', 'clubService', 'authService', 'userService', 'coreDataService', function($scope, $rootScope, ngDialog, $state, clubService, authService, userService, coreDataService) {        
+    .controller('ClubController', ['$scope', 'ngDialog', '$state', 'clubService', 'authService', 'userService', 'coreDataService', function($scope, ngDialog, $state, clubService, authService, userService, coreDataService) {        
         
         $scope.createClub = function() {
             console.log('Creating club', $scope.createClubData); 
@@ -89,9 +93,10 @@ angular.module('ma-app')
                                             userClubs.push(response.data[i].club);
                                         }
 
-                                        authService.populateUserRoles(userRoles);  
+                                        userService.populateUserRoles(userRoles);  
                                         userService.populateUsersClubs(userClubs);
-
+                                        
+                                        coreDataService.setDataStale("clubs");
                                         //do app data load:
                                         coreDataService.appDataLoad(userService.getCurrentUser(false));
 
@@ -114,7 +119,7 @@ angular.module('ma-app')
         };        
     }])
 
-    .controller('UserController', ['$scope', '$rootScope', 'ngDialog', '$state', 'userService', function($scope, $rootScope, ngDialog, $state, userService) {
+    .controller('UserController', ['$scope', 'ngDialog', '$state', 'userService', function($scope, ngDialog, $state, userService) {
         
         $scope.joinClub = function() {
             console.log('Joining club', $scope.join); 
@@ -125,7 +130,7 @@ angular.module('ma-app')
         
     }])
 
-    .controller('RegisterController', ['$scope', '$rootScope', 'ngDialog', '$state', 'authService', function($scope, $rootScope, ngDialog, $state, authService) {
+    .controller('RegisterController', ['$scope', 'userService', 'ngDialog', '$state', 'authService', function($scope, userService, ngDialog, $state, authService) {
         $scope.showLoader = false;
         $scope.showRegLoader = false;
         
@@ -148,7 +153,7 @@ angular.module('ma-app')
         };
         
         $scope.processLogout = function() {
-            console.log('Logging out user ' + $rootScope.username);
+            console.log('Logging out user ' + userService.getUserFullname());
             authService.logout();
             ngDialog.close();
         };
@@ -190,8 +195,7 @@ angular.module('ma-app')
         
         $scope.faSubIsSelected = function (checkTab) {
             return ($scope.faSubTab === checkTab);
-        };
-        
+        };        
         
         //initialize all form data:
         $scope.emailHidden = false;
@@ -389,35 +393,35 @@ angular.module('ma-app')
         };
         
         $scope.arePendingAccessRequests = function() {
-            return $rootScope.accessRequests.length > 0;
+            return coreDataService.getAccessRequests()length > 0;
         };
         
         $scope.areTeams = function() {
-            return $rootScope.teams.length > 0;
+            return coreDataService.getTeams().length > 0;
         };
         
         $scope.areAgeGroups = function() {
-            return $rootScope.ageGroups.length > 0;
+            return coreDataService.getAgeGroups().length > 0;
         };
         
         $scope.areLeagues = function() {
-            return $rootScope.leagues.length > 0;
+            return coreDataService.getLeagues().length > 0;
         };
         
         $scope.areRules = function() {
-            return $rootScope.rules.length > 0;
+            return coreDataService.getRules().length > 0;
         };
         
         $scope.arePendingUserInvites = function() {
-            return $rootScope.userInvites.length > 0;
+            return coreDataService.getUserInvites().length > 0;
         };
         
         $scope.areFacilities = function() {
-            return $rootScope.facilities.length > 0;
+            return coreDataService.getFacilities().length > 0;
         };
         
         $scope.areFields = function() {
-            return $rootScope.fields.length > 0;
+            return coreDataService.getFields().length > 0;
         };
         
         $scope.hasFields = function(facility) {
@@ -684,7 +688,7 @@ angular.module('ma-app')
         };      
         
         $scope.getCurrentRole = function() {
-            return authService.getCurrentRole();
+            return userService.getCurrentRole();
         };
                 
         $scope.userHasRoleActive = function(roleName, user) {            

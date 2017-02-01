@@ -6,25 +6,25 @@ angular.module('ma-app')
     .constant("googleGeolocateBaseURL", "https://maps.googleapis.com/maps/api/geocode/json?")
     .constant("googleMapsBaseURL", "https://www.google.com/maps/embed/v1/place?")
 
-    .service('coreDataService', ['$http', 'baseURL', '$rootScope', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', function($http, baseURL, $rootScope, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL) {
+    .service('coreDataService', ['$http', 'baseURL', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', function($http, baseURL, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL) {
         var clubs = {};
         var roles = {};   
-        $rootScope.ageGroups = {};
-        $rootScope.events = {};
-        $rootScope.facilities = {}; 
-        $rootScope.fields = {}; 
-        $rootScope.fieldSizes = {};
-        $rootScope.genders = {};
-        $rootScope.leagues = {}; 
-        $rootScope.leagueTypes = {};
-        $rootScope.messages = {};
-        $rootScope.notifications = {};
-        $rootScope.organizations = {};
-        $rootScope.rules = {}; 
-        $rootScope.teams = {};
-        $rootScope.users = {}; 
-        $rootScope.userInvites = {};
-        $rootScope.accessRequests = {};
+        var ageGroups = {};
+        var events = {};
+        var facilities = {}; 
+        var fields = {}; 
+        var fieldSizes = {};
+        var genders = {};
+        var leagues = {}; 
+        var leagueTypes = {};
+        var messages = {};
+        var notifications = {};
+        var organizations = {};
+        var rules = {}; 
+        var teams = {};
+        var users = {}; 
+        var userInvites = {};
+        var accessRequests = {};
         
         var clubsLoaded = false;
         var rolesLoaded = false;
@@ -43,27 +43,149 @@ angular.module('ma-app')
         var teamsLoaded = false;
         var usersLoaded = false;
         var userInvitesLoaded = false;  
-        var accessRequestsLoaded = false;     
+        var accessRequestsLoaded = false;  
+        
+        this.setDataStale = function(staleItems) {
+            var items = staleItems.split(",");
+            
+            for(var i = 0; i < items.length; i++) {
+                switch(items[i]) {
+                    case "clubs" :
+                        console.log("Setting club data to stale");
+                        clubsLoaded = false;
+                        break;
+                        
+                    case "roles" :
+                        console.log("Setting role data to stale");
+                        rolesLoaded = false;
+                        break;
+                    
+                    case "age groups" :
+                        console.log("Setting age group data to stale");
+                        ageGroupsLoaded = false;
+                        break;
+                    
+                    case "events" :
+                        console.log("Setting events data to stale");
+                        eventsLoaded = false;
+                        break;
+                    
+                    case "facilities" :
+                        console.log("Setting facility data to stale");
+                        facilitiesLoaded = false;
+                        break;
+                    
+                    case "fields" :
+                        console.log("Setting field data to stale");
+                        fieldsLoaded = false;
+                        break;
+                    
+                    case "field sizes" :
+                        console.log("Setting field size data to stale");
+                        fieldSizesLoaded = false;
+                        break;
+                    
+                    case "gender" :
+                        console.log("Setting gender data to stale");
+                        genderLoaded = false;
+                        break;
+                    
+                    case "leagues" :
+                        console.log("Setting league data to stale");
+                        leaguesLoaded = false;
+                        break;
+                    
+                    case "league types" :
+                        console.log("Setting league type data to stale");
+                        leagueTypesLoaded = false;
+                        break;
+                    
+                    case "messsages" :
+                        console.log("Setting message data to stale");
+                        messagesLoaded = false;
+                        break;
+                    
+                    case "notifications" :
+                        console.log("Setting notification data to stale");
+                        notificationsLoaded = false;
+                        break;
+                    
+                    case "organizations" :
+                        console.log("Setting organization data to stale");
+                        organizationsLoaded = false;
+                        break;
+                    
+                    case "rules" :
+                        console.log("Setting rule data to stale");
+                        rulesLoaded = false;
+                        break;
+                    
+                    case "teams" :
+                        console.log("Setting team data to stale");
+                        teamsLoaded = false;
+                        break;
+                    
+                    case "users" :
+                        console.log("Setting user data to stale");
+                        usersLoaded = false;
+                        break;
+                    
+                    case "user invites" :
+                        console.log("Setting user invite data to stale");
+                        userInvitesLoaded = false;
+                        break;
+                    
+                    case "access requests" :
+                        console.log("Setting access request data to stale");
+                        accessRequestsLoaded = false;
+                        break;
+                        
+                    default:
+                        break;
+                }
+            }          
+        };
+        
+        this.setAllDataStale = function() {
+            clubsLoaded = false;
+            rolesLoaded = false;
+            ageGroupsLoaded = false;
+            eventsLoaded = false;
+            facilitiesLoaded = false;
+            fieldsLoaded = false;
+            fieldSizesLoaded = false;
+            genderLoaded = false;
+            leaguesLoaded = false;
+            leagueTypesLoaded = false;
+            messagesLoaded = false;
+            notificationsLoaded = false;
+            organizationsLoaded = false;
+            rulesLoaded = false;
+            teamsLoaded = false;
+            usersLoaded = false;
+            userInvitesLoaded = false;  
+            accessRequestsLoaded = false; 
+        };
         
         this.cleanupOnLogout = function() {
             clubs = {};
             roles = {};   
-            $rootScope.ageGroups = {};
-            $rootScope.events = {};
-            $rootScope.facilities = {}; 
-            $rootScope.fields = {}; 
-            $rootScope.fieldSizes = {};
-            $rootScope.genders = {};
-            $rootScope.leagues = {}; 
-            $rootScope.leagueTypes = {};
-            $rootScope.messages = {};
-            $rootScope.notifications = {};
-            $rootScope.organizations = {};
-            $rootScope.rules = {}; 
-            $rootScope.teams = {};
-            $rootScope.users = {}; 
-            $rootScope.userInvites = {};
-            $rootScope.accessRequests = {};
+            ageGroups = {};
+            events = {};
+            facilities = {}; 
+            fields = {}; 
+            fieldSizes = {};
+            genders = {};
+            leagues = {}; 
+            leagueTypes = {};
+            messages = {};
+            notifications = {};
+            organizations = {};
+            rules = {}; 
+            teams = {};
+            users = {}; 
+            userInvites = {};
+            accessRequests = {};
 
             clubsLoaded = false;
             rolesLoaded = false;
@@ -91,6 +213,70 @@ angular.module('ma-app')
         
         this.getRoles = function() {
             return roles;
+        };
+        
+        this.getAgeGroups = function() {
+            return ageGroups;
+        };
+        
+        this.getEvents = function() {
+            return events;
+        };
+        
+        this.getFacilities = function() {
+            return facilities;
+        };
+        
+        this.getFields = function() {
+            return fields;
+        };
+        
+        this.getFieldSizes = function() {
+            return fieldSizes;
+        };
+        
+        this.getGenders = function() {
+            return genders;
+        };
+        
+        this.getLeagues = function() {
+            return leagues;
+        };
+        
+        this.getLeagueTypes = function() {
+            return leagueTypes;
+        };
+        
+        this.getMessages = function() {
+            return messages;
+        };
+        
+        this.getNotifications = function() {
+            return notifications;
+        };
+        
+        this.getOrganizations = function() {
+            return organizations;
+        };
+        
+        this.getRules = function() {
+            return rules;
+        };
+        
+        this.getTeams = function() {
+            return teams;
+        };
+        
+        this.getUsers    = function() {
+            return users;
+        };
+        
+        this.getUserInvites = function() {
+            return userInvites;
+        };
+        
+        this.getAccessRequests = function() {
+            return accessRequests;
         };
         
         this.getGoogleMapURL = function(formattedAddress) {
@@ -194,7 +380,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the age groups from the API: ");
                     console.log(response);
-                    $rootScope.ageGroups = response.data;
+                    ageGroups = response.data;
                     ageGroupsLoaded = true;
                 }); 
             }
@@ -210,7 +396,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the events from the API: ");
                     console.log(response);
-                    $rootScope.events = response.data;
+                    events = response.data;
                     eventsLoaded = true;
                 }); 
             }
@@ -237,7 +423,7 @@ angular.module('ma-app')
                         fac[i].google_map_string = mapString;
                         console.log(fac[i]);
                     }         
-                    $rootScope.facilities = fac;
+                    facilities = fac;
                     facilitiesLoaded = true;
                 }); 
             }
@@ -253,7 +439,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the fields from the API: ");
                     console.log(response);
-                    $rootScope.fields = response.data;
+                    fields = response.data;
                     fieldsLoaded = true;
                 }); 
             }
@@ -269,7 +455,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the field sizes from the API: ");
                     console.log(response);
-                    $rootScope.fieldSizes = response.data;
+                    fieldSizes = response.data;
                     fieldSizesLoaded = true;
                 }); 
             }
@@ -285,7 +471,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the genders from the API: ");
                     console.log(response);
-                    $rootScope.genders = response.data;
+                    genders = response.data;
                     genderLoaded = true;
                 }); 
             }
@@ -301,7 +487,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the leagues from the API: ");
                     console.log(response);
-                    $rootScope.leagues = response.data;
+                    leagues = response.data;
                     leaguesLoaded = true;
                 }); 
             }
@@ -317,7 +503,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the leagueTypes from the API: ");
                     console.log(response);
-                    $rootScope.leagueTypes = response.data;
+                    leagueTypes = response.data;
                     leagueTypesLoaded = true;
                 }); 
             }
@@ -333,7 +519,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the messages from the API: ");
                     console.log(response);
-                    $rootScope.messages = response.data;
+                    messages = response.data;
                     messagesLoaded = true;
                 }); 
             }
@@ -349,7 +535,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the notifications from the API: ");
                     console.log(response);
-                    $rootScope.notifications = response.data;
+                    notifications = response.data;
                     notificationsLoaded = true;
                 }); 
             }
@@ -365,7 +551,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the organizations from the API: ");
                     console.log(response);
-                    $rootScope.organizations = response.data;
+                    organizations = response.data;
                     organizationsLoaded = true;
                 }); 
             }
@@ -381,7 +567,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the rules from the API: ");
                     console.log(response);
-                    $rootScope.rules = response.data;
+                    rules = response.data;
                     rulesLoaded = true;
                 }); 
             }
@@ -397,7 +583,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the teams from the API: ");
                     console.log(response);
-                    $rootScope.teams = response.data;
+                    teams = response.data;
                     teamsLoaded = true;
                 }); 
             }
@@ -413,7 +599,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the users from the API: ");
                     console.log(response);
-                    $rootScope.users = response.data;
+                    users = response.data;
                     usersLoaded = true;
                 }); 
             }
@@ -429,12 +615,13 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the user invites from the API: ");
                     console.log(response);
-                    $rootScope.userInvites = response.data;
+                    userInvites = response.data;
                     userInvitesLoaded = true;
                 }); 
             }
             
             if(!accessRequestsLoaded) {
+                console.log("attempting to retrieve access requests for user " + curUser + " with id: " + curUser._id);
                 //retrieve access requests:
                 $http({
                     url: baseURL + 'access_requests/findByApprover/' + curUser._id,
@@ -445,7 +632,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the access requests from the API: ");
                     console.log(response);
-                    $rootScope.accessRequests = response.data;
+                    accessRequests = response.data;
                     accessRequestsLoaded = true;
                     //now update all access requests as seen by this user (change state to PENDING)
                     var putString = '{"status": "PENDING"}';
@@ -464,8 +651,11 @@ angular.module('ma-app')
                             console.log(errResponse);
                         });
                     }
+                }, function(errResponse) {
+                    console.log("Failed to retrieve access requests based on current user.");
                 }); 
             }
+            
         };
         
         this.refreshAccessRequests = function(curUser) {
@@ -479,7 +669,7 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the access requests from the API: ");
                 console.log(response);
-                $rootScope.accessRequests = response.data;
+                accessRequests = response.data;
                 accessRequestsLoaded = true;
                 //now update all access requests as seen by this user (change state to PENDING)
                 var putString = '{"status": "PENDING"}';
@@ -505,7 +695,7 @@ angular.module('ma-app')
             console.log("Entering storeCurrentClubUsers");
             //retrieve users:
             $http({
-                url: baseURL + 'club_members/findClubMembers/' + clubId,
+                url: baseURL + 'clubs/getClubMembers/' + clubId,
                 method: 'GET',
                 headers: {
                     'content-type': 'application/json' 
@@ -513,7 +703,7 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the users from the API: ");
                 console.log(response);
-                $rootScope.users = response.data;
+                users = response.data;
                 usersLoaded = true;
             }); 
         };
@@ -529,7 +719,7 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the user invites from the API: ");
                 console.log(response);
-                $rootScope.user_invites = response.data;
+                userInvites = response.data;
                 userInvitesLoaded = true;
             }); 
         };
@@ -546,7 +736,7 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the teams from the API: ");
                 console.log(response);
-                $rootScope.teams = response.data;
+                teams = response.data;
                 teamsLoaded = true;
             }); 
         };
@@ -563,7 +753,7 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the age groups from the API: ");
                 console.log(response);
-                $rootScope.ageGroups = response.data;
+                ageGroups = response.data;
                 ageGroupsLoaded = true;
             }); 
         };
@@ -582,7 +772,7 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the leagues from the API: ");
                 console.log(response);
-                $rootScope.leagues = response.data;
+                leagues = response.data;
                 leaguesLoaded = true;
             }); 
         };
@@ -601,7 +791,7 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the rules from the API: ");
                 console.log(response);
-                $rootScope.rules = response.data;
+                rules = response.data;
                 rulesLoaded = true;
             }); 
         };
@@ -631,7 +821,7 @@ angular.module('ma-app')
                     fac[i].google_map_string = mapString;
                     console.log(fac[i]);
                 }         
-                $rootScope.facilities = fac;
+                facilities = fac;
                 facilitiesLoaded = true;
             }); 
         };
@@ -648,7 +838,7 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the fields from the API: ");
                 console.log(response);
-                $rootScope.fields = response.data;
+                fields = response.data;
                 fieldsLoaded = true;
             }); 
         };
@@ -785,6 +975,24 @@ angular.module('ma-app')
                 localRefreshAgeGroups();
             }, function(errResponse) {
                 console.log("Failed on attempt to delete age group:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.deleteLeague = function(league) {
+            //first delete selected league and then refresh leagues stored in the scope:
+            $http({
+                url: baseURL + 'leagues/' + league._id,
+                method: 'DELETE',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Successfully deleted league: ");
+                console.log(response);
+                localRefreshLeagues();
+            }, function(errResponse) {
+                console.log("Failed on attempt to delete league:");
                 console.log(errResponse);
             });
         };
@@ -1130,12 +1338,51 @@ angular.module('ma-app')
         var userHasMultipleClubs = false;
         var currentUser = {};
         var currentUserStale = false;
+        var currentRolesStale = false;
+        var userClubRoles = [];
+        
+        var hasRole = false;
+        var hasMultipleRoles = false;
+        var currentRole = {};     
+        var fullname = '';
+        
+        this.getUserFullname = function() {
+            return fullname;
+        };
+        
+        this.populateUserRoles = function(roles) {
+            console.log("Entering populate user roles");
+            console.log("attempting to parse roles: " + roles.length); 
+            console.log(roles);
+            var role;
+            
+            if(roles.length < 1) {
+                hasRole = false;
+                hasMultipleRoles = false;
+                return;
+            } else if(roles.length > 1) {
+                hasRole = true;
+                hasMultipleRoles = true;
+            } else {
+                hasRole = true;
+                hasMultipleRoles = false;
+                currentRole = roles[0];
+            }            
+        };      
+        
+        var localPopulateUserRoles = this.populateUserRoles;
+                
+        this.userHasRoles = function() {
+            console.log("returning " + hasRole);
+            return hasRole;
+        };
         
         this.getCurrentUserId = function() {
             return currentUser._id;
         };
         
-        this.getCurrentUser = function() {
+        this.getCurrentUser = function(promise) {
+            var response = null;
             console.log("Attempting to get current user...currentUserStale: " + currentUserStale);
             if(currentUserStale) {
                 currentUserStale = false;
@@ -1148,13 +1395,46 @@ angular.module('ma-app')
                 });
                 
             } else {
-                var response = $q.when(currentUser);
+                if(promise) {
+                    response = $q.when(currentUser);
+                } else {
+                    response = currentUser;
+                }
                 return response;
             }            
         };
         
+        this.retrieveUserRoles = function(promise) {
+            var response = null;
+            console.log("Attempting to retrieve current user roles...currentRolesStale: " + currentRolesStale);
+            if(currentRolesStale) {
+                currentRolesStale = false;
+                return $http({
+                   url: baseURL + 'club_roles?member=' + currentUser._id,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                });
+                
+            } else {
+                if(promise) {
+                    response = $q.when(userClubRoles);
+                } else {
+                    response = userClubRoles;
+                }
+                return response;
+            }            
+        };
+        
+        var localRetrieveUserRoles = this.retrieveUserRoles;
+        
         this.setCurrentUser = function(user) {
             currentUser = user;
+            console.log("Added new current user:");
+            console.log(user);
+            currentUserStale = false;
+            fullname = user.first_name + " " + user.last_name;
         };
         
         this.setCurrentUserStale = function() {
@@ -1162,6 +1442,21 @@ angular.module('ma-app')
             currentUserStale = true;
             console.log("currentUserStale: " + currentUserStale);
         };
+        
+        this.setCurrentRolesStale = function() {
+            console.log("Setting current user roles stale");
+            currentRolesStale = true;
+            console.log("currentRolesStale: " + currentRolesStale);
+        };
+        
+        var localSetCurrentRolesStale = this.setCurrentRolesStale;
+        
+        this.setUserClubRoles = function(clubRoles) {
+            userClubRoles = clubRoles;  
+            currentRolesStale = false;
+        };
+        
+        var localSetUserClubRoles = this.setUserClubRoles;
         
         this.getUserHasClub = function() {
             return userHasClub;
@@ -1247,7 +1542,8 @@ angular.module('ma-app')
                 } else {
                     console.log("Successfully retrieved club admin.");
                     console.log(response);
-                    postString = '{"user": "' + currentUser._id + '", "club": "' + clubId + '", "role": "' + roleId + '", "status": "SENT", "approver": "' + response.data._id + '"';
+                    console.log("Early release workaround, only sending access request to first found user with appropriate role. FIX IN VER2.0");
+                    postString = '{"user": "' + currentUser._id + '", "club": "' + clubId + '", "role": "' + roleId + '", "status": "SENT", "approver": "' + response.data[0]._id + '"';
                     if(teamId != null) {
                         postString += ', "team": "' + teamId + '"';
                     }
@@ -1343,7 +1639,7 @@ angular.module('ma-app')
             
             //make http request:
             return $http({
-                url: baseURL + 'club_members/findClubAdmin/' + formData.selectedClub._id,
+                url: baseURL + 'club_roles/findClubRole/' + formData.selectedClub._id + '/' + coreDataService.getRoleIdByName("CLUB_ADMIN"),
                 method: 'GET',
                 headers: {
                     'content-type': 'application/json' 
@@ -1363,7 +1659,12 @@ angular.module('ma-app')
         
         this.cleanupLoggedOutUser = function() {
             usersClubs = [];
+            currentRole = {};
+            currentUser = {};
+            
             userHasClub = false;
+            hasRole = false;
+            hasMultipleRoles = false;
             userHasMultipleClubs = false;
             clubService.setCurrentClub({});
         };
@@ -1392,79 +1693,122 @@ angular.module('ma-app')
             console.log("userHasClub = " + userHasClub + " and userHasMultipleClubs = " + userHasMultipleClubs);
         };
         
+        var localPopulateUsersClubs = this.populateUsersClubs;
+        
         this.updateUserRoles = function(user, formData) {
-            //PUT the user's new ROLES, then update the current object and close the dialog.
-            var newRoles = '{"roles":[';
+            //gather all the new role ids into an array
+            var newRoles = '[';
             if(formData.caCheck) {
-                newRoles += '"' + coreDataService.getRoleIdByName("CLUB_ADMIN") + '", ';
+                newRoles += '"' + coreDataService.getRoleIdByName("CLUB_ADMIN") + '" ,';
             }
             
             if(formData.faCheck) {
-                newRoles += '"' + coreDataService.getRoleIdByName("FIELD_ADMIN") + '", ';
+                newRoles += '"' + coreDataService.getRoleIdByName("FIELD_ADMIN") + '" ,';
             }
             
             if(formData.raCheck) {
-                newRoles += '"' + coreDataService.getRoleIdByName("REFEREE_ASSIGNOR") + '", ';
+                newRoles += '"' + coreDataService.getRoleIdByName("REFEREE_ASSIGNOR") + '" ,';
             }
             
             if(formData.taCheck) {
-                newRoles += '"' + coreDataService.getRoleIdByName("TRAINING_ADMIN") + '", ';
+                newRoles += '"' + coreDataService.getRoleIdByName("TRAINING_ADMIN") + '" ,';
             }
             
             if(formData.coCheck) {
-                newRoles += '"' + coreDataService.getRoleIdByName("COACH") + '", ';
+                newRoles += '"' + coreDataService.getRoleIdByName("COACH") + '" ,';
             }
             
             if(formData.trCheck) {
-                newRoles += '"' + coreDataService.getRoleIdByName("TRAINER") + '", ';
+                newRoles += '"' + coreDataService.getRoleIdByName("TRAINER") + '" ,';
             }
             
             if(formData.reCheck) {
-                newRoles += '"' + coreDataService.getRoleIdByName("REFEREE") + '", ';
+                newRoles += '"' + coreDataService.getRoleIdByName("REFEREE") + '" ,';
             }
             
             if(formData.paCheck) {
-                newRoles += '"' + coreDataService.getRoleIdByName("PARENT") + '", ';
+                newRoles += '"' + coreDataService.getRoleIdByName("PARENT") + '" ,';
             }
             
             if(formData.plCheck) {
-                newRoles += '"' + coreDataService.getRoleIdByName("PLAYER") + '", ';
+                newRoles += '"' + coreDataService.getRoleIdByName("PLAYER") + '" ,';
             }
+            
             //remove trailing comma
             newRoles = newRoles.slice(0, -2);
-            newRoles += ']}';
+            newRoles += ']';
             
             console.log("New Roles contains");
             console.log(newRoles);
             
-            //make http request:
+            var postString = '{"roleIds": ' + newRoles + '}';
+            console.log("Attempting to add multiple roles with postData: " + postString);
+            
             $http({
-                url: baseURL + 'users/' + user._id,
-                method: 'PUT',
+                url: baseURL + 'club_roles/addMultipleRoles/' + user._id + '/' + clubService.getCurrentClubId(),
+                method: 'POST',
                 headers: {
                     'content-type': 'application/json' 
                 }, 
-                data: newRoles
+                data: postString
             }).then(function(response) {
-                console.log("Updated user" );
-                console.log(response.data);
-                //now, update the user in case that is where the change occured:
-                $http({
-                    url: baseURL + 'users/' + user._id,
-                    method: 'GET',
-                    headers: {
-                        'content-type': 'application/json' 
-                    }
-                }).then(function(response) {
-                    currentUser = response.data;
-                    //finally update all club users:
-                    coreDataService.storeCurrentClubUsers(clubService.getCurrentClubId());
-                })
+                console.log("added new user roles");
+                console.log(response); 
+                localSetCurrentRolesStale();
+                //retrieve user's club_roles:
+                localRetrieveUserRoles(true)
+                    .then(function(response) {
+                        console.log("Retrieved the user's club_roles: " );
+                        console.log(response);
+
+                        localSetUserClubRoles(response.data);
+
+                        //create an array of Role objects:
+                        var userRoles = [];
+                        for(var i = 0; i < response.data.length; i++) {
+                            userRoles.push(response.data[i].role);
+                        }
+
+                        //create an array of Club objects:
+                        var userClubs = [];
+                        for(var i = 0; i < response.data.length; i++) {
+                            userClubs.push(response.data[i].club);
+                        }
+
+                        localPopulateUserRoles(userRoles);  
+                        localPopulateUsersClubs(userClubs);
+
+                        //do app data load:
+                        coreDataService.appDataLoad(userService.getCurrentUser(false));
+                }, function(errResponse) {
+                    console.log("Failed in attempt to retrieve users club_roles.");
+                    console.log(errResponse);
+                });
             }, function(errResponse) {
-                console.log("Error when trying to update");
-                console.log(errResponse);
-            });
-        };       
+                console.log("failed to add new user roles");
+                console.log(response);
+            });  
+        };    
+        
+        this.userHasRole = function(clubId, userId, rolename) {
+            //iterate through current user's club roles and see if 
+            //the selected role is present for the current club:
+            var rolePresent = false;
+            
+            for(var i = 0; i < userClubRoles.length; i++) {
+                if(userClubRoles[i].club._id == clubId &&
+                   userClubRoles[i].role.name === rolename) {
+                    rolePresent = true;
+                    break;
+                }
+            }
+            
+            return rolePresent;
+        };        
+                
+        this.getCurrentRole = function() {
+            return currentRole.name;  
+        };
         
         this.processAccessRequestAccept = function(request) {
             var hasTeam = false;
@@ -1474,7 +1818,7 @@ angular.module('ma-app')
             var teamId;
             var inClub = false;
             
-            var postString = '{"club": "' + clubId + '", "user": "' + userId + '"}';
+            var postString = '{"club": "' + clubId + '", "member": "' + userId + '", "role": "' + roleId + '"}';
             var teamPostString = '{"team": "' + teamId + '", "member": "' + userId + '", "role": "' + roleId + '"}';
             
             if(request.team != null) {
@@ -1482,39 +1826,48 @@ angular.module('ma-app')
                 teamId = request.team._id;
             }
             
-            //if user is not already affiliated with the club, add them:
+            //add user to club role:
             $http({
-                url: baseURL + 'club_members/findClubMemberships/' + userId,
-                method: 'GET',
+                url: baseURL + 'club_roles/',
+                method: 'POST',
                 headers: {
                     'content-type': 'application/json' 
-                }
+                },
+                data: postString
             }).then(function(response) {
-                if(response.data.length > 0) {
-                    for(var i = 0; i < response.data.length; i++) {
-                        if(response.data[i]._id == clubId) {
-                            inClub = true;
-                            break;
-                        }
-                    }
-                }
-                
-                if(!inClub) {
-                    $http({
-                        url: baseURL + 'club_members/',
-                        method: 'POST',
-                        headers: {
-                            'content-type': 'application/json' 
-                        },
-                        data: postString
-                    }).then(function(response) {
-                        console.log("User added to club");
+                console.log("Successfully added user role");
+                console.log(response); 
+                localSetCurrentRolesStale();
+                //retrieve user's club_roles:
+                localRetrieveUserRoles(true)
+                    .then(function(response) {
+                        console.log("Retrieved the user's club_roles: " );
                         console.log(response);
-                    }, function(errResponse) {
-                        console.log("Failed to add user to club");
-                        console.log(errResponse);
-                    });
-                }
+
+                        localSetUserClubRoles(response.data);
+
+                        //create an array of Role objects:
+                        var userRoles = [];
+                        for(var i = 0; i < response.data.length; i++) {
+                            userRoles.push(response.data[i].role);
+                        }
+
+                        //create an array of Club objects:
+                        var userClubs = [];
+                        for(var i = 0; i < response.data.length; i++) {
+                            userClubs.push(response.data[i].club);
+                        }
+
+                        localPopulateUserRoles(userRoles);  
+                        localPopulateUsersClubs(userClubs);
+
+                        //do app data load:
+                        coreDataService.setAllDataStale();
+                        coreDataService.appDataLoad(currentUser);
+                }, function(errResponse) {
+                    console.log("Failed in attempt to retrieve users club_roles.");
+                    console.log(errResponse);
+                }); 
             });
             
             //next, if user is being granted team access, add them to the team:
@@ -1534,31 +1887,7 @@ angular.module('ma-app')
                     console.log(errResponse);
                 });
             }
-            
-            //next, if user is not already affiliated with the role, add them:
-            var userAlreadyInRole = false;
-            for(var i = 0; i < request.user.roles.length; i++) {
-                if(request.user.roles[i]._id == roleId) {
-                    userAlreadyInRole = true;
-                    break;
-                }
-            }
-            
-            if(!userAlreadyInRole) {
-                $http({
-                    url: baseURL + 'users/addUserRole/' + userId + '/'+ roleId,
-                    method: 'PUT',
-                    headers: {
-                        'content-type': 'application/json' 
-                    }
-                }).then(function(response) {
-                    console.log("User added to role");
-                    console.log(response);
-                }, function(errResponse) {
-                    console.log("Failed to add user to role");
-                    console.log(errResponse);
-                });
-            }
+        
             
             //finally, change access request status and reload access requests for this user:
             $http({
@@ -1572,18 +1901,7 @@ angular.module('ma-app')
                 console.log("Successfully marked access request ACCEPTED");
                 console.log(response);
                 //so, reload the access requests for this user:
-                //retrieve access requests:
-                $http({
-                    url: baseURL + 'access_requests/findByApprover/' + currentUser._id,
-                    method: 'GET',
-                    headers: {
-                        'content-type': 'application/json' 
-                    }
-                }).then(function(response) {
-                    console.log("Retrieved the access requests from the API: ");
-                    console.log(response);
-                    coreDataService.refreshAccessRequests(currentUser);
-                });
+                coreDataService.refreshAccessRequests(currentUser);
             }, function(errResponse) {
                 console.log("Failed to mark access request ACCEPTED");
                 console.log(errResponse);
@@ -1604,18 +1922,7 @@ angular.module('ma-app')
                 console.log("Successfully marked access request REJECTED");
                 console.log(response);
                 //so, reload the access requests for this user:
-                //retrieve access requests:
-                $http({
-                    url: baseURL + 'access_requests/findByApprover/' + currentUser._id,
-                    method: 'GET',
-                    headers: {
-                        'content-type': 'application/json' 
-                    }
-                }).then(function(response) {
-                    console.log("Retrieved the access requests from the API: ");
-                    console.log(response);
-                    coreDataService.refreshAccessRequests(currentUser);
-                });
+                coreDataService.refreshAccessRequests(currentUser);
             }, function(errResponse) {
                 console.log("Failed to mark access request REJECTED");
                 console.log(errResponse);
@@ -1624,7 +1931,7 @@ angular.module('ma-app')
             //TODO: send email/notification/text
         };
         
-    }])
+     }])
 
     .service('clubService', ['$http', 'baseURL', 'ngDialog', '$state', 'coreDataService', function($http, baseURL, ngDialog, $state, coreDataService) {        
         var currentClub = null;
@@ -1716,16 +2023,16 @@ angular.module('ma-app')
             });
         };
         
-        this.joinClub = function(userId, clubId) { 
+        this.joinClub = function(userId, clubId, roleId) { 
             //make http request:
-            console.log("Attempting to add user: " + userId + " to club: " + clubId);
+            console.log("Attempting to add user: " + userId + " to club: " + clubId + " with role:" + roleId);
             return $http({
-                url: baseURL + 'club_members/',
+                url: baseURL + 'club_roles/',
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json' 
                 },
-                data: {"club": clubId, "user": userId}
+                data: {"club": clubId, "member": userId, "role": roleId}
             });
         };        
         
@@ -1895,30 +2202,12 @@ angular.module('ma-app')
                              
     .service('authService', ['$http', 'baseURL', 'ngDialog', '$state', 'userService', 'coreDataService', 'clubService', function($http, baseURL, ngDialog, $state, userService, coreDataService, clubService) {
         var authToken = undefined;
-        var isAuthenticated = false;
-        var clubAdmin = false;
-        var fieldAdmin = false;
-        var refereeAssignor = false;
-        var trainingAdmin = false;
-        var coach = false;
-        var trainer = false;
-        var referee = false;
-        var parent = false;
-        var player = false;
-        var hasRole = false;
-        var hasMultipleRoles = false;
-        var currentRole = {};
-        var adminRoleId = '';   
-        var currentUserStale = false;
+        var isAuthenticated = false;       
         
         this.isUserAuthenticated = function() {
             return isAuthenticated;
         };
-                
-        this.getCurrentRole = function() {
-            return currentRole.name;  
-        };
-
+        
         this.login = function(loginData) {
             //make http request:
             $http({
@@ -1944,22 +2233,47 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the user from the API with value: ");
                     console.log(response);
+                    console.log("\n\nSETTING CURRENT USER TO: " );
+                    console.log(response.data);
                     userService.setCurrentUser(response.data);
-                    internalPopulateUserRoles(response.data.roles);
-                    //do app data load:
-                    coreDataService.appDataLoad(response.data);
-                    //determine if user has any club affiliations:
-                    //retrieve clubs:
-                    userService.getUserClubs(response.data._id)
-                        .then(function(response) {
-                            console.log("Retrieved the clubs the user belongs to: ");
-                            console.log(response);
-                            userService.populateUsersClubs(response.data);
-                        }, function(errResponse) {
-                            console.log("Encountered error when trying to retrieve users clubs.")
-                            console.log(errResponse);
-                    });
                     
+                    //retrieve user's club_roles:
+                    $http({
+                        url: baseURL + 'club_roles?member=' + response.data._id,
+                        method: 'GET',
+                        headers: {
+                            'content-type': 'application/json' 
+                        }
+                    }).then(function(response) {
+                        console.log("Retrieved the user's club_roles: " );
+                        console.log(response);
+                        
+                        userService.setUserClubRoles(response.data);
+                        
+                        //create an array of Role objects:
+                        var userRoles = [];
+                        for(var i = 0; i < response.data.length; i++) {
+                            userRoles.push(response.data[i].role);
+                            console.log("Adding role to array:");
+                            console.log(response.data[i].role);
+                        }
+                        
+                        //create an array of Club objects:
+                        var userClubs = [];
+                        for(var i = 0; i < response.data.length; i++) {
+                            userClubs.push(response.data[i].club);
+                        }
+                        
+                        userService.populateUserRoles(userRoles);  
+                        userService.populateUsersClubs(userClubs);
+                    
+                        //do app data load:
+                        coreDataService.appDataLoad(userService.getCurrentUser(false));
+                        
+                    }, function(errResponse) {
+                        console.log("Failed in attempt to retrieve users club_roles.");
+                        console.log(errResponse);
+                    });             
                 });   
                 
                 $state.go("app.home");
@@ -2063,21 +2377,7 @@ angular.module('ma-app')
         function destroyUserCredentials() {
             isAuthenticated = false;
             authToken = '';
-            userService.setCurrentUser({});
-            
-            clubAdmin = false;
-            fieldAdmin = false;
-            refereeAssignor = false;
-            trainingAdmin = false;
-            coach = false;
-            trainer = false;
-            referee = false;
-            parent = false;
-            player = false;
-            hasRole = false;
-            hasMultipleRoles = false;
-            currentRole = {};
-            
+                        
             clubService.clearCurrentClub();
             userService.cleanupLoggedOutUser();
             coreDataService.cleanupOnLogout();
@@ -2085,85 +2385,7 @@ angular.module('ma-app')
             // Set the token as header for your requests!
             $http.defaults.headers.common['x-access-token'] = authToken;
             console.log("user credentials have been destroyed.");
-        };
-        
-        this.populateUserRoles = function(roles) {
-            console.log("Entering populate user roles");
-            console.log("attempting to parse roles: " + roles.length); 
-            var role;
-            
-            if(roles.length < 1) {
-                hasRole = false;
-                hasMultipleRoles = false;
-                return;
-            } else if(roles.length > 1) {
-                hasRole = true;
-                hasMultipleRoles = true;
-            } else {
-                hasRole = true;
-                hasMultipleRoles = false;
-            }
-            
-            for(var i = 0; i < roles.length; i++) {
-                role = roles[i].name;
-                switch(role) {
-                    case 'CLUB_ADMIN':
-                        clubAdmin = true;
-                        if(!hasMultipleRoles) currentRole = roles[i];
-                        break;
-                        
-                    case 'FIELD_ADMIN':
-                        fieldAdmin = true;
-                        if(!hasMultipleRoles) currentRole = roles[i];
-                        break;
-                        
-                    case 'REFEREE_ASSIGNOR':
-                        refereeAssignor = true;
-                        if(!hasMultipleRoles) currentRole = roles[i];
-                        break;
-                        
-                    case 'TRAINING_ADMIN':
-                        trainingAdmin = true;
-                        if(!hasMultipleRoles) currentRole = roles[i];
-                        break;
-                        
-                    case 'COACH':
-                        coach = true;
-                        if(!hasMultipleRoles) currentRole = roles[i];
-                        break;
-                        
-                    case 'TRAINER':
-                        trainer = true;
-                        if(!hasMultipleRoles) currentRole = roles[i];
-                        break;
-                        
-                    case 'REFEREE':
-                        referee = true;
-                        if(!hasMultipleRoles) currentRole = roles[i];
-                        break;
-                        
-                    case 'PARENT':
-                        parent = true;
-                        if(!hasMultipleRoles) currentRole = roles[i];
-                        break;
-                        
-                    case 'PLAYER':
-                        player = true;
-                        if(!hasMultipleRoles) currentRole = roles[i];
-                        break;
-                        
-                    default:
-                        break;
-                }
-            }
-        };
-        
-        var internalPopulateUserRoles = this.populateUserRoles;
-        
-        this.userHasRoles = function() {
-            console.log("returning " + hasRole);
-            return hasRole;
-        };
+        }; 
         
         this.isLoggedIn = function() {
             return isAuthenticated;
