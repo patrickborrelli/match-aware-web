@@ -56,45 +56,53 @@ angular.module('ma-app')
                     console.log("Created a club with value: ");
                     console.log(clubResponse);
                     userService.setCurrentUserStale();
-                    clubService.setCurrentClub(clubResponse.data);
-                    clubService.joinClub(userService.getCurrentUserId(), clubResponse.data._id)
+                    clubService.setCurrentClub(clubResponse.data);                
+                    var roleId = coreDataService.getRoleIdByName("CLUB_ADMIN");
+                    console.log("Received ID:" + roleId);
+                    clubService.joinClub(userService.getCurrentUserId(), clubResponse.data._id, roleId)
                         .then(function(response) {
-                            console.log("Created a clubmember with value: ");
+                            console.log("Created a club role with value: ");
                             console.log(response);
-                            var roleId = coreDataService.getRoleIdByName("CLUB_ADMIN");
-                            console.log("Received ID:" + roleId);
-                            userService.addUserToRole(userService.getCurrentUserId(), roleId)
+                            userService.getCurrentUser(true)
                                 .then(function(response) {
-                                    console.log("Added user to role:");
-                                    console.log(response);
-                                    var currentUser = {};
-                                    userService.getCurrentUser()
+                                    console.log("GOT THE CURRENT USER DURING CLUB CREATION");
+                                    console.log(response.data);
+                                    userService.setCurrentUser(response.data);
+                                    userService.setCurrentRolesStale();
+                                    //retrieve user's club_roles:
+                                    userService.retrieveUserRoles(true)
                                         .then(function(response) {
-                                            console.log("GOT THE CURRENT USER DURING CLUB CREATION");
-                                            console.log(response.data);
-                                            currentUser = response.data;
-                                            userService.setCurrentUser(response.data);
-                                            console.log("Attempting to populate user roles for member: " + currentUser);
-                                            console.log(currentUser);
-                                            authService.populateUserRoles(currentUser.roles); 
-                                            userService.getUserClubs(currentUser._id)
-                                                .then(function(response) {
-                                                    console.log("Retrieved the clubs the user belongs to: ");
-                                                    console.log(response);
-                                                    userService.populateUsersClubs(response.data);
-                                                }, function(errResponse) {
-                                                    console.log("Encountered error when trying to retrieve users clubs.")
-                                                    console.log(errResponse);
-                                            });
-                                        }, function(errResponse) {
-                                            console.log("Failure when trying to retrieve current user.");
-                                            console.log(errResponse);
-                                    });
+                                        console.log("Retrieved the user's club_roles: " );
+                                        console.log(response);
 
+                                        userService.setUserClubRoles(response.data);
+
+                                        //create an array of Role objects:
+                                        var userRoles = [];
+                                        for(var i = 0; i < response.data.length; i++) {
+                                            userRoles.push(response.data[i].role);
+                                        }
+
+                                        //create an array of Club objects:
+                                        var userClubs = [];
+                                        for(var i = 0; i < response.data.length; i++) {
+                                            userClubs.push(response.data[i].club);
+                                        }
+
+                                        authService.populateUserRoles(userRoles);  
+                                        userService.populateUsersClubs(userClubs);
+
+                                        //do app data load:
+                                        coreDataService.appDataLoad(userService.getCurrentUser(false));
+
+                                    }, function(errResponse) {
+                                        console.log("Failed in attempt to retrieve users club_roles.");
+                                        console.log(errResponse);
+                                    }); 
                                 }, function(errResponse) {
-                                    console.log("Error condition while adding user to role.");
+                                    console.log("Failure when trying to retrieve current user.");
                                     console.log(errResponse);
-                                });
+                            });
                         });
                             
                 }, function(errResponse) {
@@ -535,6 +543,12 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
+        $scope.deleteLeague = function(league) {
+            console.log("\n\nDeleting league");
+            console.log(league);
+            coreDataService.deleteLeague(league);
+        };
+        
         $scope.openEditLeague = function(league) {
             console.log("\n\nOpening dialog to edit league");
             console.log(league);
@@ -576,7 +590,7 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
-         $scope.openFacilityStatus = function(facility) {
+        $scope.openFacilityStatus = function(facility) {
             console.log("\n\nOpening dialog to change facility status");
             $rootScope.facilityStatusName = facility.name;
             $rootScope.facilityStatusEntity = facility;
@@ -673,15 +687,15 @@ angular.module('ma-app')
             return authService.getCurrentRole();
         };
                 
-        $scope.userHasRoleActive = function(roleName, user) {
-            //console.log("User " + user.first_name + " " + user.last_name + " has " + user.roles.length + " roles.");
-            //console.log(user.roles);
+        $scope.userHasRoleActive = function(roleName, user) {            
             var result = false;
-            for(var i = 0; i < user.roles.length; i++)  {
-                if(user.roles[i].name === roleName) {
-                    result = true;
-                }                   
-            }
+            //determine if current club exists, then check current user roles
+            var currentClub = clubService.getCurrentClub();  
+            
+            if(currentClub != null) {
+                result = userService.userHasRole(currentClub._id, user._id, roleName);
+            }           
+            
             return result;
         };
         
