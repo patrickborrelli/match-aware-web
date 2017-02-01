@@ -43,7 +43,7 @@
                                 <ul class="media-list" ng-show="arePendingAccessRequests()">
                                     <li class="media" ng-repeat="request in accessRequests" style="padding:10px; background: lightGray;">
                                         <div class="media-left media-top" >
-                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{request.user.profile_image}} alt="user photo">
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{request.user.profile_image_url}} alt="user photo">
                                         </div>
                                         <div class="media-body">
                                             <h3 class="media-heading">{{request.user.first_name}} {{request.user.last_name}}</h3>
