@@ -20,7 +20,7 @@
                 <li><button type="button" ng-show="isAuthenticated()" id="mynavbutton"  class="btn btn-default btn-xs" ng-click="openCreateClub()">Create Club</button></li>
                 <li><a href="#contact" ng-hide="isAuthenticated()" ng-click="openRegister()">Register</a></li>
                 <li><a href="#contact" ng-hide="isAuthenticated()" ng-click="openLogin()">Login</a></li>
-                <li><a href="#contact" ng-hide="!isAuthenticated()" >{{fullname}}</a></li>
+                <li><a href="#contact" ng-hide="!isAuthenticated()" >{{getUserFullname()}}</a></li>
                 <li><a href="#contact" ng-hide="!isAuthenticated()" ng-click="openLogout()">Logout</a></li>
             </ul>                    
         </div>
