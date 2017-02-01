@@ -63,7 +63,7 @@
                                 <ul class="media-list">
                                     <li class="media" ng-repeat="user in users" style="padding:10px; background: lightGray;">
                                         <div class="media-left media-top" >
-                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{user.profile_image}} alt="user photo">
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{user.profile_image_url}} alt="user photo">
                                         </div>
                                         <div class="media-body">
                                             <div class="col-sm-3">
@@ -76,36 +76,17 @@
                                                         <div class="form-check form-check-inline">
                                                             <div class="row">
                                                                 <label class="form-check-label small">
-                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.caCheck" ng-checked="userHasRoleActive('CLUB_ADMIN', user)" name="caCheck" value="CLUB_ADMIN"> Club Admin
+                                                                    <input class="form-check-input" type="checkbox" disabled ng-model="myUser.caCheck" ng-checked="userHasRoleActive('CLUB_ADMIN', user)" name="caCheck" value="CLUB_ADMIN"> Club Admin
                                                                 </label>
                                                             </div>
                                                             <div class="row">
                                                                 <label class="form-check-label small">
-                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.faCheck" ng-checked="userHasRoleActive('FIELD_ADMIN', user)" name="faCheck" value="FIELD_ADMIN"> Field Admin
+                                                                    <input class="form-check-input" type="checkbox" disabled ng-model="myUser.faCheck" ng-checked="userHasRoleActive('FIELD_ADMIN', user)" name="faCheck" value="FIELD_ADMIN"> Field Admin
                                                                 </label>
                                                             </div>
                                                             <div class="row">
                                                                 <label class="form-check-label small">
-                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.raCheck" ng-checked="userHasRoleActive('REFEREE_ASSIGNOR', user)" name="raCheck" value="REFEREE_ASSIGNOR"> Ref Assignor
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <div class="form-check form-check-inline">
-                                                            <div class="row">
-                                                                <label class="form-check-label small">
-                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.taCheck" ng-checked="userHasRoleActive('TRAINING_ADMIN', user)" name="taCheck" value="TRAINING_ADMIN"> Training Admin
-                                                                </label>
-                                                            </div>
-                                                            <div class="row">
-                                                                <label class="form-check-label small">
-                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.coCheck" ng-checked="userHasRoleActive('COACH', user)" name="coCheck" value="COACH"> Coach
-                                                                </label>
-                                                            </div>
-                                                            <div class="row">
-                                                                <label class="form-check-label small">
-                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.trCheck" ng-checked="userHasRoleActive('TRAINER', user)" name="trCheck" value="TRAINER"> Trainer
+                                                                    <input class="form-check-input" type="checkbox" disabled ng-model="myUser.raCheck" ng-checked="userHasRoleActive('REFEREE_ASSIGNOR', user)" name="raCheck" value="REFEREE_ASSIGNOR"> Ref Assignor
                                                                 </label>
                                                             </div>
                                                         </div>
@@ -114,17 +95,36 @@
                                                         <div class="form-check form-check-inline">
                                                             <div class="row">
                                                                 <label class="form-check-label small">
-                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.reCheck" ng-checked="userHasRoleActive('REFEREE', user)" name="reCheck" value="REFEREE"> Referee
+                                                                    <input class="form-check-input" type="checkbox" disabled ng-model="myUser.taCheck" ng-checked="userHasRoleActive('TRAINING_ADMIN', user)" name="taCheck" value="TRAINING_ADMIN"> Training Admin
                                                                 </label>
                                                             </div>
                                                             <div class="row">
                                                                 <label class="form-check-label small">
-                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.plCheck" ng-checked="userHasRoleActive('PLAYER', user)" name="plCheck" value="PLAYER"> Player
+                                                                    <input class="form-check-input" type="checkbox" disabled ng-model="myUser.coCheck" ng-checked="userHasRoleActive('COACH', user)" name="coCheck" value="COACH"> Coach
                                                                 </label>
                                                             </div>
                                                             <div class="row">
                                                                 <label class="form-check-label small">
-                                                                    <input class="form-check-input" type="checkbox" ng-model="myUser.paCheck" ng-checked="userHasRoleActive('PARENT', user)" name="paCheck" value="PARENT"> Parent
+                                                                    <input class="form-check-input" type="checkbox" disabled ng-model="myUser.trCheck" ng-checked="userHasRoleActive('TRAINER', user)" name="trCheck" value="TRAINER"> Trainer
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="form-check form-check-inline">
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" disabled ng-model="myUser.reCheck" ng-checked="userHasRoleActive('REFEREE', user)" name="reCheck" value="REFEREE"> Referee
+                                                                </label>
+                                                            </div>
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" disabled ng-model="myUser.plCheck" ng-checked="userHasRoleActive('PLAYER', user)" name="plCheck" value="PLAYER"> Player
+                                                                </label>
+                                                            </div>
+                                                            <div class="row">
+                                                                <label class="form-check-label small">
+                                                                    <input class="form-check-input" type="checkbox" disabled ng-model="myUser.paCheck" ng-checked="userHasRoleActive('PARENT', user)" name="paCheck" value="PARENT"> Parent
                                                                 </label>
                                                             </div>
                                                         </div>
@@ -142,7 +142,7 @@
                         </div>
                     </div>
                     <div id="tabContent" class="tab-pane fade in active" ng-show="subIsSelected(3)">
-                        <div class="row" style="background: lightGray; padding: 0px; margin: 0px; height: 100px;">
+                        <div class="row" style="background: lightGray; padding: 0px; margin: 0px;">
                             <div class="col-xs-2" style="margin-top: 8px;">
                                 <div>
                                     <h4 style="text-align: center;">Invite User</h4>
@@ -582,7 +582,7 @@
                                         <div class="media-body">
                                             <h3 class="media-heading" style="padding-top: 20px;">{{league.name}} - {{league.short_name}}</h3>
                                             <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="addTeam()">Edit</button>
-                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="addTeam()">Delete</button>
+                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteLeague(league)">Delete</button>
                                         </div>
                                     </li>
                                 </ul>
