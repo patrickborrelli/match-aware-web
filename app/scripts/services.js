@@ -267,7 +267,7 @@ angular.module('ma-app')
             return teams;
         };
         
-        this.getUsers    = function() {
+        this.getUsers = function() {
             return users;
         };
         
@@ -335,7 +335,7 @@ angular.module('ma-app')
             return prettyName;
         };
         
-        this.appDataLoad = function(curUser) {
+        this.appDataLoad = function(curUser, curClubId) {
             
             if(!rolesLoaded) {
                 //retrieve roles:
@@ -589,19 +589,35 @@ angular.module('ma-app')
             }
             
             if(!usersLoaded) {
-                //retrieve users:
-                $http({
-                    url: baseURL + 'users/',
-                    method: 'GET',
-                    headers: {
-                        'content-type': 'application/json' 
-                    }
-                }).then(function(response) {
-                    console.log("Retrieved the users from the API: ");
-                    console.log(response);
-                    users = response.data;
-                    usersLoaded = true;
-                }); 
+                if(curClubId != null && curClubId != '') {
+                    //retrieve users just for the current club:
+                    $http({
+                        url: baseURL + 'clubs/getClubMembers/' + curClubId,
+                        method: 'GET',
+                        headers: {
+                            'content-type': 'application/json' 
+                        }
+                    }).then(function(response) {
+                        console.log("Retrieved the users from the API: ");
+                        console.log(response);
+                        users = response.data;
+                        usersLoaded = true;
+                    });
+                } else {
+                    //retrieve all users:
+                    $http({
+                        url: baseURL + 'users/',
+                        method: 'GET',
+                        headers: {
+                            'content-type': 'application/json' 
+                        }
+                    }).then(function(response) {
+                        console.log("Retrieved the users from the API: ");
+                        console.log(response);
+                        users = response.data;
+                        usersLoaded = true;
+                    }); 
+                }                
             }
             
             if(!userInvitesLoaded) {
@@ -689,6 +705,38 @@ angular.module('ma-app')
                     });
                 }
             });
+        };
+        
+        this.refreshClubUsers = function(curClubId) {
+            if(curClubId != null && curClubId != '') {
+                //retrieve users just for the current club:
+                $http({
+                    url: baseURL + 'clubs/getClubMembers/' + curClubId,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("Retrieved the users from the API: ");
+                    console.log(response);
+                    users = response.data;
+                    usersLoaded = true;
+                });
+            } else {
+                //retrieve all users:
+                $http({
+                    url: baseURL + 'users/',
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("Retrieved the users from the API: ");
+                    console.log(response);
+                    users = response.data;
+                    usersLoaded = true;
+                }); 
+            } 
         };
         
         this.storeCurrentClubUsers = function(clubId) {
@@ -1779,31 +1827,67 @@ angular.module('ma-app')
                         localPopulateUsersClubs(userClubs);
 
                         //do app data load:
-                        coreDataService.appDataLoad(userService.getCurrentUser(false));
+                        coreDataService.appDataLoad(currentUser, clubService.getCurrentClubId());
                 }, function(errResponse) {
                     console.log("Failed in attempt to retrieve users club_roles.");
                     console.log(errResponse);
                 });
             }, function(errResponse) {
                 console.log("failed to add new user roles");
-                console.log(response);
+                console.log(errResponse);
             });  
         };    
         
-        this.userHasRole = function(clubId, userId, rolename) {
-            //iterate through current user's club roles and see if 
-            //the selected role is present for the current club:
+        this.userHasRole = function(userId, rolename) {
+            
             var rolePresent = false;
             
-            for(var i = 0; i < userClubRoles.length; i++) {
-                if(userClubRoles[i].club._id == clubId &&
-                   userClubRoles[i].role.name === rolename) {
-                    rolePresent = true;
+            //retrieve user from stored users if user does not exist, retrieve from database
+            var users = coreDataService.getUsers();
+            var user = null;
+            
+            for(var i = 0; i < users.length; i++) {
+                if(users[i]._id == userId) {
+                    user = users[i];
                     break;
                 }
             }
             
-            return rolePresent;
+            if(user == null) {
+                //retrieve user from database:
+                $http({
+                    url: baseURL + 'users/' + userId,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    user = response.data;
+                    
+                    //now see if role exists in users roles:
+                    var roles = user.roles;
+                    for(var i = 0; i < roles.length; i++) {
+                        if(roles[i].name === rolename) {
+                            rolePresent = true;
+                            break;
+                        }
+                    }
+                    return rolePresent;                    
+                }, function(errResponse) {
+                    console.log("Failure while trying to retrieve user from datastore:");
+                    console.log(errResponse);
+                }); 
+            } else {
+                //see if role exists in users roles:
+                var roles = user.roles;
+                for(var i = 0; i < roles.length; i++) {
+                    if(roles[i].role.name === rolename) {
+                        rolePresent = true;
+                        break;
+                    }
+                }
+                return rolePresent; 
+            }        
         };        
                 
         this.getCurrentRole = function() {
@@ -1863,7 +1947,7 @@ angular.module('ma-app')
 
                         //do app data load:
                         coreDataService.setAllDataStale();
-                        coreDataService.appDataLoad(currentUser);
+                        coreDataService.appDataLoad(currentUser, clubService.getCurrentClubId());
                 }, function(errResponse) {
                     console.log("Failed in attempt to retrieve users club_roles.");
                     console.log(errResponse);
@@ -1938,7 +2022,11 @@ angular.module('ma-app')
         var currentClubId = '';
         
         this.getCurrentClubId = function() {
-            return currentClub._id;
+            var clubId = null;
+            if(currentClub != null) {
+                clubId = currentClub._id;
+            }
+            return clubId;
         };
         
         this.getCurrentClub = function() {
@@ -1948,6 +2036,7 @@ angular.module('ma-app')
         this.setCurrentClub = function(club) {
             currentClub = club;
             currentClubId = club._id;
+            coreDataService
         };
         
         this.clearCurrentClub = function() {
@@ -2268,7 +2357,7 @@ angular.module('ma-app')
                         userService.populateUsersClubs(userClubs);
                     
                         //do app data load:
-                        coreDataService.appDataLoad(userService.getCurrentUser(false));
+                        coreDataService.appDataLoad(userService.getCurrentUser(false), clubService.getCurrentClubId());
                         
                     }, function(errResponse) {
                         console.log("Failed in attempt to retrieve users club_roles.");

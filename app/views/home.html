@@ -5,7 +5,7 @@
     </div>
 </div>
 
-<div class="row row-content" ng-show="userHasSingleClub() && !userHasMultipleClubs() && getCurrentRole() == 'CLUB_ADMIN'">    
+<div class="row row-content" ng-show="userHasSingleClub() && !userHasMultipleClubs() && getCurrentRole() == 'CLUB_ADMIN' && loadRequests()">    
     <div class="col-xs-12">
         <h4>Club Administration</h4>
     </div>

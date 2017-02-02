@@ -393,7 +393,7 @@ angular.module('ma-app')
         };
         
         $scope.arePendingAccessRequests = function() {
-            return coreDataService.getAccessRequests()length > 0;
+            return coreDataService.getAccessRequests().length > 0;
         };
         
         $scope.areTeams = function() {
@@ -685,21 +685,22 @@ angular.module('ma-app')
         $scope.loadClubUsers = function() {
             console.log("Attemtping to load all users for this club");
             coreDataService.storeCurrentClubUsers(clubService.getCurrentClubId());
-        };      
+            $scope.users = coreDataService.getUsers();
+        };     
+        
+        $scope.loadRequests = function() {
+            console.log("Attemtping to load all access requests");            
+            $scope.accessRequests = coreDataService.getAccessRequests();
+            return true;
+        };   
         
         $scope.getCurrentRole = function() {
             return userService.getCurrentRole();
         };
                 
         $scope.userHasRoleActive = function(roleName, user) {            
-            var result = false;
-            //determine if current club exists, then check current user roles
-            var currentClub = clubService.getCurrentClub();  
-            
-            if(currentClub != null) {
-                result = userService.userHasRole(currentClub._id, user._id, roleName);
-            }           
-            
+            var result = false;            
+            result = userService.userHasRole(user._id, roleName); 
             return result;
         };
         
