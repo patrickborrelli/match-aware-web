@@ -517,6 +517,11 @@ angular.module('ma-app')
             console.log("\n\nAdding age group");
             console.log($scope.ageGroupForm);
             coreDataService.addAgeGroup($scope.ageGroupForm);
+            console.log("preloaded age groups");
+            console.log($scope.ageGroups);            
+            $scope.ageGroups = coreDataService.getAgeGroups();
+            console.log("loaded age groups");
+            console.log($scope.ageGroups);    
             ngDialog.close();
         };
         
@@ -537,6 +542,7 @@ angular.module('ma-app')
             console.log("\n\nEditing age group");
             console.log($scope.ageGroupForm);
             coreDataService.editAgeGroup($scope.editAgeGroupForm, $scope.editingAgeGroupId);
+            $scope.ageGroups = coreDataService.getAgeGroups();
             ngDialog.close();
         };
         
@@ -544,6 +550,9 @@ angular.module('ma-app')
             console.log("\n\nDeleting age group");
             console.log(ageGroup);
             coreDataService.deleteAgeGroup(ageGroup);
+            $scope.ageGroups = coreDataService.getAgeGroups();
+            console.log("loaded age groups");
+            console.log($scope.ageGroups);
             ngDialog.close();
         };
         
@@ -683,13 +692,16 @@ angular.module('ma-app')
         };
         
         $scope.loadClubUsers = function() {
-            console.log("Attemtping to load all users for this club");
             coreDataService.storeCurrentClubUsers(clubService.getCurrentClubId());
             $scope.users = coreDataService.getUsers();
         };     
         
+        $scope.loadAgeGroups = function() {
+            $scope.ageGroups = coreDataService.getAgeGroups();
+        };
+        
         $scope.loadRequests = function() {
-            console.log("Attemtping to load all access requests");            
+            console.log("Attempting to load all access requests");            
             $scope.accessRequests = coreDataService.getAccessRequests();
             return true;
         };   

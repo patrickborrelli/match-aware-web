@@ -18,7 +18,7 @@
                 <a ng-click="select(2); subSelect(1)" aria-controls="teams" role="tab">Teams</a>
             </li>
             <li role="presentation" ng-class="{active:isSelected(3)}">
-                <a ng-click="select(3); subSelect(1)" aria-controls="configuration" role="tab">Configuration</a>
+                <a ng-click="select(3); subSelect(1); loadAgeGroups()" aria-controls="configuration" role="tab">Configuration</a>
             </li>
         </ul>
 
@@ -26,13 +26,13 @@
             <div id="tabContent" class="tab-pane fade in active" ng-show="isSelected(1)">
                 <ul class="nav nav-tabs" role="tablist">
                     <li role="presentation" ng-class="{active:subIsSelected(1)}">
-                        <a ng-click="subSelect(1)" aria-controls="users" role="tab">Requests</a>
+                        <a ng-click="subSelect(1)" aria-controls="requests" role="tab">Requests</a>
                     </li>
                     <li role="presentation" ng-class="{active:subIsSelected(2)}">
-                        <a ng-click="subSelect(2); loadClubUsers();" aria-controls="teams" role="tab">Assign Roles</a>
+                        <a ng-click="subSelect(2); loadClubUsers();" aria-controls="roles" role="tab">Assign Roles</a>
                     </li>
                     <li role="presentation" ng-class="{active:subIsSelected(3)}">
-                        <a ng-click="subSelect(3)" aria-controls="configuration" role="tab">Invite Users</a>
+                        <a ng-click="subSelect(3)" aria-controls="users" role="tab">Invite Users</a>
                     </li>
                 </ul>
                 <div class="tab-content">
@@ -305,16 +305,16 @@
             <div id="tabContent" class="tab-pane fade in active" ng-show="isSelected(3)">
                 <ul class="nav nav-tabs" role="tablist">
                     <li role="presentation" ng-class="{active:subIsSelected(1)}">
-                        <a ng-click="subSelect(1)" aria-controls="users" role="tab">Age Groups</a>
+                        <a ng-click="subSelect(1); loadAgeGroups();" aria-controls="age groups" role="tab">Age Groups</a>
                     </li>
                     <li role="presentation" ng-class="{active:subIsSelected(2)}">
-                        <a ng-click="subSelect(2)" aria-controls="teams" role="tab">Leagues</a>
+                        <a ng-click="subSelect(2)" aria-controls="leagues" role="tab">Leagues</a>
                     </li>
                     <li role="presentation" ng-class="{active:subIsSelected(3)}">
-                        <a ng-click="subSelect(3)" aria-controls="configuration" role="tab">Rules</a>
+                        <a ng-click="subSelect(3)" aria-controls="rules" role="tab">Rules</a>
                     </li>
                     <li role="presentation" ng-class="{active:subIsSelected(4)}">
-                        <a ng-click="subSelect(4)" aria-controls="configuration" role="tab">Organizations</a>
+                        <a ng-click="subSelect(4)" aria-controls="organizations" role="tab">Organizations</a>
                     </li>
                 </ul>
                 <div class="tab-content">
