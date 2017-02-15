@@ -219,6 +219,11 @@ angular.module('ma-app')
             return ageGroups;
         };
         
+        this.setAgeGroups = function(newAgeGroups) {
+            ageGroups = newAgeGroups;
+            ageGroupsLoaded = true;
+        };
+        
         this.getEvents = function() {
             return events;
         };
@@ -790,20 +795,14 @@ angular.module('ma-app')
         };
         
         this.refreshAgeGroups = function() {
-            //retrieve age groups:
-            
-            $http({
+            //retrieve age groups:            
+            return $http({
                 url: baseURL + 'age_groups/',
                 method: 'GET',
                 headers: {
                     'content-type': 'application/json' 
                 }
-            }).then(function(response) {
-                console.log("Retrieved the age groups from the API: ");
-                console.log(response);
-                ageGroups = response.data;
-                ageGroupsLoaded = true;
-            }); 
+            });
         };
         
         var localRefreshAgeGroups = this.refreshAgeGroups;
@@ -906,20 +905,13 @@ angular.module('ma-app')
             //post age group:            
             var postString = '{ "birth_year": "' + formData.birthyear + '", "soccer_year": "U' + formData.socceryear + '", "name": "' + formData.name + '" }';
             console.log("Posting age group with string: " + postString);
-            $http({
+            return $http({
                 url: baseURL + 'age_groups/',
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json' 
                 },
                 data: postString
-            }).then(function(response) {
-                console.log("Successfully added age group: ");
-                console.log(response);
-                localRefreshAgeGroups();
-            }, function(errResponse) {
-                console.log("Failed on attempt to add age group:");
-                console.log(errResponse);
             });
         };
         

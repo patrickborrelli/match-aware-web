@@ -159,7 +159,7 @@ angular.module('ma-app')
         };
     }])
 
-    .controller('HomeController', ['$scope', 'ngDialog', '$state', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', 'schedulingService', function($scope, ngDialog, $state, authService, coreDataService, userService, $rootScope, clubService, schedulingService) {
+    .controller('HomeController', ['$scope', 'ngDialog', '$state', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', 'schedulingService', '$timeout', function($scope, ngDialog, $state, authService, coreDataService, userService, $rootScope, clubService, schedulingService, $timeout) {
         $scope.tab = 1;
         $scope.subTab = 1;       
         $scope.faTab = 1;
@@ -516,13 +516,24 @@ angular.module('ma-app')
         $scope.addAgeGroup = function() {
             console.log("\n\nAdding age group");
             console.log($scope.ageGroupForm);
-            coreDataService.addAgeGroup($scope.ageGroupForm);
-            console.log("preloaded age groups");
-            console.log($scope.ageGroups);            
-            $scope.ageGroups = coreDataService.getAgeGroups();
-            console.log("loaded age groups");
-            console.log($scope.ageGroups);    
-            ngDialog.close();
+            coreDataService.addAgeGroup($scope.ageGroupForm)
+                .then(function(response) {
+                    console.log("Successfully added age group: ");
+                    console.log(response);
+                    coreDataService.refreshAgeGroups()
+                        .then(function(response) {
+                            coreDataService.setAgeGroups(response.data);
+                            $timeout(function(){
+                                $scope.ageGroups = coreDataService.getAgeGroups();
+                            })
+                            console.log("\n\n\nretrieved age groups and put them in scope");
+                            console.log($scope.ageGroups);
+                            ngDialog.close();
+                        }); 
+                }, function(errResponse) {
+                    console.log("Failed on attempt to add age group:");
+                    console.log(errResponse);
+                });   
         };
         
         $scope.openEditAgeGroup = function(ageGroup) {
