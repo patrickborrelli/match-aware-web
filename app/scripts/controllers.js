@@ -6,7 +6,7 @@ angular.module('ma-app')
             return $sce.trustAsResourceUrl(url);
         };
     })
-    .controller('HeaderController', ['$scope', 'ngDialog', 'authService', 'coreDataService',  function($scope, ngDialog, authService, coreDataService) {
+    .controller('HeaderController', ['$scope', 'ngDialog', 'userService', 'coreDataService', 'authService',  function($scope, ngDialog, userService, coreDataService, authService) {
         $scope.openRegister = function () {
             ngDialog.open({ template: 'views/register.html', scope: $scope, className: 'ngdialog-theme-default custom-width', controller:"RegisterController" });
         };    
@@ -20,7 +20,7 @@ angular.module('ma-app')
         }; 
         
         $scope.openJoinClub = function() {
-            //authService.loadClubs();
+            
             $scope.clubs = coreDataService.getClubs();
             $scope.roles = coreDataService.getRoles();
             console.log("\n\nLOADING CLUBS FROM SERVICE:");
@@ -37,65 +37,77 @@ angular.module('ma-app')
         
         $scope.userHasRoles = function() {
             console.log("Checking if user has any defined roles.");
-            var hasRole = authService.userHasRoles();
+            var hasRole = userService.userHasRoles();
             return hasRole;
+        };
+        
+        $scope.isAuthenticated = function() {
+            return authService.isUserAuthenticated();
+        };
+        
+        $scope.getUserFullname = function() {
+            return userService.getUserFullname();
         };
     }])
 
-    .controller('ClubController', ['$scope', '$rootScope', 'ngDialog', '$state', 'clubService', 'authService', 'userService', function($scope, $rootScope, ngDialog, $state, clubService, authService, userService) {        
+    .controller('ClubController', ['$scope', 'ngDialog', '$state', 'clubService', 'authService', 'userService', 'coreDataService', function($scope, ngDialog, $state, clubService, authService, userService, coreDataService) {        
         
         $scope.createClub = function() {
             console.log('Creating club', $scope.createClubData); 
             
-            //TODO: 
-            // 1. make call to create club.
-            // 2. add current user as club member with current club.
-            // 3. add current user to CLUB_ADMIN role.
-                                   
             clubService.createClub($scope.createClubData)
                 .then(function(clubResponse) {
                     console.log("Created a club with value: ");
                     console.log(clubResponse);
-                    authService.setCurrentUserStale();
-                    clubService.currentClub = clubResponse.data;
-                    clubService.joinClub(authService.getCurrentUserId(), clubResponse.data._id)
+                    userService.setCurrentUserStale();
+                    clubService.setCurrentClub(clubResponse.data);                
+                    var roleId = coreDataService.getRoleIdByName("CLUB_ADMIN");
+                    console.log("Received ID:" + roleId);
+                    clubService.joinClub(userService.getCurrentUserId(), clubResponse.data._id, roleId)
                         .then(function(response) {
-                            console.log("Created a clubmember with value: ");
+                            console.log("Created a club role with value: ");
                             console.log(response);
-                            var roleId = authService.getRoleId("CLUB_ADMIN");
-                            console.log("Received ID:" + roleId);
-                            userService.addUserToRole(authService.getCurrentUserId(), roleId)
+                            userService.getCurrentUser(true)
                                 .then(function(response) {
-                                    console.log("Added user to role:");
-                                    console.log(response);
-                                    var currentUser = {};
-                                    authService.getCurrentUser()
+                                    console.log("GOT THE CURRENT USER DURING CLUB CREATION");
+                                    console.log(response.data);
+                                    userService.setCurrentUser(response.data);
+                                    userService.setCurrentRolesStale();
+                                    //retrieve user's club_roles:
+                                    userService.retrieveUserRoles(true)
                                         .then(function(response) {
-                                            console.log("GOT THE CURRENT USER DURING CLUB CREATION");
-                                            console.log(response.data);
-                                            currentUser = response.data;
-                                            authService.setCurrentUser(response.data);
-                                            console.log("Attempting to populate user roles for member: " + currentUser);
-                                            console.log(currentUser);
-                                            authService.populateUserRoles(currentUser.roles); 
-                                            userService.getUserClubs(authService.getCurrentUserId())
-                                                .then(function(response) {
-                                                    console.log("Retrieved the clubs the user belongs to: ");
-                                                    console.log(response);
-                                                    userService.populateUsersClubs(response.data);
-                                                }, function(errResponse) {
-                                                    console.log("Encountered error when trying to retrieve users clubs.")
-                                                    console.log(errResponse);
-                                            });
-                                        }, function(errResponse) {
-                                            console.log("Failure when trying to retrieve current user.");
-                                            console.log(errResponse);
-                                    });
+                                        console.log("Retrieved the user's club_roles: " );
+                                        console.log(response);
 
+                                        userService.setUserClubRoles(response.data);
+
+                                        //create an array of Role objects:
+                                        var userRoles = [];
+                                        for(var i = 0; i < response.data.length; i++) {
+                                            userRoles.push(response.data[i].role);
+                                        }
+
+                                        //create an array of Club objects:
+                                        var userClubs = [];
+                                        for(var i = 0; i < response.data.length; i++) {
+                                            userClubs.push(response.data[i].club);
+                                        }
+
+                                        userService.populateUserRoles(userRoles);  
+                                        userService.populateUsersClubs(userClubs);
+                                        
+                                        coreDataService.setDataStale("clubs");
+                                        //do app data load:
+                                        coreDataService.appDataLoad(userService.getCurrentUser(false));
+
+                                    }, function(errResponse) {
+                                        console.log("Failed in attempt to retrieve users club_roles.");
+                                        console.log(errResponse);
+                                    }); 
                                 }, function(errResponse) {
-                                    console.log("Error condition while adding user to role.");
+                                    console.log("Failure when trying to retrieve current user.");
                                     console.log(errResponse);
-                                });
+                            });
                         });
                             
                 }, function(errResponse) {
@@ -107,7 +119,7 @@ angular.module('ma-app')
         };        
     }])
 
-    .controller('UserController', ['$scope', '$rootScope', 'ngDialog', '$state', 'userService', function($scope, $rootScope, ngDialog, $state, userService) {
+    .controller('UserController', ['$scope', 'ngDialog', '$state', 'userService', function($scope, ngDialog, $state, userService) {
         
         $scope.joinClub = function() {
             console.log('Joining club', $scope.join); 
@@ -118,7 +130,7 @@ angular.module('ma-app')
         
     }])
 
-    .controller('RegisterController', ['$scope', '$rootScope', 'ngDialog', '$state', 'authService', function($scope, $rootScope, ngDialog, $state, authService) {
+    .controller('RegisterController', ['$scope', 'userService', 'ngDialog', '$state', 'authService', function($scope, userService, ngDialog, $state, authService) {
         $scope.showLoader = false;
         $scope.showRegLoader = false;
         
@@ -141,13 +153,13 @@ angular.module('ma-app')
         };
         
         $scope.processLogout = function() {
-            console.log('Logging out user ' + $rootScope.username);
+            console.log('Logging out user ' + userService.getUserFullname());
             authService.logout();
             ngDialog.close();
         };
     }])
 
-    .controller('HomeController', ['$scope', 'ngDialog', '$state', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', 'schedulingService', function($scope, ngDialog, $state, authService, coreDataService, userService, $rootScope, clubService, schedulingService) {
+    .controller('HomeController', ['$scope', 'ngDialog', '$state', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', 'schedulingService', '$timeout', function($scope, ngDialog, $state, authService, coreDataService, userService, $rootScope, clubService, schedulingService, $timeout) {
         $scope.tab = 1;
         $scope.subTab = 1;       
         $scope.faTab = 1;
@@ -183,8 +195,7 @@ angular.module('ma-app')
         
         $scope.faSubIsSelected = function (checkTab) {
             return ($scope.faSubTab === checkTab);
-        };
-        
+        };        
         
         //initialize all form data:
         $scope.emailHidden = false;
@@ -368,41 +379,49 @@ angular.module('ma-app')
             }
         });
         
+        $scope.userHasSingleClub = function() {
+            return userService.getUserHasClub();
+        };
+        
+        $scope.userHasMultipleClubs = function() {
+            return userService.getUserHasMultipleClubs();
+        };
+        
         $scope.getGoogleEmbedURL = function(formattedAddress) {
             var url =  coreDataService.getGoogleMapURL(formattedAddress);
             console.log("Returing map URL: " + url);
         };
         
         $scope.arePendingAccessRequests = function() {
-            return $rootScope.accessRequests.length > 0;
+            return coreDataService.getAccessRequests().length > 0;
         };
         
         $scope.areTeams = function() {
-            return $rootScope.teams.length > 0;
+            return coreDataService.getTeams().length > 0;
         };
         
         $scope.areAgeGroups = function() {
-            return $rootScope.ageGroups.length > 0;
+            return coreDataService.getAgeGroups().length > 0;
         };
         
         $scope.areLeagues = function() {
-            return $rootScope.leagues.length > 0;
+            return coreDataService.getLeagues().length > 0;
         };
         
         $scope.areRules = function() {
-            return $rootScope.rules.length > 0;
+            return coreDataService.getRules().length > 0;
         };
         
         $scope.arePendingUserInvites = function() {
-            return $rootScope.userInvites.length > 0;
+            return coreDataService.getUserInvites().length > 0;
         };
         
         $scope.areFacilities = function() {
-            return $rootScope.facilities.length > 0;
+            return coreDataService.getFacilities().length > 0;
         };
         
         $scope.areFields = function() {
-            return $rootScope.fields.length > 0;
+            return coreDataService.getFields().length > 0;
         };
         
         $scope.hasFields = function(facility) {
@@ -497,8 +516,11 @@ angular.module('ma-app')
         $scope.addAgeGroup = function() {
             console.log("\n\nAdding age group");
             console.log($scope.ageGroupForm);
-            coreDataService.addAgeGroup($scope.ageGroupForm);
-            ngDialog.close();
+            coreDataService.addAgeGroup($scope.ageGroupForm)
+                .then(function(response) {
+                    console.log("Successfully added age group: ");
+                    console.log(response);
+                     
         };
         
         $scope.openEditAgeGroup = function(ageGroup) {
@@ -518,6 +540,7 @@ angular.module('ma-app')
             console.log("\n\nEditing age group");
             console.log($scope.ageGroupForm);
             coreDataService.editAgeGroup($scope.editAgeGroupForm, $scope.editingAgeGroupId);
+            $scope.ageGroups = coreDataService.getAgeGroups();
             ngDialog.close();
         };
         
@@ -525,7 +548,38 @@ angular.module('ma-app')
             console.log("\n\nDeleting age group");
             console.log(ageGroup);
             coreDataService.deleteAgeGroup(ageGroup);
+            $scope.ageGroups = coreDataService.getAgeGroups();
+            console.log("loaded age groups");
+            console.log($scope.ageGroups);
             ngDialog.close();
+        };
+        
+        $scope.deleteLeague = function(league) {
+            console.log("\n\nDeleting league");
+            console.log(league);
+            coreDataService.deleteLeague(league);
+        };
+        
+        $scope.openEditLeague = function(league) {
+            console.log("\n\nOpening dialog to edit league");
+            console.log(league);
+            
+            $scope.leagueForm = {
+                name: league.name,
+                shortname: league.short_name,
+                minAgeGroup: league.min_age_group,
+                maxAgeGroup: league.max_age_group,
+                type: league.type,
+                rescheduleDays: league.reschedule_rule.timespan_days,
+                consequence: league.reschedule_rule.consequence,
+                fine: league.reschedule_rule.fine,
+                rescheduleRuleId: league.reschedule_rule._id,
+                logoURL: league.logo_url
+            };
+                
+            console.log("Current entries include: ");
+            console.log($scope.leagueForm);
+            ngDialog.open({ template: 'views/editLeague.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
         };
         
         $scope.openAddRule = function() {
@@ -547,7 +601,7 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
-         $scope.openFacilityStatus = function(facility) {
+        $scope.openFacilityStatus = function(facility) {
             console.log("\n\nOpening dialog to change facility status");
             $rootScope.facilityStatusName = facility.name;
             $rootScope.facilityStatusEntity = facility;
@@ -636,23 +690,27 @@ angular.module('ma-app')
         };
         
         $scope.loadClubUsers = function() {
-            console.log("Attemtping to load all users for this club");
-            coreDataService.getCurrentClubUsers();
-        };      
+            coreDataService.storeCurrentClubUsers(clubService.getCurrentClubId());
+            $scope.users = coreDataService.getUsers();
+        };     
+        
+        $scope.loadAgeGroups = function() {
+            $scope.ageGroups = coreDataService.getAgeGroups();
+        };
+        
+        $scope.loadRequests = function() {
+            console.log("Attempting to load all access requests");            
+            $scope.accessRequests = coreDataService.getAccessRequests();
+            return true;
+        };   
         
         $scope.getCurrentRole = function() {
-            return authService.getCurrentRole();
+            return userService.getCurrentRole();
         };
                 
-        $scope.userHasRoleActive = function(roleName, user) {
-            //console.log("User " + user.first_name + " " + user.last_name + " has " + user.roles.length + " roles.");
-            //console.log(user.roles);
-            var result = false;
-            for(var i = 0; i < user.roles.length; i++)  {
-                if(user.roles[i].name === roleName) {
-                    result = true;
-                }                   
-            }
+        $scope.userHasRoleActive = function(roleName, user) {            
+            var result = false;            
+            result = userService.userHasRole(user._id, roleName); 
             return result;
         };
         
@@ -726,11 +784,11 @@ angular.module('ma-app')
         };
         
         $scope.acceptAccess = function(accessRequest) {
-            coreDataService.processAccessRequestAccept(accessRequest);            
+            userService.processAccessRequestAccept(accessRequest);            
         };
         
         $scope.declineAccess = function(accessRequest) {            
-            coreDataService.processAccessRequestDecline(accessRequest);  
+            userService.processAccessRequestDecline(accessRequest);  
         };
     }])
 ;
