@@ -18,7 +18,7 @@
                 <a ng-click="select(2); subSelect(1)" aria-controls="teams" role="tab">Teams</a>
             </li>
             <li role="presentation" ng-class="{active:isSelected(3)}">
-                <a ng-click="select(3); subSelect(1); loadAgeGroups()" aria-controls="configuration" role="tab">Configuration</a>
+                <a ng-click="select(3); subSelect(1);" aria-controls="configuration" role="tab">Configuration</a>
             </li>
         </ul>
 
@@ -305,7 +305,7 @@
             <div id="tabContent" class="tab-pane fade in active" ng-show="isSelected(3)">
                 <ul class="nav nav-tabs" role="tablist">
                     <li role="presentation" ng-class="{active:subIsSelected(1)}">
-                        <a ng-click="subSelect(1); loadAgeGroups();" aria-controls="age groups" role="tab">Age Groups</a>
+                        <a ng-click="subSelect(1);" aria-controls="age groups" role="tab">Age Groups</a>
                     </li>
                     <li role="presentation" ng-class="{active:subIsSelected(2)}">
                         <a ng-click="subSelect(2)" aria-controls="leagues" role="tab">Leagues</a>

@@ -6,10 +6,10 @@ angular.module('ma-app')
     .constant("googleGeolocateBaseURL", "https://maps.googleapis.com/maps/api/geocode/json?")
     .constant("googleMapsBaseURL", "https://www.google.com/maps/embed/v1/place?")
 
-    .service('coreDataService', ['$http', 'baseURL', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', function($http, baseURL, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL) {
-        var clubs = {};
+    .service('coreDataService', ['$http', '$rootScope', 'baseURL', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', 'ngDialog', function($http, $rootScope, baseURL, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL, ngDialog) {
+        $rootScope.clubs = {};
         var roles = {};   
-        var ageGroups = {};
+        $rootScope.ageGroups = {};
         var events = {};
         var facilities = {}; 
         var fields = {}; 
@@ -168,9 +168,9 @@ angular.module('ma-app')
         };
         
         this.cleanupOnLogout = function() {
-            clubs = {};
+            $rootScope.clubs = {};
             roles = {};   
-            ageGroups = {};
+            $rootScope.ageGroups = {};
             events = {};
             facilities = {}; 
             fields = {}; 
@@ -206,24 +206,11 @@ angular.module('ma-app')
             userInvitesLoaded = false;  
             accessRequestsLoaded = false; 
         };
-        
-        this.getClubs = function() {
-            return clubs;
-        };
-        
+                
         this.getRoles = function() {
             return roles;
         };
-        
-        this.getAgeGroups = function() {
-            return ageGroups;
-        };
-        
-        this.setAgeGroups = function(newAgeGroups) {
-            ageGroups = newAgeGroups;
-            ageGroupsLoaded = true;
-        };
-        
+                
         this.getEvents = function() {
             return events;
         };
@@ -369,7 +356,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the clubs from the API: ");
                     console.log(response);
-                    clubs = response.data;
+                    $rootScope.clubs = response.data;
                     clubsLoaded = true;
                 }); 
             }
@@ -385,7 +372,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the age groups from the API: ");
                     console.log(response);
-                    ageGroups = response.data;
+                    $rootScope.ageGroups = response.data;
                     ageGroupsLoaded = true;
                 }); 
             }
@@ -796,12 +783,18 @@ angular.module('ma-app')
         
         this.refreshAgeGroups = function() {
             //retrieve age groups:            
-            return $http({
+            $http({
                 url: baseURL + 'age_groups/',
                 method: 'GET',
                 headers: {
                     'content-type': 'application/json' 
                 }
+            }).then(function(response) { 
+                $rootScope.ageGroups = response.data;  
+                ageGroupsLoaded = true;
+            }, function(errResponse) {
+                console.log("Error encountered when refreshing age groups.");
+                console.log(errResponse);
             });
         };
         
@@ -905,13 +898,21 @@ angular.module('ma-app')
             //post age group:            
             var postString = '{ "birth_year": "' + formData.birthyear + '", "soccer_year": "U' + formData.socceryear + '", "name": "' + formData.name + '" }';
             console.log("Posting age group with string: " + postString);
-            return $http({
+            $http({
                 url: baseURL + 'age_groups/',
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json' 
                 },
                 data: postString
+            }).then(function(response) {
+                console.log("Successfully added age group: ");
+                console.log(response);
+                localRefreshAgeGroups();  
+                ngDialog.close();
+            }, function(errResponse) { 
+                console.log("Failed on attempt to add age group:"); 
+                console.log(errResponse); 
             });
         };
         

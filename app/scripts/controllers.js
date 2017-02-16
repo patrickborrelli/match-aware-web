@@ -21,10 +21,7 @@ angular.module('ma-app')
         
         $scope.openJoinClub = function() {
             
-            $scope.clubs = coreDataService.getClubs();
-            $scope.roles = coreDataService.getRoles();
-            console.log("\n\nLOADING CLUBS FROM SERVICE:");
-            console.log($scope.clubs);            
+            $scope.roles = coreDataService.getRoles();        
             console.log("\n\nLOADING ROLES FROM SERVICE:");
             console.log($scope.roles);
             
@@ -401,7 +398,7 @@ angular.module('ma-app')
         };
         
         $scope.areAgeGroups = function() {
-            return coreDataService.getAgeGroups().length > 0;
+            return $rootScope.ageGroups.length > 0;
         };
         
         $scope.areLeagues = function() {
@@ -516,11 +513,7 @@ angular.module('ma-app')
         $scope.addAgeGroup = function() {
             console.log("\n\nAdding age group");
             console.log($scope.ageGroupForm);
-            coreDataService.addAgeGroup($scope.ageGroupForm)
-                .then(function(response) {
-                    console.log("Successfully added age group: ");
-                    console.log(response);
-                     
+            coreDataService.addAgeGroup($scope.ageGroupForm);  
         };
         
         $scope.openEditAgeGroup = function(ageGroup) {
@@ -540,7 +533,6 @@ angular.module('ma-app')
             console.log("\n\nEditing age group");
             console.log($scope.ageGroupForm);
             coreDataService.editAgeGroup($scope.editAgeGroupForm, $scope.editingAgeGroupId);
-            $scope.ageGroups = coreDataService.getAgeGroups();
             ngDialog.close();
         };
         
@@ -548,9 +540,6 @@ angular.module('ma-app')
             console.log("\n\nDeleting age group");
             console.log(ageGroup);
             coreDataService.deleteAgeGroup(ageGroup);
-            $scope.ageGroups = coreDataService.getAgeGroups();
-            console.log("loaded age groups");
-            console.log($scope.ageGroups);
             ngDialog.close();
         };
         
