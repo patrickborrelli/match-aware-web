@@ -22,7 +22,7 @@ angular.module('ma-app')
         var organizations = {};
         var rules = {}; 
         var teams = {};
-        var users = {}; 
+        $rootScope.users = {}; 
         var userInvites = {};
         var accessRequests = {};
         
@@ -183,7 +183,7 @@ angular.module('ma-app')
             organizations = {};
             rules = {}; 
             teams = {};
-            users = {}; 
+            $rootScope.users = {}; 
             userInvites = {};
             accessRequests = {};
 
@@ -260,7 +260,7 @@ angular.module('ma-app')
         };
         
         this.getUsers = function() {
-            return users;
+            return $rootScope.users;
         };
         
         this.getUserInvites = function() {
@@ -592,7 +592,7 @@ angular.module('ma-app')
                     }).then(function(response) {
                         console.log("Retrieved the users from the API: ");
                         console.log(response);
-                        users = response.data;
+                        $rootScope.users = response.data;
                         usersLoaded = true;
                     });
                 } else {
@@ -606,7 +606,7 @@ angular.module('ma-app')
                     }).then(function(response) {
                         console.log("Retrieved the users from the API: ");
                         console.log(response);
-                        users = response.data;
+                        $rootScope.users = response.data;
                         usersLoaded = true;
                     }); 
                 }                
@@ -711,7 +711,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the users from the API: ");
                     console.log(response);
-                    users = response.data;
+                    $rootScope.users = response.data;
                     usersLoaded = true;
                 });
             } else {
@@ -725,27 +725,10 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the users from the API: ");
                     console.log(response);
-                    users = response.data;
+                    $rootScope.users = response.data;
                     usersLoaded = true;
                 }); 
             } 
-        };
-        
-        this.storeCurrentClubUsers = function(clubId) {
-            console.log("Entering storeCurrentClubUsers");
-            //retrieve users:
-            $http({
-                url: baseURL + 'clubs/getClubMembers/' + clubId,
-                method: 'GET',
-                headers: {
-                    'content-type': 'application/json' 
-                }
-            }).then(function(response) {
-                console.log("Retrieved the users from the API: ");
-                console.log(response);
-                users = response.data;
-                usersLoaded = true;
-            }); 
         };
         
         this.refreshUserInvites = function() {

@@ -675,20 +675,32 @@ angular.module('ma-app')
             console.log("\n\nOpening dialog to update user: ");
             console.log(user);
             $scope.currentAssignmentUser = user;
+            
+            //set values for myUser form:
+            $scope.myUser.caCheck = $scope.userHasRoleActive('CLUB_ADMIN', user);
+            $scope.myUser.faCheck = $scope.userHasRoleActive('FIELD_ADMIN', user);
+            $scope.myUser.raCheck = $scope.userHasRoleActive('REFEREE_ASSIGNOR', user);
+            $scope.myUser.taCheck = $scope.userHasRoleActive('TRAINING_ADMIN', user);
+            $scope.myUser.coCheck = $scope.userHasRoleActive('COACH', user);
+            $scope.myUser.trCheck = $scope.userHasRoleActive('TRAINER', user);
+            $scope.myUser.reCheck = $scope.userHasRoleActive('REFEREE', user);
+            $scope.myUser.plCheck = $scope.userHasRoleActive('PLAYER', user);
+            $scope.myUser.paCheck = $scope.userHasRoleActive('PARENT', user);
+            console.log("HAVE SET MYUSER FORM IN SCOPE WITH VALUES: ");
+            console.log($scope.myUser);
+            
             ngDialog.open({ template: 'views/assignmentUpdate.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
         };
         
         $scope.loadClubUsers = function() {
-            coreDataService.storeCurrentClubUsers(clubService.getCurrentClubId());
-            $scope.users = coreDataService.getUsers();
+            coreDataService.refreshClubUsers(clubService.getCurrentClubId());
         };     
         
         $scope.loadAgeGroups = function() {
             $scope.ageGroups = coreDataService.getAgeGroups();
         };
         
-        $scope.loadRequests = function() {
-            console.log("Attempting to load all access requests");            
+        $scope.loadRequests = function() {           
             $scope.accessRequests = coreDataService.getAccessRequests();
             return true;
         };   
@@ -702,7 +714,7 @@ angular.module('ma-app')
             result = userService.userHasRole(user._id, roleName); 
             return result;
         };
-        
+                
         $scope.updateUserRoles = function(user) {
             console.log("Received update for user: " + user._id);            
             console.log("data is ");
