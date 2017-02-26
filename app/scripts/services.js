@@ -167,6 +167,10 @@ angular.module('ma-app')
             accessRequestsLoaded = false; 
         };
         
+        this.setUsersLoaded = function(loaded) {
+            usersLoaded = loaded;
+        };
+        
         this.cleanupOnLogout = function() {
             $rootScope.clubs = {};
             roles = {};   
@@ -729,6 +733,17 @@ angular.module('ma-app')
                     usersLoaded = true;
                 }); 
             } 
+        };
+        
+        this.refreshClubUsersAndWait = function(curClubId) {
+            //retrieve users just for the current club:
+            return $http({
+                url: baseURL + 'clubs/getClubMembers/' + curClubId,
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            });
         };
         
         this.refreshUserInvites = function() {
@@ -1768,50 +1783,14 @@ angular.module('ma-app')
             var postString = '{"roleIds": ' + newRoles + '}';
             console.log("Attempting to add multiple roles with postData: " + postString);
             
-            $http({
-                url: baseURL + 'club_roles/addMultipleRoles/' + user._id + '/' + clubService.getCurrentClubId(),
+            return $http({
+                url: baseURL + 'club_roles/replaceAllRoles/' + user._id + '/' + clubService.getCurrentClubId(),
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json' 
                 }, 
                 data: postString
-            }).then(function(response) {
-                console.log("added new user roles");
-                console.log(response); 
-                localSetCurrentRolesStale();
-                //retrieve user's club_roles:
-                localRetrieveUserRoles(true)
-                    .then(function(response) {
-                        console.log("Retrieved the user's club_roles: " );
-                        console.log(response);
-
-                        localSetUserClubRoles(response.data);
-
-                        //create an array of Role objects:
-                        var userRoles = [];
-                        for(var i = 0; i < response.data.length; i++) {
-                            userRoles.push(response.data[i].role);
-                        }
-
-                        //create an array of Club objects:
-                        var userClubs = [];
-                        for(var i = 0; i < response.data.length; i++) {
-                            userClubs.push(response.data[i].club);
-                        }
-
-                        localPopulateUserRoles(userRoles);  
-                        localPopulateUsersClubs(userClubs);
-
-                        //do app data load:
-                        coreDataService.appDataLoad(currentUser, clubService.getCurrentClubId());
-                }, function(errResponse) {
-                    console.log("Failed in attempt to retrieve users club_roles.");
-                    console.log(errResponse);
-                });
-            }, function(errResponse) {
-                console.log("failed to add new user roles");
-                console.log(errResponse);
-            });  
+            });
         };    
         
         this.userHasRole = function(userId, rolename) {

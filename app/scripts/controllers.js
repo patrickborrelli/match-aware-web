@@ -719,7 +719,50 @@ angular.module('ma-app')
             console.log("Received update for user: " + user._id);            
             console.log("data is ");
             console.log($scope.myUser); 
-            userService.updateUserRoles(user, $scope.myUser);
+            userService.updateUserRoles(user, $scope.myUser)
+                .then(function(response) {
+                    console.log("added new user roles");
+                    console.log(response); 
+                    userService.setCurrentRolesStale();
+                    //retrieve user's club_roles:
+                    userService.retrieveUserRoles(true)
+                        .then(function(response) {
+                            console.log("Retrieved the user's club_roles: " );
+                            console.log(response);
+
+                            userService.setUserClubRoles(response.data);
+
+                            //create an array of Role objects:
+                            var userRoles = [];
+                            for(var i = 0; i < response.data.length; i++) {
+                                userRoles.push(response.data[i].role);
+                            }
+
+                            //create an array of Club objects:
+                            var userClubs = [];
+                            for(var i = 0; i < response.data.length; i++) {
+                                userClubs.push(response.data[i].club);
+                            }
+
+                            userService.populateUserRoles(userRoles);  
+                            userService.populateUsersClubs(userClubs);
+
+                            //do app data load:
+                            coreDataService.refreshClubUsersAndWait(clubService.getCurrentClubId())
+                                .then(function(response) {
+                                    console.log("Retrieved the users from the API: ");
+                                    console.log(response);
+                                    $rootScope.users = response.data;
+                                    coreDataService.setUsersLoaded(true);
+                                });
+                    }, function(errResponse) {
+                        console.log("Failed in attempt to retrieve users club_roles.");
+                        console.log(errResponse);
+                    });
+                }, function(errResponse) {
+                    console.log("failed to add new user roles");
+                    console.log(errResponse);
+                });  
             ngDialog.close();
         };
         
