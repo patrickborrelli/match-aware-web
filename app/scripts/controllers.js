@@ -21,10 +21,6 @@ angular.module('ma-app')
         
         $scope.openJoinClub = function() {
             
-            $scope.roles = coreDataService.getRoles();        
-            console.log("\n\nLOADING ROLES FROM SERVICE:");
-            console.log($scope.roles);
-            
             ngDialog.open({ template: 'views/joinClub.html', scope: $scope, className: 'ngdialog-theme-default', controller:"UserController" });
         }; 
         
@@ -156,7 +152,7 @@ angular.module('ma-app')
         };
     }])
 
-    .controller('HomeController', ['$scope', 'ngDialog', '$state', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', 'schedulingService', '$timeout', function($scope, ngDialog, $state, authService, coreDataService, userService, $rootScope, clubService, schedulingService, $timeout) {
+    .controller('HomeController', ['$scope', 'ngDialog', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', 'schedulingService', function($scope, ngDialog, authService, coreDataService, userService, $rootScope, clubService, schedulingService) {
         $scope.tab = 1;
         $scope.subTab = 1;       
         $scope.faTab = 1;
@@ -227,13 +223,6 @@ angular.module('ma-app')
             role: ''
         };
         
-        $scope.teamForm = {
-            name: '',
-            ageGroup: null,
-            gender: null,
-            league: null
-        };
-        
         $scope.ageGroupForm = {
             name: '',
             birthyear: '',
@@ -272,8 +261,16 @@ angular.module('ma-app')
             rescheduleDays: '',
             consequence: '',
             fine: '',
-            rescheduleRuleId: null,
-            logoURL: ''
+            logoURL: '',
+            leagueId: ''
+        };
+        
+        $scope.teamForm = {
+            name: '',
+            ageGroup: null,
+            gender: null,
+            league: null,
+            teamId: ''
         };
         
         $scope.facilityForm = {
@@ -394,7 +391,7 @@ angular.module('ma-app')
         };
         
         $scope.areTeams = function() {
-            return coreDataService.getTeams().length > 0;
+            return $rootScope.teams.length > 0;
         };
         
         $scope.areAgeGroups = function() {
@@ -402,7 +399,7 @@ angular.module('ma-app')
         };
         
         $scope.areLeagues = function() {
-            return coreDataService.getLeagues().length > 0;
+            return $rootScope.leagues.length > 0;
         };
         
         $scope.areRules = function() {
@@ -450,32 +447,39 @@ angular.module('ma-app')
             console.log("\n\nAdding league");
             console.log($scope.leagueForm);
             
-            //first pull data and add the reschedule rule:
-            var days = $scope.leagueForm.rescheduleDays;
-            var consequence = $scope.leagueForm.consequence;
-            var fine = $scope.leagueForm.fine;
-            
-            if(days == '') {
-                //no reschedule rule created, so just add the league:
-                coreDataService.addLeague($scope.leagueForm);
-            } else {
-                coreDataService.addRescheduleRule(days, consequence, fine)
+            coreDataService.addLeague($scope.leagueForm)
                 .then(function(response) {
-                    $scope.leagueForm.rescheduleDays = response.data.timespan_days;
-                    $scope.leagueForm.consequence = response.data.consequence;
-                    $scope.leagueForm.fine = response.data.fine;
-                
-                    coreDataService.addLeague($scope.leagueForm);
+                    console.log("Successfully added league: ");
+                    console.log(response);
+                    coreDataService.refreshLeagues();
                 }, function(errResponse) {
-                    console.log("Failed to add reschedule rule, so league could not be added:");
-                    console.log(errResponse);                
+                    console.log("Failed on attempt to add league:");
+                    console.log(errResponse);
                 });
-            }           
+            
+            ngDialog.close();
+        };
+        
+        $scope.editLeague = function(league) {
+            console.log("\n\nEditing league");
+            $scope.leagueForm.leagueId = league._id;
+            console.log($scope.leagueForm);
+            
+            coreDataService.editLeague($scope.leagueForm)
+                .then(function(response) {
+                    console.log("Successfully edited league: ");
+                    console.log(response);
+                    coreDataService.refreshLeagues();
+                }, function(errResponse) {
+                    console.log("Failed on attempt to edit league:");
+                    console.log(errResponse);
+                });
             
             ngDialog.close();
         };
         
         $scope.openAddTeam = function() {
+            
             console.log("\n\nOpening dialog to add team");
             ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
         }; 
@@ -503,6 +507,36 @@ angular.module('ma-app')
             console.log($scope.teamForm);
             clubService.addTeam($scope.teamForm);
             ngDialog.close();
+        };
+        
+        $scope.deleteTeam = function(team) {
+            console.log("\n\nDeleting team" );
+            console.log(team);
+            
+            coreDataService.deleteTeam(team)
+                .then(function(response) {
+                    console.log("Successfully deleted team: ");
+                    console.log(response);
+                    coreDataService.refreshTeams(clubService.getCurrentClubId());
+                }, function(errResponse) {
+                    console.log("Failed on attempt to delete league:");
+                    console.log(errResponse);
+                });
+        };
+        
+        $scope.openEditTeam = function(team, league) {
+            console.log("\n\nOpening dialog to edit team");
+            console.log(team);
+            $scope.teamForm.name = team.name;
+            $scope.teamForm.ageGroup = team.age_group;
+            $scope.teamForm.gender = team.gender;
+            $scope.teamForm.league = league;
+            $scope.teamForm.teamId = team._id;
+            
+            console.log("teamForm contains: ");
+            console.log($scope.teamForm);
+                
+            ngDialog.open({ template: 'views/editTeam.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
         };
         
         $scope.openAddAgeGroup = function() {
@@ -552,6 +586,7 @@ angular.module('ma-app')
         $scope.openEditLeague = function(league) {
             console.log("\n\nOpening dialog to edit league");
             console.log(league);
+            $scope.league = league;
             
             $scope.leagueForm = {
                 name: league.name,
@@ -559,16 +594,16 @@ angular.module('ma-app')
                 minAgeGroup: league.min_age_group,
                 maxAgeGroup: league.max_age_group,
                 type: league.type,
-                rescheduleDays: league.reschedule_rule.timespan_days,
-                consequence: league.reschedule_rule.consequence,
-                fine: league.reschedule_rule.fine,
-                rescheduleRuleId: league.reschedule_rule._id,
-                logoURL: league.logo_url
+                rescheduleDays: league.reschedule_time,
+                consequence: league.reschedule_consequence,
+                fine: league.reschedule_fine,
+                logoURL: league.logo_url,
+                leagueId: league._id
             };
                 
             console.log("Current entries include: ");
             console.log($scope.leagueForm);
-            ngDialog.open({ template: 'views/editLeague.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
+            ngDialog.open({ template: 'views/editLeague.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
         };
         
         $scope.openAddRule = function() {

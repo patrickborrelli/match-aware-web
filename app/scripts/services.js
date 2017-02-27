@@ -8,20 +8,20 @@ angular.module('ma-app')
 
     .service('coreDataService', ['$http', '$rootScope', 'baseURL', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', 'ngDialog', function($http, $rootScope, baseURL, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL, ngDialog) {
         $rootScope.clubs = {};
-        var roles = {};   
+        $rootScope.roles = {};   
         $rootScope.ageGroups = {};
         var events = {};
         var facilities = {}; 
         var fields = {}; 
         var fieldSizes = {};
-        var genders = {};
-        var leagues = {}; 
-        var leagueTypes = {};
+        $rootScope.genders = {};
+        $rootScope.leagues = {}; 
+        $rootScope.leagueTypes = {};
         var messages = {};
         var notifications = {};
         var organizations = {};
         var rules = {}; 
-        var teams = {};
+        $rootScope.teams = {};
         $rootScope.users = {}; 
         var userInvites = {};
         var accessRequests = {};
@@ -173,20 +173,20 @@ angular.module('ma-app')
         
         this.cleanupOnLogout = function() {
             $rootScope.clubs = {};
-            roles = {};   
+            $rootScope.roles = {};   
             $rootScope.ageGroups = {};
             events = {};
             facilities = {}; 
             fields = {}; 
             fieldSizes = {};
-            genders = {};
-            leagues = {}; 
-            leagueTypes = {};
+            $rootScope.genders = {};
+            $rootScope.leagues = {}; 
+            $rootScope.leagueTypes = {};
             messages = {};
             notifications = {};
             organizations = {};
             rules = {}; 
-            teams = {};
+            $rootScope.teams = {};
             $rootScope.users = {}; 
             userInvites = {};
             accessRequests = {};
@@ -211,10 +211,6 @@ angular.module('ma-app')
             accessRequestsLoaded = false; 
         };
                 
-        this.getRoles = function() {
-            return roles;
-        };
-                
         this.getEvents = function() {
             return events;
         };
@@ -231,18 +227,6 @@ angular.module('ma-app')
             return fieldSizes;
         };
         
-        this.getGenders = function() {
-            return genders;
-        };
-        
-        this.getLeagues = function() {
-            return leagues;
-        };
-        
-        this.getLeagueTypes = function() {
-            return leagueTypes;
-        };
-        
         this.getMessages = function() {
             return messages;
         };
@@ -257,10 +241,6 @@ angular.module('ma-app')
         
         this.getRules = function() {
             return rules;
-        };
-        
-        this.getTeams = function() {
-            return teams;
         };
         
         this.getUsers = function() {
@@ -344,7 +324,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the roles from the API: ");
                     console.log(response);
-                    roles = response.data;
+                    $rootScope.roles = response.data;
                     rolesLoaded = true;
                 });
             }
@@ -467,7 +447,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the genders from the API: ");
                     console.log(response);
-                    genders = response.data;
+                    $rootScope.genders = response.data;
                     genderLoaded = true;
                 }); 
             }
@@ -483,7 +463,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the leagues from the API: ");
                     console.log(response);
-                    leagues = response.data;
+                    $rootScope.leagues = response.data;
                     leaguesLoaded = true;
                 }); 
             }
@@ -499,7 +479,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the leagueTypes from the API: ");
                     console.log(response);
-                    leagueTypes = response.data;
+                    $rootScope.leagueTypes = response.data;
                     leagueTypesLoaded = true;
                 }); 
             }
@@ -570,18 +550,35 @@ angular.module('ma-app')
             
             if(!teamsLoaded) {
                 //retrieve teams:
-                $http({
-                    url: baseURL + 'teams/',
-                    method: 'GET',
-                    headers: {
-                        'content-type': 'application/json' 
-                    }
-                }).then(function(response) {
-                    console.log("Retrieved the teams from the API: ");
-                    console.log(response);
-                    teams = response.data;
-                    teamsLoaded = true;
-                }); 
+                if(curClubId != null && curClubId != '') {
+                    //retrieve teams just for current club:
+                    $http({
+                        url: baseURL + 'teams?club=' + curClubId,
+                        method: 'GET',
+                        headers: {
+                            'content-type': 'application/json' 
+                        }
+                    }).then(function(response) {
+                        console.log("Retrieved the teams from the API: ");
+                        console.log(response);
+                        $rootScope.teams = response.data;
+                        teamsLoaded = true;
+                    });
+                } else {
+                    //load all teams:
+                    $http({
+                        url: baseURL + 'teams/',
+                        method: 'GET',
+                        headers: {
+                            'content-type': 'application/json' 
+                        }
+                    }).then(function(response) {
+                        console.log("Retrieved the teams from the API: ");
+                        console.log(response);
+                        $rootScope.teams = response.data;
+                        teamsLoaded = true;
+                    }); 
+                }                
             }
             
             if(!usersLoaded) {
@@ -762,23 +759,39 @@ angular.module('ma-app')
             }); 
         };
         
-        this.refreshTeams = function() {
+        this.refreshTeams = function(curClubId) {
             //retrieve teams:
-            
-            $http({
-                url: baseURL + 'teams/',
-                method: 'GET',
-                headers: {
-                    'content-type': 'application/json' 
-                }
-            }).then(function(response) {
-                console.log("Retrieved the teams from the API: ");
-                console.log(response);
-                teams = response.data;
-                teamsLoaded = true;
-            }); 
+            if(curClubId != null && curClubId != '') {
+                //retrieve teams just for current club:
+                $http({
+                    url: baseURL + 'teams?club=' + curClubId,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("Retrieved the teams from the API: ");
+                    console.log(response);
+                    $rootScope.teams = response.data;
+                    teamsLoaded = true;
+                });
+            } else {
+                //load all teams:
+                $http({
+                    url: baseURL + 'teams/',
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("Retrieved the teams from the API: ");
+                    console.log(response);
+                    $rootScope.teams = response.data;
+                    teamsLoaded = true;
+                }); 
+            } 
         };
-        
+                
         this.refreshAgeGroups = function() {
             //retrieve age groups:            
             $http({
@@ -810,7 +823,7 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the leagues from the API: ");
                 console.log(response);
-                leagues = response.data;
+                $rootScope.leagues = response.data;
                 leaguesLoaded = true;
             }); 
         };
@@ -926,8 +939,16 @@ angular.module('ma-app')
                 postString += '"max_age_group": "' + formData.maxAgeGroup._id + '", ';
             }
             
-            if(formData.rescheduleRuleId != null) {
-                postString += '"reschedule_rule": "' + formData.rescheduleRuleId + '", ';
+            if(formData.rescheduleDays != '') {
+                postString += '"reschedule_time": "' + formData.rescheduleDays + '", ';
+            }
+            
+            if(formData.consequence != '') {
+                postString += '"reschedule_consequence": "' + formData.consequence + '", ';
+            }
+            
+            if(formData.fine != '') {
+                postString += '"reschedule_fine": "' + formData.fine + '", ';
             }
             
             if(formData.logoURL != '') {
@@ -937,21 +958,14 @@ angular.module('ma-app')
             postString += '"type": "' + formData.type._id + '" }';   
             console.log("Posting league with string: " + postString);
             
-            $http({
+            return $http({
                 url: baseURL + 'leagues/',
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json' 
                 },
                 data: postString
-            }).then(function(response) {
-                console.log("Successfully added league: ");
-                console.log(response);
-                localRefreshLeagues();
-            }, function(errResponse) {
-                console.log("Failed on attempt to add league:");
-                console.log(errResponse);
-            });
+            })
         };
         
         this.addRescheduleRule = function(days, consequence, fine) {
@@ -1034,6 +1048,72 @@ angular.module('ma-app')
                 console.log("Failed on attempt to delete league:");
                 console.log(errResponse);
             });
+        };
+        
+        this.deleteTeam = function(team) {
+            //delete selected team and refresh the scope:
+            return $http({
+                url: baseURL + 'teams/' + team._id,
+                method: 'DELETE',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            })
+        };
+        
+        this.editLeague = function(formData) {
+            //post league:            
+            var postString = '{';
+            
+            if(formData.name != null && formData.name != '') {
+                postString += '"name": "' + formData.name + '", ';
+            }
+            
+            if(formData.shortname != null && formData.shortname != '') {
+                postString += '"short_name": "' + formData.shortname + '", ';
+            }
+            
+            if(formData.minAgeGroup != null) {
+                postString += '"min_age_group": "' + formData.minAgeGroup._id + '", ';
+            }
+            
+            if(formData.maxAgeGroup != null) {
+                postString += '"max_age_group": "' + formData.maxAgeGroup._id + '", ';
+            }
+            
+            if(formData.rescheduleDays != null && formData.rescheduleDays != '') {
+                postString += '"reschedule_time": "' + formData.rescheduleDays + '", ';
+            }
+            
+            if(formData.consequence != null && formData.consequence != '') {
+                postString += '"reschedule_consequence": "' + formData.consequence + '", ';
+            }
+            
+            if(formData.fine != null && formData.fine != '') {
+                postString += '"reschedule_fine": "' + formData.fine + '", ';
+            }
+            
+            if(formData.logoURL != '') {
+                postString += '"logo_url": "' + formData.logoURL + '", ';
+            }
+            
+            if(formData.type != null) {
+                postString += '"type": "' + formData.type._id + '", ';
+            }
+            
+            postString = postString.slice(0, -2);
+            postString += '}';
+            
+            console.log("Editing league with string: " + postString + " and league id " + formData.leagueId);
+            
+            return $http({
+                url: baseURL + 'leagues/' + formData.leagueId,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            })
         };
         
         this.addField = function(formData) {
@@ -2048,7 +2128,7 @@ angular.module('ma-app')
                         console.log(leagueErr);
                     });
                 }
-                coreDataService.refreshTeams();
+                coreDataService.refreshTeams(currentClub._id);
             }, function(errResponse) {
                 console.log("Failed creating team: ");
                 console.log(errResponse);
