@@ -295,7 +295,9 @@
                                 <div class="media-body">
                                     <h3 class="media-heading">{{team.name}}</h3>
                                     <p>{{team.age_group.birth_year}}/{{team.age_group.soccer_year}} {{team.gender.name}}<br />
-                                    {{team.club.name}}</p>            
+                                    {{team.club.name}}</p>  
+                                    <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditTeam(team)">Edit</button>
+                                    <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteTeam(team)">Delete</button>
                                 </div>
                             </li>
                         </ul>
@@ -363,7 +365,9 @@
                                             <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{league.logo_url}} alt="league logo">
                                         </div>
                                         <div class="media-body">
-                                            <h3 class="media-heading" style="padding-top: 20px;">{{league.name}} - {{league.short_name}}</h3>
+                                            <h3 class="media-heading" style="padding-top: 20px;">{{league.name}} - {{league.short_name}}</h3>                                           
+                                            <p>{{league.min_age_group.name}} - {{league.max_age_group.name}}<br />
+                                                {{team.club.name}}</p>  
                                             <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditLeague(league)">Edit</button>
                                             <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteLeague(league)">Delete</button>
                                         </div>
@@ -581,7 +585,7 @@
                                         </div>
                                         <div class="media-body">
                                             <h3 class="media-heading" style="padding-top: 20px;">{{league.name}} - {{league.short_name}}</h3>
-                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="addTeam()">Edit</button>
+                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="opemEditLeague(league)">Edit</button>
                                             <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteLeague(league)">Delete</button>
                                         </div>
                                     </li>
