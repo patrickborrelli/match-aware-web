@@ -4,11 +4,12 @@
     </div>
     <div>&nbsp;</div>
     <div>
-        <form class="form-horizontal" ng-submit="editLeague()">
+        <form class="form-horizontal" ng-submit="editLeague(league)">
             <div class="form-group">
                 <label class="sr-only" for="name">League Name</label>
                 <div class="col-xs-12 col-sm-6">
                     <input type="text" class="form-control" id="name" placeholder="league name" ng-model="leagueForm.name">
+                    <input type="hidden" class="form-control" id="league" ng-model="leagueForm.leagueId" value={{league._id}}>
                 </div>
                 <label class="sr-only" for="shortname">League Abbreviation</label>
                 <div class="col-xs-12 col-sm-6">
