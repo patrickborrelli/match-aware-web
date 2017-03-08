@@ -898,9 +898,9 @@ angular.module('ma-app')
         
         //TODO: first check if roles are loaded, if not refresh roles:
         this.getRoleIdByName = function(roleName) {
-            for(var i = 0; i < roles.length; i++) {
-                if(String(roles[i].name) == String(roleName)) {
-                    return roles[i]._id;
+            for(var i = 0; i < $rootScope.roles.length; i++) {
+                if(String($rootScope.roles[i].name) == String(roleName)) {
+                    return $rootScope.roles[i]._id;
                 }
             }  
         };
