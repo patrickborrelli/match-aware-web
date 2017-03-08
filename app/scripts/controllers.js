@@ -6,7 +6,7 @@ angular.module('ma-app')
             return $sce.trustAsResourceUrl(url);
         };
     })
-    .controller('HeaderController', ['$scope', 'ngDialog', 'userService', 'coreDataService', 'authService',  function($scope, ngDialog, userService, coreDataService, authService) {
+    .controller('HeaderController', ['$scope', '$rootScope', 'ngDialog', 'userService', 'coreDataService', 'authService',  function($scope, $rootScope, ngDialog, userService, coreDataService, authService) {
         $scope.openRegister = function () {
             ngDialog.open({ template: 'views/register.html', scope: $scope, className: 'ngdialog-theme-default custom-width', controller:"RegisterController" });
         };    
@@ -32,6 +32,14 @@ angular.module('ma-app')
             console.log("Checking if user has any defined roles.");
             var hasRole = userService.userHasRoles();
             return hasRole;
+        };
+        
+        $scope.clubsExist = function() {
+            var hasClubs = false;
+            if($rootScope.clubs.length > 0) {
+                hasClubs = true;
+            }
+            return hasClubs;
         };
         
         $scope.isAuthenticated = function() {
