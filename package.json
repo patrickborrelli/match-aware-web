@@ -41,5 +41,8 @@
     "gulp-usemin": "^0.3.27",
     "jshint": "^2.9.4",
     "jshint-stylish": "^2.2.1"
+  },
+  "dependencies": {
+    "sendinblue-api": "^1.0.8"
   }
 }

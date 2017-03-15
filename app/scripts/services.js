@@ -1926,7 +1926,11 @@ angular.module('ma-app')
         };        
                 
         this.getCurrentRole = function() {
-            return currentRole.name;  
+            var name = null;
+            if(currentRole != null) {
+                name = currentRole.name;
+            }
+            return name;  
         };
         
         this.processAccessRequestAccept = function(request) {
@@ -2514,4 +2518,6 @@ angular.module('ma-app')
         this.isLoggedIn = function() {
             return isAuthenticated;
         };
-    }]);
+    }])
+
+;

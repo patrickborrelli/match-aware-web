@@ -6,7 +6,7 @@ angular.module('ma-app')
             return $sce.trustAsResourceUrl(url);
         };
     })
-    .controller('HeaderController', ['$scope', '$rootScope', 'ngDialog', 'userService', 'coreDataService', 'authService',  function($scope, $rootScope, ngDialog, userService, coreDataService, authService) {
+    .controller('HeaderController', ['$scope', '$rootScope', 'ngDialog', 'userService', 'coreDataService', 'authService', 'clubService',  function($scope, $rootScope, ngDialog, userService, coreDataService, authService, clubService) {
         $scope.openRegister = function () {
             ngDialog.open({ template: 'views/register.html', scope: $scope, className: 'ngdialog-theme-default custom-width', controller:"RegisterController" });
         };    
@@ -48,6 +48,26 @@ angular.module('ma-app')
         
         $scope.getUserFullname = function() {
             return userService.getUserFullname();
+        };
+        
+        $scope.isUserClubSelected = function() {
+            return (clubService.getCurrentClub() != null);
+        };
+        
+        $scope.getCurrentClubName = function() {
+            var name = '';
+            if(clubService.getCurrentClub() != null) {
+                name = clubService.getCurrentClub().name;
+            }
+            return name;
+        };
+        
+        $scope.getCurrentRole = function() {
+            var roleName = '';
+            if(authService.isUserAuthenticated() && userService.getCurrentRole != null) {
+                roleName = coreDataService.getRolePrettyName(userService.getCurrentRole());
+            }
+            return roleName;
         };
     }])
 

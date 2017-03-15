@@ -11,17 +11,16 @@
         </div>
         <div id="my-collapse" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li><a ui-sref="app.users">Users</a></li>
-                <li><a ui-sref="app.blogs">Blogs</a></li>
-                <li><a ui-sref="app.forums">Forums</a></li>
+                <li><a ng-click="sendTest()" ng-show="isUserClubSelected()" >{{getCurrentClubName()}}</a></li>
+                <li><a ng-show="isAuthenticated()" >{{getCurrentRole()}}</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><button type="button" ng-show="isAuthenticated(); clubsExist();" id="mynavbutton" class="btn btn-default btn-xs" ng-click="openJoinClub()">Join Existing Club</button></li>
                 <li><button type="button" ng-show="isAuthenticated()" id="mynavbutton"  class="btn btn-default btn-xs" ng-click="openCreateClub()">Create Club</button></li>
-                <li><a href="#contact" ng-hide="isAuthenticated()" ng-click="openRegister()">Register</a></li>
-                <li><a href="#contact" ng-hide="isAuthenticated()" ng-click="openLogin()">Login</a></li>
-                <li><a href="#contact" ng-hide="!isAuthenticated()" >{{getUserFullname()}}</a></li>
-                <li><a href="#contact" ng-hide="!isAuthenticated()" ng-click="openLogout()">Logout</a></li>
+                <li><a ng-hide="isAuthenticated()" ng-click="openRegister()">Register</a></li>
+                <li><a ng-hide="isAuthenticated()" ng-click="openLogin()">Login</a></li>
+                <li><a ng-hide="!isAuthenticated()" >{{getUserFullname()}}</a></li>
+                <li><a ng-hide="!isAuthenticated()" ng-click="openLogout()">Logout</a></li>
             </ul>                    
         </div>
     </div>
