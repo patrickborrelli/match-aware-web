@@ -23,7 +23,7 @@ angular.module('ma-app')
         var rules = {}; 
         $rootScope.teams = {};
         $rootScope.users = {}; 
-        var userInvites = {};
+        $rootScope.userInvites = {};
         var accessRequests = {};
         
         var clubsLoaded = false;
@@ -188,7 +188,7 @@ angular.module('ma-app')
             rules = {}; 
             $rootScope.teams = {};
             $rootScope.users = {}; 
-            userInvites = {};
+            $rootScope.userInvites = {};
             accessRequests = {};
 
             clubsLoaded = false;
@@ -246,11 +246,7 @@ angular.module('ma-app')
         this.getUsers = function() {
             return $rootScope.users;
         };
-        
-        this.getUserInvites = function() {
-            return userInvites;
-        };
-        
+                
         this.getAccessRequests = function() {
             return accessRequests;
         };
@@ -624,7 +620,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the user invites from the API: ");
                     console.log(response);
-                    userInvites = response.data;
+                    $rootScope.userInvites = response.data;
                     userInvitesLoaded = true;
                 }); 
             }
@@ -754,7 +750,7 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the user invites from the API: ");
                 console.log(response);
-                userInvites = response.data;
+                $rootScope.userInvites = response.data;
                 userInvitesLoaded = true;
             }); 
         };
@@ -1592,17 +1588,18 @@ angular.module('ma-app')
             var postString = '{ "invite_key" : "';
             var inviteKey = new Date().getTime();
             var role = coreDataService.getRoleIdByName(formData.role);
+            var clubName = clubService.getCurrentClub().name
+            
+            var html = "";
+            var text = "You have been invited to join MatchAware by " + clubName;
+            var subject = "Your Invite from " + clubName;
             
             postString += inviteKey + '", ';
-            if(formData.email != null && formData.email != '') {
-                postString += '"email" : "' + formData.email + '", ';
-            }
-            
-            if(formData.mobile != null && formData.mobile != '') {
-                postString += '"mobile" : "' + formData.mobile + '", ';
-            }
-            
+            postString += '"sendToEmail" : "' + formData.email + '", '; 
             postString += '"role" : "' + role + '", ';
+            postString += '"emailHtml" : "' + html + '", ';
+            postString += '"emailText" : "' + text + '", ';
+            postString += '"emailSubject" : "' + subject + '", ';
             postString += '"status" : "SENT"}';
             
             console.log("Creating invite with post string: " + postString);
