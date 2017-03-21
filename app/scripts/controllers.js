@@ -219,8 +219,6 @@ angular.module('ma-app')
         };        
         
         //initialize all form data:
-        $scope.emailHidden = false;
-        $scope.mobileHidden = true;
         $scope.addressHidden = false;
         
         $rootScope.rangeShown = true;        
@@ -246,8 +244,6 @@ angular.module('ma-app')
         
         $scope.invite = {
             email: '',
-            mobile: '',
-            method: 'email',
             role: ''
         };
         
@@ -371,17 +367,7 @@ angular.module('ma-app')
                 $scope.rangeShown = false;  
             }
         });
-        
-        $scope.$watch('invite.method', function(method) {
-            if(method === 'email') {
-                $scope.emailHidden = false;
-                $scope.mobileHidden = true;
-            } else {
-                $scope.emailHidden = true;
-                $scope.mobileHidden = false;
-            }
-        });
-        
+                
         $scope.$watch('facilityForm.method', function(method) {
             console.log("Value of method switched to : " + method);
             if(method == 'address') {
@@ -435,7 +421,7 @@ angular.module('ma-app')
         };
         
         $scope.arePendingUserInvites = function() {
-            return coreDataService.getUserInvites().length > 0;
+            return $rootScope.userInvites.length > 0;
         };
         
         $scope.areFacilities = function() {
