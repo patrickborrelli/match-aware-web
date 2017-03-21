@@ -152,21 +152,9 @@
                                 <form ng-submit="sendInvite()">
                                     <div class="row">
                                         <div class="col-xs-4" style="padding-top: 12px;">
-                                            <div class="form-group" ng-show="!emailHidden">
+                                            <div class="form-group">
                                                 <label class="sr-only" for="email">Email address</label>
                                                 <input type="email" ng-model="invite.email" class="form-control" id="email" placeholder="email address">
-                                            </div>
-                                            <div class="form-group" ng-show="!mobileHidden">
-                                                <label class="sr-only" for="mobile">Password</label>
-                                                <input type="tel" ng-model="invite.mobile" class="form-control" id="mobile" placeholder="mobile">
-                                            </div>
-                                            <div class="radio">
-                                                <label class="radio-inline">
-                                                    <input type="radio" ng-model="invite.method" id="emailSelected" value="email" checked>email
-                                                </label>
-                                                <label class="radio-inline">
-                                                    <input type="radio" name="mobileSelected" ng-model="invite.method" id="mobileSelected" value="mobile">mobile
-                                                </label>
                                             </div>
                                         </div>
                                         <div class="col-xs-2">
@@ -238,9 +226,8 @@
                                             <img class="media-object img-thumbnail" style="width: 75px;" ng-src="./images/defaultUser.png" alt="user photo">
                                         </div>
                                         <div class="media-body">
-                                            <h3 class="media-heading">{{getRolePrettyName(invite.role.name)}}</h3>
-                                            <p>{{invite.mobile}}<br />
-                                            {{invite.email}}<br />
+                                            <h3 class="media-heading">{{invite.sendToEmail}}</h3>
+                                            <p>{{getRolePrettyName(invite.role.name)}}<br />
                                             Invite Key: {{invite.invite_key}}</p>            
                                         </div>
                                     </li>
