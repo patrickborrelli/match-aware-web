@@ -226,9 +226,23 @@
                                             <img class="media-object img-thumbnail" style="width: 75px;" ng-src="./images/defaultUser.png" alt="user photo">
                                         </div>
                                         <div class="media-body">
-                                            <h3 class="media-heading">{{invite.sendToEmail}}</h3>
-                                            <p>{{getRolePrettyName(invite.role.name)}}<br />
-                                            Invite Key: {{invite.invite_key}}</p>            
+                                            <div class="col-xs-9">
+                                                <h3 class="media-heading">{{invite.sendToEmail}}</h3>
+                                                <p>{{getRolePrettyName(invite.role.name)}}<br />
+                                                Invite Key: {{invite.invite_key}}<br />
+                                                Sent: {{getInviteSentDate(invite.invite_key)}}</p>
+                                            </div>
+                                            <div class="col-xs-3">  
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <button type="button" ng-click="revokeInvite(invite)" class="btn btn-info">Revoke</button>
+                                                    </div>
+                                                    <div class="col-xs-12" style="margin-top: 10px;">
+                                                        <button type="button" class="btn btn-success">Resend</button>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
                                         </div>
                                     </li>
                                 </ul>
