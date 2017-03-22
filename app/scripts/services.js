@@ -1622,6 +1622,24 @@ angular.module('ma-app')
             });
         };
         
+        this.revokeUserInvite = function(inviteKey) {
+            //make http request:
+            $http({
+                url: baseURL + 'user_invites/deleteByKey/' + inviteKey,
+                method: 'DELETE',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Successfully revoked invite");
+                console.log(response.data);
+                coreDataService.refreshUserInvites();
+            }, function(errResponse) {
+                console.log("Failed to revoke invite");
+                console.log(errResponse);
+            });
+        };
+        
         this.sendAccessRequest = function(formData) {
             
             console.log("Received access request with form data:" );
@@ -2322,6 +2340,39 @@ angular.module('ma-app')
                         
             console.log("Converted date to " + returnDate.toISOString());
             return returnDate;            
+        };
+        
+        this.getIsoDate = function(milis) {
+            var sent = new Date(milis);
+            var today = new Date();
+            var dateString = '';
+            var isAm = true;
+            
+            if(sent.getHours() >= 12) {
+                isAm = false;
+            }
+            
+            //determine if invite was sent today, either way, set date portion of string:
+            if(today.getFullYear() == sent.getFullYear() &&
+               today.getMonth() == sent.getMonth() &&
+               today.getDate() == sent.getDate()) {
+                dateString += 'Today ';                
+            } else {
+                dateString += (sent.getMonth() + "/" + sent.getDate() + "/" + sent.getFullYear()) + " ";
+            }
+            
+            //convert hours to am/pm
+            var hour = sent.getHours() % 12;
+            hour = hour ? hour : 12;
+            dateString += (hour + ":" + sent.getMinutes());
+            if(isAm) {
+                dateString += "AM"; 
+            } else {
+                dateString += "PM";
+            }   
+            
+            return dateString;
+            
         };
     }])
                              

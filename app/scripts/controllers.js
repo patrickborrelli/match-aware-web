@@ -180,7 +180,7 @@ angular.module('ma-app')
         };
     }])
 
-    .controller('HomeController', ['$scope', 'ngDialog', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', 'schedulingService', function($scope, ngDialog, authService, coreDataService, userService, $rootScope, clubService, schedulingService) {
+    .controller('HomeController', ['$scope', 'ngDialog', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', 'schedulingService', 'datetimeService', function($scope, ngDialog, authService, coreDataService, userService, $rootScope, clubService, schedulingService, datetimeService) {
         $scope.tab = 1;
         $scope.subTab = 1;       
         $scope.faTab = 1;
@@ -445,6 +445,19 @@ angular.module('ma-app')
             console.log("data is ");
             console.log($scope.invite); 
             userService.sendUserInvite($scope.invite);
+            $scope.invite = {
+                email: '',
+                role: ''
+            };
+        };
+        
+        $scope.getInviteSentDate = function(inviteKey) {
+            return datetimeService.getIsoDate(inviteKey);
+        };
+        
+        $scope.revokeInvite = function(invite) {
+            console.log("Revoking invite with key: " + invite.invite_key);
+            userService.revokeUserInvite(invite.invite_key);
         };
         
         $scope.openAddLeague = function() {
