@@ -1465,6 +1465,17 @@ angular.module('ma-app')
             return fullname;
         };
         
+        this.getUserById = function(userId) {
+            //call http and return promise:
+            return $http({
+                url: baseURL + 'users/' + userId,
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }); 
+        };
+        
         this.populateUserRoles = function(roles) {
             console.log("Entering populate user roles");
             console.log("attempting to parse roles: " + roles.length); 
@@ -1580,6 +1591,17 @@ angular.module('ma-app')
         this.getUserHasMultipleClubs = function() {
             return userHasMultipleClubs;
         };
+        
+        this.getInviteByKey = function(inviteKey) {
+            //make http request:
+            return $http({
+                url: baseURL + 'user_invites?invite_key=' + inviteKey,
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            });
+        };
                 
         this.sendUserInvite = function(formData) {
             //create invite then update rootscope userinvites
@@ -1589,6 +1611,7 @@ angular.module('ma-app')
             var inviteKey = new Date().getTime();
             var role = coreDataService.getRoleIdByName(formData.role);
             var clubName = clubService.getCurrentClub().name
+            var club = clubService.getCurrentClub();
             
             var html = "";
             var text = "You have been invited to join MatchAware by " + clubName;
@@ -1600,6 +1623,7 @@ angular.module('ma-app')
             postString += '"emailHtml" : "' + html + '", ';
             postString += '"emailText" : "' + text + '", ';
             postString += '"emailSubject" : "' + subject + '", ';
+            postString += '"club" : "' + club._id + '", ';
             postString += '"status" : "SENT"}';
             
             console.log("Creating invite with post string: " + postString);
@@ -1948,6 +1972,85 @@ angular.module('ma-app')
             return name;  
         };
         
+        this.processUserInviteAcceptance = function(user_Id, club_Id, role_Id, team_Id) {
+            var hasTeam = false;
+            var userId = user_Id;
+            var clubId = club_Id;
+            var roleId = role_Id;
+            var teamId;
+            var inClub = false;
+            
+            var postString = '{"club": "' + clubId + '", "member": "' + userId + '", "role": "' + roleId + '"}';
+            var teamPostString = '{"team": "' + teamId + '", "member": "' + userId + '", "role": "' + roleId + '"}';
+            
+            if(team_Id != null && team_Id != 0) {
+                hasTeam = true;
+                teamId = team_Id;
+            }
+            
+            //add user to club role:
+            $http({
+                url: baseURL + 'club_roles/',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Successfully added user role");
+                console.log(response); 
+                localSetCurrentRolesStale();
+                //retrieve user's club_roles:
+                localRetrieveUserRoles(true)
+                    .then(function(response) {
+                        console.log("Retrieved the user's club_roles: " );
+                        console.log(response);
+
+                        localSetUserClubRoles(response.data);
+
+                        //create an array of Role objects:
+                        var userRoles = [];
+                        for(var i = 0; i < response.data.length; i++) {
+                            userRoles.push(response.data[i].role);
+                        }
+
+                        //create an array of Club objects:
+                        var userClubs = [];
+                        for(var i = 0; i < response.data.length; i++) {
+                            userClubs.push(response.data[i].club);
+                        }
+
+                        localPopulateUserRoles(userRoles);  
+                        localPopulateUsersClubs(userClubs);
+
+                        //do app data load:
+                        coreDataService.setAllDataStale();
+                        coreDataService.appDataLoad(currentUser, clubService.getCurrentClubId());
+                }, function(errResponse) {
+                    console.log("Failed in attempt to retrieve users club_roles.");
+                    console.log(errResponse);
+                }); 
+            });
+            
+            //next, if user is being granted team access, add them to the team:
+            if(hasTeam) {
+                $http({
+                    url: baseURL + 'team_members/',
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json' 
+                    },
+                    data: teamPostString
+                }).then(function(response) {
+                    console.log("User added to team");
+                    console.log(response);
+                }, function(errResponse) {
+                    console.log("Failed to add user to team");
+                    console.log(errResponse);
+                });
+            }
+        };
+        
         this.processAccessRequestAccept = function(request) {
             var hasTeam = false;
             var userId = request.user._id;
@@ -2069,7 +2172,7 @@ angular.module('ma-app')
             //TODO: send email/notification/text
         };
         
-     }])
+      }])
 
     .service('clubService', ['$http', 'baseURL', 'ngDialog', '$state', 'coreDataService', function($http, baseURL, ngDialog, $state, coreDataService) {        
         var currentClub = null;
@@ -2384,6 +2487,18 @@ angular.module('ma-app')
             return isAuthenticated;
         };
         
+        this.loginOnly = function (loginData) {
+            //make http request and return promise:
+            return $http({
+                url: baseURL + 'users/login',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: loginData
+            });  
+        };
+        
         this.login = function(loginData) {
             //make http request:
             $http({
@@ -2395,8 +2510,7 @@ angular.module('ma-app')
                 data: loginData
             }).then(function(response) {
                 console.log(response);
-                setUserCredentials({username:loginData.username, token: response.data.token, fullname: response.data.fullname, userId: response.data.userId});                 
-                isAuthenticated = true;
+                internalSetUserCredentials({username:loginData.username, token: response.data.token, fullname: response.data.fullname, userId: response.data.userId});                 
                 console.log("User " + response.data.fullname + " has been authenticated successfully.");
                 
                 //retrieve user and store in scope:
@@ -2499,6 +2613,21 @@ angular.module('ma-app')
             
         };
         
+        this.registerOnly = function(registerData) {
+            //make http request and return promise:
+            console.log("Attempting to register user with data:");
+            console.log(registerData);
+            
+            return $http({
+                url: baseURL + 'users/register',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                data: registerData
+            });
+        };
+        
         this.register = function(registerData) {
             //make http request
             console.log(registerData);
@@ -2539,7 +2668,7 @@ angular.module('ma-app')
             });
         };
         
-        function setUserCredentials(credentials) {
+        this.setUserCredentials = function(credentials) {
             isAuthenticated = true;
             authToken = credentials.token;
 
@@ -2549,6 +2678,8 @@ angular.module('ma-app')
                         isAuthenticated + "\nusername: " + credentials.username + "\nauthToken: " + 
                         authToken + "\nfullname: " + credentials.fullname + "\nuserId: " + credentials.userId);
         };
+        
+        var internalSetUserCredentials = this.setUserCredentials;
         
         function destroyUserCredentials() {
             isAuthenticated = false;

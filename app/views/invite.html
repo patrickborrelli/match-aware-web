@@ -1,0 +1,101 @@
+
+<div class="row row-content" data-ng-init="initInvite()">
+    <div class="col-xs-12">
+        <h2 align=center>Welcome to MatchAware, thanks for responding to your invite.</h2>
+    </div>
+    <div ng-show="inviteError">
+        <p align=center>Your invite could not be found.  Please contact the <a href="mailto:patrickborrelli@gmail.com" target="_blank">administrator</a>.</p>
+    </div>
+    <div ng-show="!inviteError">
+        <hr />
+        <div>
+            <h3>Complete Your Registration</h3>
+        </div>
+        <div class="">&nbsp;</div>
+        <div class="">
+            <form class="form-horizontal" ng-submit="registerInviteUser()">
+                <div class="form-group">
+                    <label class="sr-only" for="username">Username</label>
+                    <div class="col-xs-12 col-sm-6">
+                        <input type="text" class="form-control" id="username" placeholder="Username" ng-model="registration.username">
+                    </div>
+                    <label class="sr-only" for="password">Password</label>
+                    <div class="col-xs-12 col-sm-6">
+                        <input type="password" class="form-control" id="password" placeholder="Password" ng-model="registration.password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="firstName">First Name</label>
+                    <div class="col-xs-12 col-sm-6">
+                        <input type="text" class="form-control" id="firstName" placeholder="First Name" ng-model="registration.first_name">
+                    </div>
+                    <label class="sr-only" for="lastName">Last Name</label>
+                     <div class="col-xs-12 col-sm-6">
+                        <input type="text" class="form-control" id="lastname" placeholder="Last Name" ng-model="registration.last_name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="email_address">Email Address</label>
+                    <div class="col-xs-12 col-sm-6">
+                        <input type="email" class="form-control" id="email_address" placeholder="Email Address" ng-model="registration.email_address">
+                    </div>
+                    <label class="sr-only" for="mobile">Mobile</label>
+                    <div class="col-xs-12 col-sm-6">
+                        <input type="tel" class="form-control" id="mobile" placeholder="Mobile Phone" ng-model="registration.mobile">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="club">Club</label>
+                    <div class="col-xs-12 col-sm-6">
+                        <input type="text" class="form-control" id="club" ng-model="registration.club" disabled>
+                    </div>                    
+                    <label class="sr-only" for="role">Role</label>
+                    <div class="col-xs-12 col-sm-6">
+                        <input type="tel" class="form-control" id="role" placeholder="Role" ng-model="registration.role" disabled>
+                    </div>
+                </div>
+                <div class="form-group">
+                    
+                    <div class="col-xs-12 col-sm-6">
+                        <input type="text" class="form-control" id="invite_key" ng-model="registration.invite_key" ng-show="false">
+                    </div>
+                    <div class="col-xs-6 col-sm-3">
+                        <input type="text" class="form-control" id="clubId" ng-model="registration.clubId" ng-show="false">
+                    </div>
+                    <div class="col-xs-6 col-sm-3">
+                        <input type="text" class="form-control" id="roleId" ng-model="registration.roleId" ng-show="false">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="address">Address</label>
+                    <div class=" col-xs-12">
+                        <input type="text" class="form-control" id="address" placeholder="Street Address" ng-model="registration.address">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="city">City</label>
+                    <div class=" col-xs-12 col-sm-5">
+                        <input type="text" class="form-control" id="city" placeholder="City" ng-model="registration.city">
+                    </div>
+                    <label class="sr-only" for="state">State</label>
+                     <div class=" col-xs-12 col-sm-4">
+                        <input type="text" class="form-control" id="state" placeholder="State" ng-model="registration.state">
+                    </div>
+                    <label class="sr-only" for="postalCode">Postal Code</label>
+                     <div class=" col-xs-12 col-sm-3">
+                        <input type="text" maxlength="5" class="form-control" id="postalCode" placeholder="ZIP" ng-model="registration.postal_code">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="country">Country</label>
+                    <div class="col-xs-12">
+                        <input type="text" class="form-control" id="country" placeholder="Country" ng-model="registration.country">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-info">Register</button>
+                <button type="button" class="btn btn-default" ng-click=closeThisDialog("Cancel")>Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>

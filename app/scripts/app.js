@@ -28,22 +28,12 @@ angular.module('ma-app', ['ui.router', 'ngDialog'])
                 }
             })
         
-            .state('app.blogs', {
-                url:'blog',
+            .state('app.invite', {
+                url:'invite/:inviteId',
                 views: {
                     'content@': {
-                        templateUrl: 'views/blogs.html',
-                        controller  : 'BlogController'
-                    }
-                }
-            })
-        
-            .state('app.forums', {
-                url:'forum',
-                views: {
-                    'content@': {
-                        templateUrl: 'views/forums.html',
-                        controller  : 'ForumController'
+                        templateUrl: 'views/invite.html',
+                        controller  : 'InviteController'
                     }
                 }
             });

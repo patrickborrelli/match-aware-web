@@ -180,6 +180,125 @@ angular.module('ma-app')
         };
     }])
 
+    .controller('InviteController', ['$scope', '$stateParams', 'userService', 'coreDataService', 'authService', function($scope, $stateParams, userService, coreDataService, authService) {
+        $scope.inviteId = $stateParams.inviteId;
+        $scope.inviteError = false;
+        $scope.registration = {};
+        var registerData = {};
+        
+        $scope.registerInviteUser = function() {
+            console.log('Doing registration', $scope.registration); 
+            //build registration data object:
+            registerData.username = $scope.registration.username;
+            registerData.password = $scope.registration.password;
+            registerData.first_name = $scope.registration.first_name;
+            registerData.last_name = $scope.registration.last_name;
+            registerData.email_address = $scope.registration.email_address;
+            registerData.mobile = $scope.registration.mobile;
+            registerData.address = $scope.registration.address;
+            registerData.city = $scope.registration.city;
+            registerData.state = $scope.registration.state;
+            registerData.postal_code = $scope.registration.postal_code;
+            registerData.country = $scope.registration.country;
+                    
+            //TODO: register and login user, then call userService.processUserInviteAcceptance, and finally redirect to home 
+            
+            //register user account:
+            authService.registerOnly(registerData)
+                .then(function(response) {
+                    console.log("successfully registered a user.");
+                
+                    //now add club/user/role relationship:
+                    
+                    //now log in the registered user:
+                    console.log("will attempt to log user in with username: " + registerData.username + " and password: " + registerData.password);
+                    authService.loginOnly({username:registerData.username, password:registerData.password})
+                        .then(function(response) {
+                            console.log(response);
+                            authService.setUserCredentials({username:registerData.username, token: response.data.token, fullname: response.data.fullname, userId: response.data.userId});                 
+                            console.log("User " + response.data.fullname + " has been authenticated successfully.");
+
+                            //retrieve user and store in scope:
+                            userService.getUserById(response.data.userId)
+                                .then(function(response) {
+                                    console.log("\n\nSETTING CURRENT USER TO: " );
+                                    console.log(response.data);
+                                    userService.setCurrentUser(response.data);            
+                                });   
+
+                            $state.go("app.home");
+                            ngDialog.close();
+                        }, function(errResponse) {
+                            isAuthenticated = false;            
+                            var message = '\
+                            <div class="ngdialog-message">\
+                            <div><h3>Login Unsuccessful</h3></div>' +
+                              '<div><p>' +  errResponse.data.err.message + '</p><p>' +
+                                errResponse.data.err.name + '</p></div>' +
+                            '<div class="ngdialog-buttons">\
+                                <button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm("OK")>OK</button>\
+                            </div>'
+
+                            ngDialog.openConfirm({ template: message, plain: 'true'});
+                        });
+                    
+                
+                
+                    var message = '\
+                    <div class="ngdialog-message">\
+                    <div><h3>Registration Successful</h3></div>' +
+                    '<div class="ngdialog-buttons">\
+                        <button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm(1)>OK</button>\
+                    </div>';
+                    ngDialog.openConfirm({ template: message, plain: 'true'});
+
+                }, function(response) {
+                    console.log("failed to registered a user.");
+                    var message = '\
+                    <div class="ngdialog-message">\
+                    <div><h3>Login Unsuccessful</h3></div>' +
+                      '<div><p>' +  response.data.err.message + '</p><p>' +
+                        response.data.err.name + '</p></div>' +
+                    '<div class="ngdialog-buttons">\
+                        <button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm(1)>OK</button>\
+                    </div>'
+
+                    ngDialog.openConfirm({ template: message, plain: 'true'});
+                });
+            
+            
+            
+        };
+                
+        $scope.initInvite = function() {
+            var invite = userService.getInviteByKey($stateParams.inviteId)
+                .then(function(response) {
+                    console.log("Successfully retrieved invite");
+                    console.log(response.data);
+                    
+                    if(response.data.length > 0) {
+                        //found one, so:
+                        $scope.invite = response.data[0];
+                        console.log("Found email address " + response.data[0].sendToEmail);
+                        $scope.registration.email_address = response.data[0].sendToEmail;
+                        $scope.registration.invite_key = $stateParams.inviteId;
+                        $scope.registration.role = coreDataService.getRolePrettyName(response.data[0].role.name);
+                        $scope.registration.club = response.data[0].club.name;
+                        $scope.registration.roleId = response.data[0].role._id;
+                        $scope.registration.clubId = response.data[0].club._id;
+                    } else {
+                        $scope.inviteError = true;
+                    }
+                }, function(errResponse) {
+                    console.log("Failed to retrieved invite");
+                    console.log(errResponse);
+                });
+            
+            
+                         
+        };
+    }])
+
     .controller('HomeController', ['$scope', 'ngDialog', 'authService', 'coreDataService', 'userService', '$rootScope', 'clubService', 'schedulingService', 'datetimeService', function($scope, ngDialog, authService, coreDataService, userService, $rootScope, clubService, schedulingService, datetimeService) {
         $scope.tab = 1;
         $scope.subTab = 1;       
