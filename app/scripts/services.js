@@ -1972,83 +1972,18 @@ angular.module('ma-app')
             return name;  
         };
         
-        this.processUserInviteAcceptance = function(user_Id, club_Id, role_Id, team_Id) {
-            var hasTeam = false;
-            var userId = user_Id;
-            var clubId = club_Id;
-            var roleId = role_Id;
-            var teamId;
-            var inClub = false;
-            
-            var postString = '{"club": "' + clubId + '", "member": "' + userId + '", "role": "' + roleId + '"}';
-            var teamPostString = '{"team": "' + teamId + '", "member": "' + userId + '", "role": "' + roleId + '"}';
-            
-            if(team_Id != null && team_Id != 0) {
-                hasTeam = true;
-                teamId = team_Id;
-            }
-            
+        this.addUserToClubRole = function(user_Id, club_Id, role_Id) {
+            var postString = '{"club": "' + club_Id + '", "member": "' + user_Id + '", "role": "' + role_Id + '"}';
+            console.log("Post string = " + postString);
             //add user to club role:
-            $http({
+            return $http({
                 url: baseURL + 'club_roles/',
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json' 
                 },
                 data: postString
-            }).then(function(response) {
-                console.log("Successfully added user role");
-                console.log(response); 
-                localSetCurrentRolesStale();
-                //retrieve user's club_roles:
-                localRetrieveUserRoles(true)
-                    .then(function(response) {
-                        console.log("Retrieved the user's club_roles: " );
-                        console.log(response);
-
-                        localSetUserClubRoles(response.data);
-
-                        //create an array of Role objects:
-                        var userRoles = [];
-                        for(var i = 0; i < response.data.length; i++) {
-                            userRoles.push(response.data[i].role);
-                        }
-
-                        //create an array of Club objects:
-                        var userClubs = [];
-                        for(var i = 0; i < response.data.length; i++) {
-                            userClubs.push(response.data[i].club);
-                        }
-
-                        localPopulateUserRoles(userRoles);  
-                        localPopulateUsersClubs(userClubs);
-
-                        //do app data load:
-                        coreDataService.setAllDataStale();
-                        coreDataService.appDataLoad(currentUser, clubService.getCurrentClubId());
-                }, function(errResponse) {
-                    console.log("Failed in attempt to retrieve users club_roles.");
-                    console.log(errResponse);
-                }); 
             });
-            
-            //next, if user is being granted team access, add them to the team:
-            if(hasTeam) {
-                $http({
-                    url: baseURL + 'team_members/',
-                    method: 'POST',
-                    headers: {
-                        'content-type': 'application/json' 
-                    },
-                    data: teamPostString
-                }).then(function(response) {
-                    console.log("User added to team");
-                    console.log(response);
-                }, function(errResponse) {
-                    console.log("Failed to add user to team");
-                    console.log(errResponse);
-                });
-            }
         };
         
         this.processAccessRequestAccept = function(request) {

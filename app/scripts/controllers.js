@@ -180,7 +180,7 @@ angular.module('ma-app')
         };
     }])
 
-    .controller('InviteController', ['$scope', '$stateParams', 'userService', 'coreDataService', 'authService', function($scope, $stateParams, userService, coreDataService, authService) {
+    .controller('InviteController', ['$scope', 'ngDialog', '$stateParams', 'userService', 'coreDataService', 'authService', function($scope, ngDialog, $stateParams, userService, coreDataService, authService) {
         $scope.inviteId = $stateParams.inviteId;
         $scope.inviteError = false;
         $scope.registration = {};
@@ -208,8 +208,6 @@ angular.module('ma-app')
                 .then(function(response) {
                     console.log("successfully registered a user.");
                 
-                    //now add club/user/role relationship:
-                    
                     //now log in the registered user:
                     console.log("will attempt to log user in with username: " + registerData.username + " and password: " + registerData.password);
                     authService.loginOnly({username:registerData.username, password:registerData.password})
@@ -217,17 +215,61 @@ angular.module('ma-app')
                             console.log(response);
                             authService.setUserCredentials({username:registerData.username, token: response.data.token, fullname: response.data.fullname, userId: response.data.userId});                 
                             console.log("User " + response.data.fullname + " has been authenticated successfully.");
+                        
+                        //now add club/user/role relationship:
+                        userService.addUserToClubRole(response.data.userId, $scope.registration.clubId, $scope.registration.roleId)
+                            .then(function(response) {
+                                console.log("Successfully added user role");
+                                console.log(response); 
+                                userService.setCurrentRolesStale();
+                                //retrieve user's club_roles:
+                                userService.retrieveUserRoles(true)
+                                    .then(function(response) {
+                                        console.log("Retrieved the user's club_roles: " );
+                                        console.log(response);
 
-                            //retrieve user and store in scope:
-                            userService.getUserById(response.data.userId)
-                                .then(function(response) {
-                                    console.log("\n\nSETTING CURRENT USER TO: " );
-                                    console.log(response.data);
-                                    userService.setCurrentUser(response.data);            
-                                });   
+                                        userService.setUserClubRoles(response.data);
 
-                            $state.go("app.home");
-                            ngDialog.close();
+                                        //create an array of Role objects:
+                                        var userRoles = [];
+                                        for(var i = 0; i < response.data.length; i++) {
+                                            userRoles.push(response.data[i].role);
+                                        }
+
+                                        //create an array of Club objects:
+                                        var userClubs = [];
+                                        for(var i = 0; i < response.data.length; i++) {
+                                            userClubs.push(response.data[i].club);
+                                        }
+
+                                        userService.populateUserRoles(userRoles);  
+                                        userService.populateUsersClubs(userClubs);
+
+                                        //do app data load:
+                                        coreDataService.setAllDataStale();
+                                        coreDataService.appDataLoad(currentUser, clubService.getCurrentClubId());
+                                    
+                                        //retrieve user and store in scope:
+                                        userService.getUserById(response.data.userId)
+                                            .then(function(response) {
+                                                console.log("\n\nSETTING CURRENT USER TO: " );
+                                                console.log(response.data);
+                                                userService.setCurrentUser(response.data); 
+                                                var message = '\
+                                                <div class="ngdialog-message">\
+                                                <div><h3>Registration Successful</h3></div>' +
+                                                '<div class="ngdialog-buttons">\
+                                                    <button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm(1)>OK</button>\
+                                                </div>';
+                                                ngDialog.openConfirm({ template: message, plain: 'true'});
+                                                $state.go("app.home");
+                                            }); 
+
+                                    }, function(errResponse) {
+                                        console.log("Failed in attempt to retrieve users club_roles.");
+                                        console.log(errResponse);
+                                    }); 
+                            });   
                         }, function(errResponse) {
                             isAuthenticated = false;            
                             var message = '\
@@ -241,17 +283,6 @@ angular.module('ma-app')
 
                             ngDialog.openConfirm({ template: message, plain: 'true'});
                         });
-                    
-                
-                
-                    var message = '\
-                    <div class="ngdialog-message">\
-                    <div><h3>Registration Successful</h3></div>' +
-                    '<div class="ngdialog-buttons">\
-                        <button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm(1)>OK</button>\
-                    </div>';
-                    ngDialog.openConfirm({ template: message, plain: 'true'});
-
                 }, function(response) {
                     console.log("failed to registered a user.");
                     var message = '\
@@ -265,9 +296,6 @@ angular.module('ma-app')
 
                     ngDialog.openConfirm({ template: message, plain: 'true'});
                 });
-            
-            
-            
         };
                 
         $scope.initInvite = function() {
