@@ -612,7 +612,7 @@ angular.module('ma-app')
             if(!userInvitesLoaded) {
                 //retrieve user invites:
                 $http({
-                    url: baseURL + 'user_invites/',
+                    url: baseURL + 'user_invites?status=SENT',
                     method: 'GET',
                     headers: {
                         'content-type': 'application/json' 
@@ -742,7 +742,7 @@ angular.module('ma-app')
         this.refreshUserInvites = function() {
             //retrieve invites:
             $http({
-                url: baseURL + 'user_invites/',
+                url: baseURL + 'user_invites?status=SENT',
                 method: 'GET',
                 headers: {
                     'content-type': 'application/json' 
@@ -1530,13 +1530,20 @@ angular.module('ma-app')
             }            
         };
         
-        this.retrieveUserRoles = function(promise) {
+        this.retrieveUserRoles = function(promise, userId) {
             var response = null;
+            var user_id;
+            
+            if(userId == null || userId == 0) {
+                user_id = currentUser._id;
+            } else {
+                user_id = userId;
+            }
             console.log("Attempting to retrieve current user roles...currentRolesStale: " + currentRolesStale);
             if(currentRolesStale) {
                 currentRolesStale = false;
                 return $http({
-                   url: baseURL + 'club_roles?member=' + currentUser._id,
+                   url: baseURL + 'club_roles?member=' + user_id,
                     method: 'GET',
                     headers: {
                         'content-type': 'application/json' 
@@ -1986,6 +1993,25 @@ angular.module('ma-app')
             });
         };
         
+        this.processInviteAcceptance = function(inviteKey) {
+            var accepted = '{"status":"ACCEPTED"}';
+            console.log("\n\nENTERING INVITE UPDATE\n\n");
+            $http({
+                url: baseURL + 'user_invites/' + inviteKey,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: accepted
+            }).then(function(response) {
+                console.log("Updated user invite");
+                console.log(response);  
+            }, function(errResponse) {           
+                console.log("Failed to update user invite");
+                console.log(errResponse);
+            });
+        };
+        
         this.processAccessRequestAccept = function(request) {
             var hasTeam = false;
             var userId = request.user._id;
@@ -2105,6 +2131,16 @@ angular.module('ma-app')
             });     
             
             //TODO: send email/notification/text
+        };
+        
+        this.retrieveUser = function(userId) {
+            return $http({
+                url: baseURL + 'users/' + userId,
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            });
         };
         
       }])
