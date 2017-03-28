@@ -577,7 +577,7 @@ angular.module('ma-app')
         };
         
         $scope.areRules = function() {
-            return coreDataService.getRules().length > 0;
+            return $rootScope.rules.length > 0;
         };
         
         $scope.arePendingUserInvites = function() {
