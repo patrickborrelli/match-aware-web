@@ -20,7 +20,7 @@ angular.module('ma-app')
         var messages = {};
         var notifications = {};
         var organizations = {};
-        var rules = {}; 
+        $rootScope.rules = {}; 
         $rootScope.teams = {};
         $rootScope.users = {}; 
         $rootScope.userInvites = {};
@@ -185,7 +185,7 @@ angular.module('ma-app')
             messages = {};
             notifications = {};
             organizations = {};
-            rules = {}; 
+            $rootScope.rules = {}; 
             $rootScope.teams = {};
             $rootScope.users = {}; 
             $rootScope.userInvites = {};
@@ -238,11 +238,7 @@ angular.module('ma-app')
         this.getOrganizations = function() {
             return organizations;
         };
-        
-        this.getRules = function() {
-            return rules;
-        };
-        
+                
         this.getUsers = function() {
             return $rootScope.users;
         };
@@ -539,7 +535,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the rules from the API: ");
                     console.log(response);
-                    rules = response.data;
+                    $rootScope.rules = response.data;
                     rulesLoaded = true;
                 }); 
             }
@@ -838,7 +834,7 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the rules from the API: ");
                 console.log(response);
-                rules = response.data;
+                $rootScope.rules = response.data;
                 rulesLoaded = true;
             }); 
         };
@@ -1620,8 +1616,11 @@ angular.module('ma-app')
             var clubName = clubService.getCurrentClub().name
             var club = clubService.getCurrentClub();
             
-            var html = "";
+            var html = "<h2>Welcome to MatchAware</h2><h3>The youth club sports-centric app for Field Utilization Management and Match Scheduling</h3>";
+            html += "<p>You have been invited to join MatchAware by " + clubName + ". <br />";
+            html += "Click <a href='http://matchaware.com/#!/invite/" + inviteKey +"' target='_blank'>here</a> to accept your invitation.</p>"
             var text = "You have been invited to join MatchAware by " + clubName;
+            text += "To accept, go to http://matchaware.com/#!/invite/" + inviteKey;
             var subject = "Your Invite from " + clubName;
             
             postString += inviteKey + '", ';
