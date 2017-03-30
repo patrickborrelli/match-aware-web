@@ -11,7 +11,7 @@ angular.module('ma-app')
         $rootScope.roles = {};   
         $rootScope.ageGroups = {};
         var events = {};
-        var facilities = {}; 
+        $rootScope.facilities = {}; 
         var fields = {}; 
         var fieldSizes = {};
         $rootScope.genders = {};
@@ -176,7 +176,7 @@ angular.module('ma-app')
             $rootScope.roles = {};   
             $rootScope.ageGroups = {};
             events = {};
-            facilities = {}; 
+            $rootScope.facilities = {}; 
             fields = {}; 
             fieldSizes = {};
             $rootScope.genders = {};
@@ -213,10 +213,6 @@ angular.module('ma-app')
                 
         this.getEvents = function() {
             return events;
-        };
-        
-        this.getFacilities = function() {
-            return facilities;
         };
         
         this.getFields = function() {
@@ -391,7 +387,7 @@ angular.module('ma-app')
                         fac[i].google_map_string = mapString;
                         console.log(fac[i]);
                     }         
-                    facilities = fac;
+                    $rootScope.facilities = fac;
                     facilitiesLoaded = true;
                 }); 
             }
@@ -864,7 +860,7 @@ angular.module('ma-app')
                     fac[i].google_map_string = mapString;
                     console.log(fac[i]);
                 }         
-                facilities = fac;
+                $rootScope.facilities = fac;
                 facilitiesLoaded = true;
             }); 
         };

@@ -585,7 +585,7 @@ angular.module('ma-app')
         };
         
         $scope.areFacilities = function() {
-            return coreDataService.getFacilities().length > 0;
+            return $rootScope.facilities.length > 0;
         };
         
         $scope.areFields = function() {
