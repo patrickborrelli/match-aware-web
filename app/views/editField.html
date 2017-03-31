@@ -1,10 +1,10 @@
 <div class="ngdialog-message">
     <div class="">
-        <h4>Add New Field</h4>
+        <h4>Edit Field</h4>
     </div>
     <div class="">&nbsp;</div>
     <div class="">
-        <form class="form-horizontal" ng-submit="addField()">
+        <form class="form-horizontal" ng-submit="editField()">
             <div class="form-group custom-padding"> 
                 <label class="sr-only" for="facility">Facility</label>
                 <div class="col-xs-12">  
@@ -51,7 +51,7 @@
                     <div class="input-group">
                         <div class="input-group-addon custom-width-100">Condition</div>
                         <select id="condition" class="form-control" ng-model="fieldForm.condition">
-                            <option value="10" selected>Excellent</option>
+                            <option value='10' selected>Excellent</option>
                             <option value="8">Very Good</option>
                             <option value="6">Good</option>
                             <option value="4">Poor</option>
@@ -97,7 +97,7 @@
             
             
             
-            <button type="submit" class="btn btn-info">Add</button>
+            <button type="submit" class="btn btn-info">Update</button>
             <button type="button" class="btn btn-default" ng-click=closeThisDialog("Cancel")>Cancel</button>
         </form>
     </div>

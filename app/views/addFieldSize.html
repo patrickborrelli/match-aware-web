@@ -1,0 +1,69 @@
+<div class="ngdialog-message">
+    <div class="">
+        <h4>Add New Field Size</h4>
+    </div>
+    <div class="">&nbsp;</div>
+    <div class="">
+        <form class="form-horizontal" ng-submit="addFieldSize()">            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="name">Name</label>
+                <div class="col-xs-12 col-sm-7" style="margin-right: 0px; padding-right: 0px;">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-75">Name</div>
+                        <input type="text" id="name" class="form-control" ng-model="fieldSizeForm.name" placeholder="Large-sided">
+                    </div>
+                </div>
+                <label class="sr-only" for="units">Units</label>
+                <div class="col-xs-12 col-sm-5" style="padding-left:0px; margin-left: 0px;">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-75">Unit</div>
+                        <select id="unit" class="form-control" ng-model="fieldSizeForm.unit">                            
+                            <option value="YARDS" selected>Yards</option>
+                            <option value="FEET">Feet</option>
+                            <option value="METERS">Meters</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding">   
+                <label class="sr-only" for="minlength">Minimum Field Length</label>
+                <div class="col-xs-12 col-sm-7" style="padding-right:0px; margin-right: 0px;">                    
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-75">Length</div>
+                        <input type="text" class="form-control" id="minlength" placeholder="min" ng-model="fieldSizeForm.minlength"> 
+                    </div> 
+                </div>
+                <label class="sr-only" for="maxlength">Maximum Field Length</label>
+                <div class="col-xs-12 col-sm-5" style="padding-left:0px; margin-left: 0px;">                    
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="maxlength" placeholder="max" ng-model="fieldSizeForm.maxlength">
+                    </div> 
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding">   
+                <label class="sr-only" for="minwidth">Minimum Field Width</label>
+                <div class="col-xs-12 col-sm-7" style="padding-right:0px; margin-right: 0px;">                    
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-75">Width</div>
+                        <input type="text" class="form-control" id="minwidth" placeholder="min" ng-model="fieldSizeForm.minwidth"> 
+                    </div> 
+                </div>
+                <label class="sr-only" for="maxwidth">Maximum Field Width</label>
+                <div class="col-xs-12 col-sm-5" style="padding-left:0px; margin-left: 0px;">                    
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="maxwidth" placeholder="max" ng-model="fieldSizeForm.maxwidth">
+                    </div> 
+                </div>
+            </div>  
+            
+            <div class="">&nbsp;</div>
+            <div class="">
+            
+            <button type="submit" class="btn btn-info">Add</button>
+            <button type="button" class="btn btn-default" ng-click=closeThisDialog("Cancel")>Cancel</button>
+        </form>
+    </div>
+    <div>&nbsp;</div>
+</div>
