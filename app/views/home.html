@@ -550,8 +550,8 @@
                                                     <div class="row">
                                                         <div class="col-xs-12 col-sm-5">
                                                             <h3 class="media-heading" style="padding-top: 0px; margin-top:0px;">{{facility.name}} - {{field.name}}</h3>
-                                                            <button type="button" class="btn btn-xs btn-default" style="width: 50px;" ng-click="openEditAgeGroup(ageGroup)">Edit</button>
-                                                            <button type="button" class="btn btn-xs btn-default" style="width: 50px;" ng-click="deleteAgeGroup(ageGroup)">Delete</button>
+                                                            <button type="button" class="btn btn-xs btn-default" style="width: 50px;" ng-click="openEditField(field, facility)">Edit</button>
+                                                            <button type="button" class="btn btn-xs btn-default" style="width: 50px;" ng-click="deleteField(field, facility)">Delete</button>
                                                         </div>  
                                                         <div class="col-xs-12 col-sm-7">
                                                             <h5 style="padding-top: 0px; margin-top:0px;"><span style="font-weight: bold;">Usage:</span> {{getFieldUsage(field)}}</h5>
@@ -571,23 +571,27 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <form class="form-inline">
-                                    <button type="button" class="btn btn-success" ng-click="openAddLeague()">Add League</button>                  
+                                    <button type="button" class="btn btn-success" ng-click="openAddFieldSize()">Add Field Size</button>                  
                                 </form>
                             </div>
                         </div>
                         <hr />
                         <div class="row row-content">                    
                             <div class="col-xs-12">
-                                <h4 ng-show="!areLeagues()">No current leagues.</h4>
-                                <ul class="media-list" ng-show="areLeagues()">
-                                    <li class="media" ng-repeat="league in leagues" style="padding:10px; background: lightGray;">
+                                <h4 ng-show="!areFieldSizes()">No field sizes defined.</h4>
+                                <ul class="media-list" ng-show="areFieldSizes()">
+                                    <li class="media" ng-repeat="fieldsize in fieldSizes" style="padding:10px; background: lightGray;">
                                         <div class="media-left media-top" >
-                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{league.logo_url}} alt="league logo">
+                                            
                                         </div>
                                         <div class="media-body">
-                                            <h3 class="media-heading" style="padding-top: 20px;">{{league.name}} - {{league.short_name}}</h3>
-                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="opemEditLeague(league)">Edit</button>
-                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteLeague(league)">Delete</button>
+                                            <h3 class="media-heading" style="padding-top: 20px;">{{fieldsize.name}}</h3>
+                                            <p>
+                                                Minimum Size: {{fieldsize.min_width}} x {{fieldsize.min_length}} {{getUnitPrettyName(fieldsize.unit)}}<br />
+                                                Maximum Size: {{fieldsize.max_width}} x {{fieldsize.max_length}} {{getUnitPrettyName(fieldsize.unit)}}
+                                            </p>
+                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditFieldSize(fieldsize)">Edit</button>
+                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteFieldSize(fieldsize)">Delete</button>
                                         </div>
                                     </li>
                                 </ul>
