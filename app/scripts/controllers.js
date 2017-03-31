@@ -455,7 +455,7 @@ angular.module('ma-app')
             gender: null,
             league: null,
             teamId: ''
-        };
+        };        
         
         $scope.facilityForm = {
             name: '',
@@ -483,19 +483,6 @@ angular.module('ma-app')
             satStop: '',
             indoor: false,
             method: 'address'
-        };
-        
-        $scope.fieldForm = {
-            name: '',
-            facility: {},
-            size: {},
-            lights: false,
-            game: false,
-            practice: false,
-            tournament: false,
-            training: false,
-            condition: '',
-            surface: ''
         };
         
         $rootScope.fuForm = {
@@ -589,7 +576,11 @@ angular.module('ma-app')
         };
         
         $scope.areFields = function() {
-            return coreDataService.getFields().length > 0;
+            return $rootScope.fields.length > 0;
+        };
+        
+        $scope.areFieldSizes = function() {
+            return $rootScope.fieldSizes.length > 0;
         };
         
         $scope.hasFields = function(facility) {
@@ -668,24 +659,71 @@ angular.module('ma-app')
         $scope.openAddTeam = function() {
             
             console.log("\n\nOpening dialog to add team");
-            ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
+            ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
         }; 
         
         $scope.openAddField = function(facility) {
             console.log("\nOpening dialog to add field");
-            $rootScope.short_name = facility.short_name;
-            $rootScope.facilityName = facility.name;
-            $rootScope.tempFacility = facility;
-            console.log($scope.fieldForm);
+            $scope.short_name = facility.short_name;
+            $scope.facilityName = facility.name;
+            $scope.tempFacility = facility;
+            $scope.fieldForm = {
+                name: '',
+                size: {},
+                lights: false,
+                game: false,
+                practice: false,
+                tournament: false,
+                training: false,
+                surface: ''
+            };
             
-            ngDialog.open({ template: 'views/addField.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:'HomeController'});
+            ngDialog.open({ template: 'views/addField.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:'HomeController'});
         };
         
         $scope.addField = function() {
             console.log("\n\nAdding field");
-            $scope.fieldForm.facility = $rootScope.tempFacility;
+            $scope.fieldForm.facility = $scope.tempFacility;
             console.log($scope.fieldForm);
             coreDataService.addField($scope.fieldForm);
+            ngDialog.close();
+        };
+        
+        $scope.openEditField = function(field, myFacility) {
+            console.log("\n\nOpening dialog to edit field");
+            console.log(field);
+            $scope.short_name = myFacility.short_name;
+            $scope.facilityName = myFacility.name;
+            $scope.fieldForm = {
+                name: field.name,
+                facility: myFacility,
+                size: field.size,
+                lights: field.lights,
+                game: field.game,
+                practice: field.practice,
+                tournament: field.tournament,
+                training: field.training,
+                condition: field.condition,
+                surface: field.surface,
+                id: field._id
+            };
+                
+            console.log("Current entries include: ");
+            console.log($scope.fieldForm);
+            ngDialog.open({ template: 'views/editField.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
+        };
+        
+        $scope.editField = function() {
+            console.log("\n\nEditing field");
+            console.log($scope.fieldForm);
+            coreDataService.editField($scope.fieldForm);
+            ngDialog.close();
+        };
+        
+        $scope.addFieldSize = function() {
+            console.log("\n\nAdding field size");
+            console.log($scope.fieldSizeForm);
+            coreDataService.addFieldSize($scope.fieldSizeForm);
             ngDialog.close();
         };
         
@@ -723,7 +761,7 @@ angular.module('ma-app')
             console.log("teamForm contains: ");
             console.log($scope.teamForm);
                 
-            ngDialog.open({ template: 'views/editTeam.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
+            ngDialog.open({ template: 'views/editTeam.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
         };
         
         $scope.openAddAgeGroup = function() {
@@ -764,6 +802,40 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
+        $scope.openAddFieldSize = function() {
+            console.log("\n\nOpening dialog to add field size");
+            ngDialog.open({ template: 'views/addFieldSize.html', scope: $scope, className: 'ngdialog-theme-default custom-width-500', controller:"HomeController" });
+        };
+        
+        $scope.openEditFieldSize = function(fieldsize) {
+            console.log("\n\nOpening dialog to edit field size");
+            console.log(fieldsize);
+            $scope.fieldSizeForm = {
+                name: fieldsize.name,
+                unit: fieldsize.unit,
+                maxlength: fieldsize.max_length,
+                maxwidth: fieldsize.max_width,
+                minlength: fieldsize.min_length,
+                minwidth: fieldsize.min_width,
+                id: fieldsize._id                
+            };
+                
+            console.log("Current entries include: ");
+            console.log($scope.fieldSizeForm);
+            ngDialog.open({ template: 'views/editFieldSize.html', scope: $scope, className: 'ngdialog-theme-default custom-width-500', controller:"HomeController" });
+        };
+        
+        $scope.editFieldSize = function() {
+            console.log("\n\nEditing field size");
+            console.log($scope.fieldSizeForm);
+            coreDataService.editFieldSize($scope.fieldSizeForm);
+            ngDialog.close();
+        };
+        
+        $scope.clearFieldSizeForm = function() {
+            $scope.fieldSizeForm = {};
+        };
+        
         $scope.deleteLeague = function(league) {
             console.log("\n\nDeleting league");
             console.log(league);
@@ -795,7 +867,7 @@ angular.module('ma-app')
         
         $scope.openAddRule = function() {
             console.log("\n\nOpening dialog to add rule");
-            ngDialog.open({ template: 'views/addRule.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
+            ngDialog.open({ template: 'views/addRule.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
         }; 
         
         $scope.addRule = function() {
@@ -817,7 +889,7 @@ angular.module('ma-app')
             $rootScope.facilityStatusName = facility.name;
             $rootScope.facilityStatusEntity = facility;
             $scope.fuForm.entity = facility;
-            ngDialog.open({ template: 'views/updateFacility.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
+            ngDialog.open({ template: 'views/updateFacility.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
         };
         
         $scope.openFieldStatus = function(field) {
@@ -825,7 +897,7 @@ angular.module('ma-app')
             $rootScope.fieldStatusName = field.name;
             $rootScope.fieldStatusEntity = field;         
             $scope.fuForm.entity = field;
-            ngDialog.open({ template: 'views/updateField.html', scope: $scope, className: 'ngdialog-theme-default  custom-width-600', controller:"HomeController" });
+            ngDialog.open({ template: 'views/updateField.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
         };
         
         $scope.closeFacility = function(facility) {
@@ -996,6 +1068,10 @@ angular.module('ma-app')
         
         $scope.getRolePrettyName = function(roleName) {
             return coreDataService.getRolePrettyName(roleName);            
+        };
+        
+        $scope.getUnitPrettyName = function(unit) {
+            return coreDataService.getUnitPrettyName(unit);            
         };
         
         $scope.getFieldUsage = function(field) {
