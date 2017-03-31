@@ -30,6 +30,10 @@
     width: 600px;
 }
 
+.ngdialog.ngdialog-theme-default.custom-width-500 .ngdialog-content {
+    width: 500px;
+}
+
 .input-group { 
     width: 100%; 
 }
