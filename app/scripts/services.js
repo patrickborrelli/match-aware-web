@@ -12,8 +12,8 @@ angular.module('ma-app')
         $rootScope.ageGroups = {};
         var events = {};
         $rootScope.facilities = {}; 
-        var fields = {}; 
-        var fieldSizes = {};
+        $rootScope.fields = {}; 
+        $rootScope.fieldSizes = {};
         $rootScope.genders = {};
         $rootScope.leagues = {}; 
         $rootScope.leagueTypes = {};
@@ -177,8 +177,8 @@ angular.module('ma-app')
             $rootScope.ageGroups = {};
             events = {};
             $rootScope.facilities = {}; 
-            fields = {}; 
-            fieldSizes = {};
+            $rootScope.fields = {}; 
+            $rootScope.fieldSizes = {};
             $rootScope.genders = {};
             $rootScope.leagues = {}; 
             $rootScope.leagueTypes = {};
@@ -213,14 +213,6 @@ angular.module('ma-app')
                 
         this.getEvents = function() {
             return events;
-        };
-        
-        this.getFields = function() {
-            return fields;
-        };
-        
-        this.getFieldSizes = function() {
-            return fieldSizes;
         };
         
         this.getMessages = function() {
@@ -293,6 +285,30 @@ angular.module('ma-app')
                     
                 default :
                     prettyName = roleName;
+                    break;   
+            }
+            
+            return prettyName;
+        };
+        
+        this.getUnitPrettyName = function(unit) {
+            var prettyName = unit;
+            
+            switch(unit) {
+                case "YARDS":
+                    prettyName = "yd";
+                    break;
+                    
+                case "FEET":
+                    prettyName = "ft";
+                    break;
+                    
+                case "METERS":
+                    prettyName = "m";
+                    break;
+                    
+                default :
+                    prettyName = unit;
                     break;   
             }
             
@@ -403,7 +419,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the fields from the API: ");
                     console.log(response);
-                    fields = response.data;
+                    $rootScope.fields = response.data;
                     fieldsLoaded = true;
                 }); 
             }
@@ -419,7 +435,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the field sizes from the API: ");
                     console.log(response);
-                    fieldSizes = response.data;
+                    $rootScope.fieldSizes = response.data;
                     fieldSizesLoaded = true;
                 }); 
             }
@@ -877,12 +893,29 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Retrieved the fields from the API: ");
                 console.log(response);
-                fields = response.data;
+                $rootScope.fields = response.data;
                 fieldsLoaded = true;
             }); 
         };
         
         var localRefreshFields = this.refreshFields;     
+        
+        this.refreshFieldSizes = function() {
+            $http({
+                url: baseURL + 'field_sizes/',
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Retrieved the field sizes from the API: ");
+                console.log(response);
+                $rootScope.fieldSizes = response.data;
+                fieldSizesLoaded = true;
+            }); 
+        };
+        
+        var localRefreshFieldSizes = this.refreshFieldSizes; 
         
         //TODO: first check if roles are loaded, if not refresh roles:
         this.getRoleIdByName = function(roleName) {
@@ -1139,7 +1172,7 @@ angular.module('ma-app')
                 //next add field to facility, then refresh facilities:
                 $http({
                     url: baseURL + 'facilities/addField/' + formData.facility._id + '/' + response.data._id,
-                    method: 'POST',
+                    method: 'PUT',
                     headers: {
                         'content-type': 'application/json' 
                     }
@@ -1154,6 +1187,45 @@ angular.module('ma-app')
                 });
             }, function(errResponse) {
                 console.log("Failed on attempt to add field:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.editField = function(formData) {
+            //build field post string:            
+            var postString = '{ "name": "' + formData.name + '", "facility": "' + formData.facility._id + '", ';
+            
+            if(formData.surface != null) {
+                postString += '"surface": "' + formData.surface + '", ';
+            }
+            
+            if(formData.condition != '') {
+                postString += '"condition": ' + formData.condition + ', ';
+            }
+            
+            postString += '"lights": "' + formData.lights + '", ';
+            postString += '"game": "' + formData.game + '", ';
+            postString += '"practice": "' + formData.practice + '", ';
+            postString += '"tournament": "' + formData.tournament + '", ';
+            postString += '"training": "' + formData.training + '", ';
+            postString += '"size": "' + formData.size._id + '" }';
+            
+            console.log("Posting rule with string: " + postString);
+            
+            $http({
+                url: baseURL + 'fields/' + formData.id,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Successfully updated field: ");
+                console.log(response);                
+                localRefreshFacilities();
+                localRefreshFields();
+            }, function(errResponse) {
+                console.log("Failed on attempt to update field:");
                 console.log(errResponse);
             });
         };
@@ -1212,6 +1284,88 @@ angular.module('ma-app')
                 localRefreshRules();
             }, function(errResponse) {
                 console.log("Failed on attempt to add rule:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.addFieldSize = function(formData) {
+            //post rule:            
+            var postString = '{ "name": "' + formData.name + '", ';
+                        
+            if(formData.minlength != 0) {
+                postString += '"min_length": ' + formData.minlength + ', ';
+            }
+            
+            if(formData.maxlength != 0) {
+                postString += '"max_length": ' + formData.maxlength + ', ';
+            }
+            
+            if(formData.minwidth != 0) {
+                postString += '"min_width": ' + formData.minwidth + ', ';
+            }
+            
+            if(formData.maxwidth != 0) {
+                postString += '"max_width": ' + formData.maxwidth + ', ';
+            }
+            
+            postString += '"unit": "' + formData.unit + '" }';
+            
+            console.log("Posting field size with string: " + postString);
+            
+            $http({
+                url: baseURL + 'field_sizes/',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Successfully added field size: ");
+                console.log(response);
+                localRefreshFieldSizes();
+            }, function(errResponse) {
+                console.log("Failed on attempt to add field size:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.editFieldSize = function(formData) {
+            //post rule:            
+            var postString = '{ "name": "' + formData.name + '", ';
+                        
+            if(formData.minlength != 0) {
+                postString += '"min_length": ' + formData.minlength + ', ';
+            }
+            
+            if(formData.maxlength != 0) {
+                postString += '"max_length": ' + formData.maxlength + ', ';
+            }
+            
+            if(formData.minwidth != 0) {
+                postString += '"min_width": ' + formData.minwidth + ', ';
+            }
+            
+            if(formData.maxwidth != 0) {
+                postString += '"max_width": ' + formData.maxwidth + ', ';
+            }
+            
+            postString += '"unit": "' + formData.unit + '" }';
+            
+            console.log("Updating field size with string: " + postString);
+            
+            $http({
+                url: baseURL + 'field_sizes/' + formData.id,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Successfully updated field size: ");
+                console.log(response);
+                localRefreshFieldSizes();
+            }, function(errResponse) {
+                console.log("Failed on attempt to update field size:");
                 console.log(errResponse);
             });
         };
