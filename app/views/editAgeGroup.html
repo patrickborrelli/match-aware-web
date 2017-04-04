@@ -7,17 +7,17 @@
         <form ng-submit="editAgeGroup()">
             <div class="form-group">
                 <label class="sr-only" for="name">Age Group Display Name</label>
-                <input type="text" class="form-control" id="name" placeholder="age group name" ng-model="editAgeGroupForm.name" value={{editAgeGroupForm.name}}>
+                <input type="text" class="form-control" id="name" placeholder="age group name" ng-model="ageGroupForm.name">
             </div>
             <div class="form-group">
                 <label class="sr-only" for="birthyear">Birth Year</label>
-                <input type="text" class="form-control" id="birthyear" placeholder="birth year" ng-model="editAgeGroupForm.birthyear">
+                <input type="text" class="form-control" id="birthyear" placeholder="birth year" ng-model="ageGroupForm.birthyear">
             </div>
             <div class="form-group">
                 <label class="sr-only" for="socceryear">Soccer Year</label>
                 <div class="input-group">
                     <div class="input-group-addon">U</div>
-                    <input type="text" class="form-control" id="socceryear" placeholder="soccer year" ng-model="editAgeGroupForm.socceryear"> 
+                    <input type="text" class="form-control" id="socceryear" placeholder="soccer year" ng-model="ageGroupForm.socceryear"> 
                 </div>                               
             </div>
             <button type="submit" class="btn btn-info">Update</button>
