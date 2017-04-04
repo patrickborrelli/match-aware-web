@@ -407,18 +407,6 @@ angular.module('ma-app')
             role: ''
         };
         
-        $scope.ageGroupForm = {
-            name: '',
-            birthyear: '',
-            socceryear: ''
-        };
-        
-        $scope.editAgeGroupForm = {
-            name: '',
-            birthyear: '',
-            socceryear: ''
-        };
-        
         $scope.ruleForm = {
             league: null,
             age: null,
@@ -779,19 +767,23 @@ angular.module('ma-app')
             console.log("\n\nOpening dialog to edit age group");
             console.log(ageGroup);
             $scope.editingAgeGroupId = ageGroup._id;
-            $scope.editAgeGroupForm.name = ageGroup.name;
-            $scope.editAgeGroupForm.birthyear = ageGroup.birth_year;
-            $scope.editAgeGroupForm.socceryear = ageGroup.soccer_year;
+            var mySocceryear = ageGroup.soccer_year.slice(1);
+            
+            $scope.ageGroupForm = {
+                name: ageGroup.name,
+                birthyear: ageGroup.birth_year,
+                socceryear: mySocceryear 
+            };
                 
             console.log("Current entries include: ");
-            console.log($scope.editAgeGroupForm);
+            console.log($scope.ageGroupForm);
             ngDialog.open({ template: 'views/editAgeGroup.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
         };
         
         $scope.editAgeGroup = function() {
             console.log("\n\nEditing age group");
             console.log($scope.ageGroupForm);
-            coreDataService.editAgeGroup($scope.editAgeGroupForm, $scope.editingAgeGroupId);
+            coreDataService.editAgeGroup($scope.ageGroupForm, $scope.editingAgeGroupId);
             ngDialog.close();
         };
         
