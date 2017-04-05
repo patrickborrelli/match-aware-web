@@ -436,15 +436,7 @@ angular.module('ma-app')
             logoURL: '',
             leagueId: ''
         };
-        
-        $scope.teamForm = {
-            name: '',
-            ageGroup: null,
-            gender: null,
-            league: null,
-            teamId: ''
-        };        
-        
+            
         $scope.facilityForm = {
             name: '',
             shortname: '',
@@ -644,7 +636,14 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
-        $scope.openAddTeam = function() {
+        $scope.openAddTeam = function() {            
+            $scope.teamForm = {
+                name: '',
+                ageGroup: '',
+                gender: '',
+                league: '',
+                teamId: ''
+            };
             
             console.log("\n\nOpening dialog to add team");
             ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
@@ -737,14 +736,41 @@ angular.module('ma-app')
                 });
         };
         
+        $scope.getTeamLeague = function(team) {
+            console.log("RETRIEVING LEAGUE NAME FOR TEAM " + team.name);
+            coreDataService.getTeamLeague(team._id) 
+                .then(function(response) {
+                    console.log("Retrieved league ");
+                    console.log(response.data[0]);
+                    $scope.openEditTeam(team, response.data[0])
+                }, function(err) {
+                    console.log("Error while retrieveing league" );
+                    console.log(err);
+            });
+            
+        };
+        
+        $scope.getTeamLeagueName = function(team) {
+            var leagues = team.leagues;
+            
+            var leagueString = '';
+            for(var i = 0; i < leagues.length; i++) {
+                leagueString += leagues[i].name + '\n';
+            }
+            return leagueString;
+        };
+        
         $scope.openEditTeam = function(team, league) {
             console.log("\n\nOpening dialog to edit team");
             console.log(team);
-            $scope.teamForm.name = team.name;
-            $scope.teamForm.ageGroup = team.age_group;
-            $scope.teamForm.gender = team.gender;
-            $scope.teamForm.league = league;
-            $scope.teamForm.teamId = team._id;
+            
+            $scope.teamForm = {
+                name: team.name,
+                ageGroup: team.age_group._id,
+                gender: team.gender._id,
+                league: league._id,
+                teamId: team._id
+            };  
             
             console.log("teamForm contains: ");
             console.log($scope.teamForm);
@@ -752,7 +778,19 @@ angular.module('ma-app')
             ngDialog.open({ template: 'views/editTeam.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
         };
         
+        $scope.editTeam = function() {
+            console.log("\n\nEditing team");
+            console.log($scope.teamForm);
+            clubService.editTeam($scope.teamForm);
+            ngDialog.close();
+        };
+        
         $scope.openAddAgeGroup = function() {
+            $scope.ageGroupForm = {
+                name: '',
+                birthyear: '',
+                socceryear: '' 
+            };
             console.log("\n\nOpening dialog to add age group");
             ngDialog.open({ template: 'views/addAgeGroup.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
         };

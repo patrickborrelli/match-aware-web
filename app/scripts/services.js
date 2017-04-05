@@ -557,7 +557,7 @@ angular.module('ma-app')
                 if(curClubId != null && curClubId != '') {
                     //retrieve teams just for current club:
                     $http({
-                        url: baseURL + 'teams?club=' + curClubId,
+                        url: baseURL + 'teams/getTeamWithLeagues/teams?club=' + curClubId,
                         method: 'GET',
                         headers: {
                             'content-type': 'application/json' 
@@ -571,7 +571,7 @@ angular.module('ma-app')
                 } else {
                     //load all teams:
                     $http({
-                        url: baseURL + 'teams/',
+                        url: baseURL + 'teams/getTeamWithLeagues/teams/',
                         method: 'GET',
                         headers: {
                             'content-type': 'application/json' 
@@ -768,7 +768,7 @@ angular.module('ma-app')
             if(curClubId != null && curClubId != '') {
                 //retrieve teams just for current club:
                 $http({
-                    url: baseURL + 'teams?club=' + curClubId,
+                    url: baseURL + 'teams/getTeamWithLeagues/teams?club=' + curClubId,
                     method: 'GET',
                     headers: {
                         'content-type': 'application/json' 
@@ -782,7 +782,7 @@ angular.module('ma-app')
             } else {
                 //load all teams:
                 $http({
-                    url: baseURL + 'teams/',
+                    url: baseURL + 'teams/getTeamWithLeagues/teams/',
                     method: 'GET',
                     headers: {
                         'content-type': 'application/json' 
@@ -917,7 +917,6 @@ angular.module('ma-app')
         
         var localRefreshFieldSizes = this.refreshFieldSizes; 
         
-        //TODO: first check if roles are loaded, if not refresh roles:
         this.getRoleIdByName = function(roleName) {
             for(var i = 0; i < $rootScope.roles.length; i++) {
                 if(String($rootScope.roles[i].name) == String(roleName)) {
@@ -2326,17 +2325,16 @@ angular.module('ma-app')
             var leagueAdd = false;
             var postString = '{ "name": "' + formData.name + '", ';
             
-            if(formData.gender != null && formData.gender._id != null) {
-                postString += '"gender": "' + formData.gender._id + '", ';
+            if(formData.gender != null && formData.gender != '') {
+                postString += '"gender": "' + formData.gender + '", ';
             }
             
-            if(formData.ageGroup != null && formData.ageGroup._id != null) {
-                postString += '"age_group": "' + formData.ageGroup._id + '", ';
+            if(formData.ageGroup != null && formData.ageGroup != '') {
+                postString += '"age_group": "' + formData.ageGroup + '", ';
             }
             
-            if(formData.league != null && formData.league._id != null) {
+            if(formData.league != null && formData.league != '') {
                 leagueAdd = true;
-                postString += '"league": "' + formData.league._id + '", ';
             }
             
             postString += '"club": "' + currentClub._id + '" }';
@@ -2361,10 +2359,79 @@ angular.module('ma-app')
                         headers: {
                             'content-type': 'application/json' 
                         },
-                        data: '{ "league": "' + formData.league._id + '", "team": "' + response.data._id + '" }'
+                        data: '{ "league": "' + formData.league + '", "team": "' + response.data._id + '" }'
                     }).then(function(leagueResponse) {
                         console.log("Successfully entered team into league: ");
                         console.log(leagueResponse);
+                    }, function(leagueErr) {
+                        console.log("Failure entering team into league: ");
+                        console.log(leagueErr);
+                    });
+                }
+                coreDataService.refreshTeams(currentClub._id);
+            }, function(errResponse) {
+                console.log("Failed creating team: ");
+                console.log(errResponse);
+            });            
+        };
+        
+        this.editTeam = function(formData) {       
+            var leagueAdd = false;
+            //edit team object, then remove league_team entry and replace with this one:
+            var postString = '{ "name": "' + formData.name + '", ';
+            
+            if(formData.gender != null && formData.gender != '') {
+                postString += '"gender": "' + formData.gender + '", ';
+            }
+            
+            if(formData.ageGroup != null && formData.ageGroup != '') {
+                postString += '"age_group": "' + formData.ageGroup + '", ';
+            }
+            
+            if(formData.league != null && formData.league != '') {
+                leagueAdd = true;
+            }
+            
+            postString += '"club": "' + currentClub._id + '" }';
+            
+            console.log("Creating team with string: " + postString);
+            
+            $http({
+                url: baseURL + 'teams/' + formData.teamId,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Edited team successfully: ");
+                console.log(response);
+                //now add team to the league if there is one:
+                if(leagueAdd) {
+                    $http({
+                        url: baseURL + 'league_teams/' + formData.teamId,
+                        method: 'DELETE',
+                        headers: {
+                            'content-type': 'application/json' 
+                        }
+                    }).then(function(leagueResponse) {
+                        console.log("Successfully leagues for team: ");
+                        console.log(leagueResponse);
+                        $http({
+                            url: baseURL + 'league_teams/',
+                            method: 'POST',
+                            headers: {
+                                'content-type': 'application/json' 
+                            },
+                            data: '{ "league": "' + formData.league + '", "team": "' + formData.teamId + '" }'
+                        }).then(function(leagueResponse) {
+                            console.log("Successfully entered team into league: ");
+                            console.log(leagueResponse);
+                            coreDataService.refreshTeams(currentClub._id);
+                        }, function(leagueErr) {
+                            console.log("Failure entering team into league: ");
+                            console.log(leagueErr);
+                        });
                     }, function(leagueErr) {
                         console.log("Failure entering team into league: ");
                         console.log(leagueErr);
