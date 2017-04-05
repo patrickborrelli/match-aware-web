@@ -951,12 +951,12 @@ angular.module('ma-app')
             //post league:            
             var postString = '{ "name": "' + formData.name + '", "short_name": "' + formData.shortname + '", ';
             
-            if(formData.minAgeGroup != null) {
-                postString += '"min_age_group": "' + formData.minAgeGroup._id + '", ';
+            if(formData.minAgeGroup != null && formData.minAgeGroup != '') {
+                postString += '"min_age_group": "' + formData.minAgeGroup + '", ';
             }
             
-            if(formData.maxAgeGroup != null) {
-                postString += '"max_age_group": "' + formData.maxAgeGroup._id + '", ';
+            if(formData.maxAgeGroup != null && formData.maxAgeGroup != '') {
+                postString += '"max_age_group": "' + formData.maxAgeGroup + '", ';
             }
             
             if(formData.rescheduleDays != '') {
@@ -975,7 +975,7 @@ angular.module('ma-app')
                 postString += '"logo_url": "' + formData.logoURL + '", ';
             }
             
-            postString += '"type": "' + formData.type._id + '" }';   
+            postString += '"type": "' + formData.type + '" }';   
             console.log("Posting league with string: " + postString);
             
             return $http({
@@ -1093,12 +1093,12 @@ angular.module('ma-app')
                 postString += '"short_name": "' + formData.shortname + '", ';
             }
             
-            if(formData.minAgeGroup != null) {
-                postString += '"min_age_group": "' + formData.minAgeGroup._id + '", ';
+            if(formData.minAgeGroup != null && formData.minAgeGroup != '') {
+                postString += '"min_age_group": "' + formData.minAgeGroup + '", ';
             }
             
-            if(formData.maxAgeGroup != null) {
-                postString += '"max_age_group": "' + formData.maxAgeGroup._id + '", ';
+            if(formData.maxAgeGroup != null && formData.maxAgeGroup != '') {
+                postString += '"max_age_group": "' + formData.maxAgeGroup + '", ';
             }
             
             if(formData.rescheduleDays != null && formData.rescheduleDays != '') {
@@ -1117,8 +1117,8 @@ angular.module('ma-app')
                 postString += '"logo_url": "' + formData.logoURL + '", ';
             }
             
-            if(formData.type != null) {
-                postString += '"type": "' + formData.type._id + '", ';
+            if(formData.type != null && formData.type != '') {
+                postString += '"type": "' + formData.type + '", ';
             }
             
             postString = postString.slice(0, -2);

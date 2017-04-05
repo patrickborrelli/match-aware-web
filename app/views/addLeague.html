@@ -21,14 +21,14 @@
                 <div class="col-xs-12 col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon">Min Age Group</div>
-                        <select id="minage" class="form-control" ng-model="leagueForm.minAgeGroup" ng-options="ageGroup as ageGroup.name for ageGroup in ageGroups"></select>
+                        <select id="minage" class="form-control" ng-model="leagueForm.minAgeGroup" ng-options="ageGroup._id as ageGroup.name for ageGroup in ageGroups"></select>
                     </div>
                 </div>
                 <label class="sr-only" for="maxage">Maximum Age Group</label>
                 <div class="col-xs-12 col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon">Max Age Group</div>
-                        <select id="maxage" class="form-control" ng-model="leagueForm.maxAgeGroup" ng-options="ageGroup as ageGroup.name for ageGroup in ageGroups"></select>
+                        <select id="maxage" class="form-control" ng-model="leagueForm.maxAgeGroup" ng-options="ageGroup._id as ageGroup.name for ageGroup in ageGroups"></select>
                     </div>
                 </div>
             </div>
@@ -38,7 +38,7 @@
                 <div class="col-xs-12 col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon">Type</div>
-                        <select id="type" class="form-control" ng-model="leagueForm.type" ng-options="leagueType as leagueType.name for leagueType in leagueTypes"></select>
+                        <select id="type" class="form-control" ng-model="leagueForm.type" ng-options="leagueType._id as leagueType.name for leagueType in leagueTypes"></select>
                     </div>
                 </div>
                 <label class="sr-only" for="days">Day to Reschedule</label>

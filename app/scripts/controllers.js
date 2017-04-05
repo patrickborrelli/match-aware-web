@@ -423,19 +423,6 @@ angular.module('ma-app')
             offside: false,
             header: false
         };
-        
-        $scope.leagueForm = {
-            name: '',
-            shortname: '',
-            minAgeGroup: null,
-            maxAgeGroup: null,
-            type: null,
-            rescheduleDays: '',
-            consequence: '',
-            fine: '',
-            logoURL: '',
-            leagueId: ''
-        };
             
         $scope.facilityForm = {
             name: '',
@@ -593,12 +580,20 @@ angular.module('ma-app')
         
         $scope.openAddLeague = function() {
             console.log("\n\nOpening dialog to add league");
+            
+            $scope.leagueForm = {
+                name: '',
+                shortname: '',
+                minAgeGroup: '',
+                maxAgeGroup: '',
+                type: '',
+                rescheduleDays: 0,
+                consequence: '',
+                fine: 0,
+                logoURL: '',
+                leagueId: ''
+            };
             ngDialog.open({ template: 'views/addLeague.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
-        }; 
-        
-        $scope.openAddFacility = function() {
-            console.log("\n\nOpening dialog to add facility");
-            ngDialog.open({ template: 'views/addFacility.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
         }; 
         
         $scope.addLeague = function() {
@@ -616,6 +611,29 @@ angular.module('ma-app')
                 });
             
             ngDialog.close();
+        };
+        
+        $scope.openEditLeague = function(league) {
+            console.log("\n\nOpening dialog to edit league");
+            console.log(league);
+            $scope.league = league;
+            
+            $scope.leagueForm = {
+                name: league.name,
+                shortname: league.short_name,
+                minAgeGroup: league.min_age_group._id,
+                maxAgeGroup: league.max_age_group._id,
+                type: league.type._id,
+                rescheduleDays: league.reschedule_time,
+                consequence: league.reschedule_consequence,
+                fine: league.reschedule_fine,
+                logoURL: league.logo_url,
+                leagueId: league._id
+            };
+                
+            console.log("Current entries include: ");
+            console.log($scope.leagueForm);
+            ngDialog.open({ template: 'views/editLeague.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
         };
         
         $scope.editLeague = function(league) {
@@ -872,29 +890,6 @@ angular.module('ma-app')
             coreDataService.deleteLeague(league);
         };
         
-        $scope.openEditLeague = function(league) {
-            console.log("\n\nOpening dialog to edit league");
-            console.log(league);
-            $scope.league = league;
-            
-            $scope.leagueForm = {
-                name: league.name,
-                shortname: league.short_name,
-                minAgeGroup: league.min_age_group,
-                maxAgeGroup: league.max_age_group,
-                type: league.type,
-                rescheduleDays: league.reschedule_time,
-                consequence: league.reschedule_consequence,
-                fine: league.reschedule_fine,
-                logoURL: league.logo_url,
-                leagueId: league._id
-            };
-                
-            console.log("Current entries include: ");
-            console.log($scope.leagueForm);
-            ngDialog.open({ template: 'views/editLeague.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
-        };
-        
         $scope.openAddRule = function() {
             console.log("\n\nOpening dialog to add rule");
             ngDialog.open({ template: 'views/addRule.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
@@ -906,6 +901,11 @@ angular.module('ma-app')
             coreDataService.addRule($scope.ruleForm);
             ngDialog.close();
         };
+        
+        $scope.openAddFacility = function() {
+            console.log("\n\nOpening dialog to add facility");
+            ngDialog.open({ template: 'views/addFacility.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
+        }; 
         
         $scope.addFacility = function() {
             console.log("\n\nAdding facility");
