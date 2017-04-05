@@ -294,16 +294,16 @@
                                     <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{team.club.logo_url}} alt="club logo">
                                 </div>
                                 <div class="media-body">
-                                    <h3 class="media-heading">{{team.name}}</h3>
+                                    <h3 class="media-heading">{{team.name}} - {{getTeamLeagueName(team)}}</h3>
                                     <p>{{team.age_group.birth_year}}/{{team.age_group.soccer_year}} {{team.gender.name}}<br />
                                     {{team.club.name}}</p>  
-                                    <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditTeam(team)">Edit</button>
+                                    <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="getTeamLeague(team);">Edit</button>
                                     <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteTeam(team)">Delete</button>
                                 </div>
                             </li>
                         </ul>
                     </div>
-                </div>
+                </div>, 
             </div>
             <div id="tabContent" class="tab-pane fade in active" ng-show="isSelected(3)">
                 <ul class="nav nav-tabs" role="tablist">
