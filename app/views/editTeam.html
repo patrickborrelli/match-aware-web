@@ -14,7 +14,7 @@
                 <div class="col-xs-12 col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon">Age Group</div>
-                        <select id="agegroup" class="form-control" ng-model="teamForm.ageGroup" ng-options="ageGroup as ageGroup.name for ageGroup in ageGroups"></select>
+                        <select id="agegroup" class="form-control" ng-selected="teamForm.ageGroup" ng-model="teamForm.ageGroup" ng-options="ageGroup._id as ageGroup.name for ageGroup in ageGroups"></select>
                     </div>
                 </div>
             </div>
@@ -23,14 +23,14 @@
                 <div class="col-xs-12 col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon">Gender</div>
-                        <select id="gender" class="form-control" ng-model="teamForm.gender" ng-options="gender as gender.name for gender in genders"></select>
+                        <select id="gender" class="form-control" ng-model="teamForm.gender" ng-options="gender._id as gender.name for gender in genders"></select>
                     </div>
                 </div>
                 <label class="sr-only" for="league">League</label>
                 <div class="col-xs-12 col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon">League</div>
-                        <select id="league" class="form-control" ng-model="teamForm.league" ng-options="league as league.name for league in leagues"></select>
+                        <select id="league" class="form-control" ng-model="teamForm.league" ng-options="league._id as league.name for league in leagues"></select>
                     </div>
                 </div>
             </div>
