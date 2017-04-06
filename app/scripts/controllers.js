@@ -406,24 +406,7 @@ angular.module('ma-app')
             email: '',
             role: ''
         };
-        
-        $scope.ruleForm = {
-            league: null,
-            age: null,
-            duration: '',
-            players: '',
-            maxFieldLen: '',
-            maxFieldWidth: '',
-            goalHeight: '',
-            goalWidth: '',
-            periods: '',
-            periodDuration: '',
-            goalkeeper: false,
-            buildout: false,
-            offside: false,
-            header: false
-        };
-            
+                    
         $scope.facilityForm = {
             name: '',
             shortname: '',
@@ -500,6 +483,46 @@ angular.module('ma-app')
                 $scope.fineHidden = true;
             }
         });
+        
+        $scope.$watch('ruleForm.periods', function(ruleForm) {
+            if(ruleForm.periods != 0 && ruleForm.periods != '' &&
+               ruleForm.periodDuration != 0 && ruleForm.periodDuration != '' &&
+               ruleForm.break != 0 && ruleForm.break != '') {
+                var per = parseInt(periods);
+                var pDur = parseInt(ruleForm.periodDuration);
+                var br = parseInt(ruleForm.break);
+                
+                var totalDuration = (per * pDur) + ((per - 1) * br);
+                ruleForm.duration = totalDuration.toString();
+            }
+        });
+        
+        $scope.$watch('ruleForm.periodDuration', function(periodDuration) {
+            if($scope.ruleForm.periods != 0 && $scope.ruleForm.periods != '' &&
+               periodDuration != 0 && periodDuration != '' &&
+               $scope.ruleForm.break != 0 && $scope.ruleForm.break != '') {
+                var per = parseInt($scope.ruleForm.periods);
+                var pDur = parseInt($scope.ruleForm.periodDuration);
+                var br = parseInt($scope.ruleForm.break);
+                
+                var totalDuration = (per * pDur) + ((per - 1) * br);
+                $scope.ruleForm.duration = totalDuration.toString();
+            }
+        });
+        
+        $scope.$watch('ruleForm.break', function(breaks) {
+            if($scope.ruleForm.periods != 0 && $scope.ruleForm.periods != '' &&
+               $scope.ruleForm.periodDuration != 0 && $scope.ruleForm.periodDuration != '' &&
+               breaks != 0 && breaks != '') {
+                var per = parseInt($scope.ruleForm.periods);
+                var pDur = parseInt($scope.ruleForm.periodDuration);
+                var br = parseInt($scope.ruleForm.break);
+                
+                var totalDuration = (per * pDur) + ((per - 1) * br);
+                $scope.ruleForm.duration = totalDuration.toString();
+            }
+        });
+        
         
         $scope.userHasSingleClub = function() {
             return userService.getUserHasClub();
@@ -892,6 +915,25 @@ angular.module('ma-app')
         
         $scope.openAddRule = function() {
             console.log("\n\nOpening dialog to add rule");
+            
+            $scope.ruleForm = {
+                league: '',
+                age: '',
+                duration: '',
+                players: '',
+                break: '',
+                ballsize: '',
+                maxFieldLen: '',
+                maxFieldWidth: '',
+                goalHeight: '',
+                goalWidth: '',
+                periods: '',
+                periodDuration: '',
+                goalkeeper: false,
+                buildout: false,
+                offside: false,
+                header: false
+            };
             ngDialog.open({ template: 'views/addRule.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
         }; 
         
@@ -900,6 +942,56 @@ angular.module('ma-app')
             console.log($scope.ruleForm);
             coreDataService.addRule($scope.ruleForm);
             ngDialog.close();
+        };
+        
+        $scope.openEditRule = function(rule) {
+            console.log("\n\nOpening dialog to add rule");
+            console.log(rule);
+            
+            $scope.ruleForm = {
+                league: rule.league._id,
+                age: rule.age_group._id,
+                duration: rule.duration_minutes,
+                players: rule.fielded_players.toString(),
+                break: rule.intermission_duration_minutes,
+                ballsize: rule.ball_size,
+                maxFieldLen: rule.max_field_length,
+                maxFieldWidth: rule.max_field_width,
+                goalHeight: rule.goal_height_ft,
+                goalWidth: rule.goal_width_ft,
+                periods: rule.num_periods,
+                periodDuration: rule.period_duration_minutes,
+                goalkeeper: rule.goalkeeper,
+                buildout: rule.build_out_line,
+                offside: rule.offside,
+                header: rule.heading,
+                ruleId: rule._id
+            };            
+            console.log("\n\nForm now contains:");
+            console.log($scope.ruleForm);
+            ngDialog.open({ template: 'views/editRule.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
+        }; 
+        
+        $scope.editRule = function() {
+            console.log("\n\nUpdating rule");
+            console.log($scope.ruleForm);
+            coreDataService.editRule($scope.ruleForm);
+            ngDialog.close();
+        };
+        
+        $scope.deleteRule = function(rule) {
+            console.log("\n\nDeleting rule" );
+            console.log(rule);
+            
+            coreDataService.deleteRule(rule)
+                .then(function(response) {
+                    console.log("Successfully deleted rule: ");
+                    console.log(response);
+                    coreDataService.refreshRules();
+                }, function(errResponse) {
+                    console.log("Failed on attempt to delete rule:");
+                    console.log(errResponse);
+                });
         };
         
         $scope.openAddFacility = function() {

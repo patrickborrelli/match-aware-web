@@ -396,19 +396,21 @@
                                         </div>
                                         <div class="media-body">
                                             <div class="col-xs-12 col-sm-4">
-                                                <h3 class="media-heading" style="padding-top: 20px;">{{rule.league.name}} - {{rule.league.short_name}}</h3>
-                                                <p>{{rule.age_group.birth_year}}/{{rule.age_group.soccer_year}}<br /></p>
+                                                <h4 class="media-heading" style="padding-top: 20px;">{{rule.league.name}} - {{rule.league.short_name}}</h4>
+                                                <h5>{{rule.age_group.birth_year}}/{{rule.age_group.soccer_year}}</h5>
+                                                <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditRule(rule)">Edit</button>
+                                                <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteRule(rule)">Delete</button>
                                             </div>
                                             <div class="col-xs-12 col-sm-8">
                                                 <p>
-                                                    Game Duration: {{rule.duration_minutes}} - {{rule.num_periods}} x {{rule.period_duration_minutes}}<br />
-                                                    Fielded Players: {{rule.fielded_players}}  Ball Size: {{rule.ball_size}}<br />
-                                                    Goalkeeper: {{rule.goalkeeper}}  Offside: {{rule.offside}}  Heading: {{rule.heading}}  Build-out Line: {{rule.build_out_line}}
-                                                    Max Field Dimensions: {{rule.max_field_length}} x {{rule.max_field_width}}  Goal: {{rule.goal_width_ft}} x {{rule.goal_height_ft}}    
+                                                    <strong>Duration:</strong> {{rule.duration_minutes}} total min. - {{rule.num_periods}} periods x {{rule.period_duration_minutes}} min. with {{rule.intermission_duration_minutes}} min. break(s)<br />
+                                                    <strong>Format:</strong> {{rule.fielded_players}}v{{rule.fielded_players}}&nbsp;&nbsp;&nbsp;&nbsp;<strong>Ball Size:</strong> {{rule.ball_size}}<br />
+                                                    <strong>Goalkeeper:</strong> {{rule.goalkeeper}}&nbsp;&nbsp;&nbsp;&nbsp;<strong>Offside:</strong> {{rule.offside}}<br />
+                                                    <strong>Heading:</strong> {{rule.heading}}&nbsp;&nbsp;&nbsp;&nbsp;<strong>Build-out Line:</strong> {{rule.build_out_line}}<br />
+                                                    <strong>Max Field Dimensions:</strong> {{rule.max_field_length}} x {{rule.max_field_width}}&nbsp;&nbsp;&nbsp;&nbsp;<strong>Goal:</strong> {{rule.goal_width_ft}} x {{rule.goal_height_ft}}    
                                                 </p>
                                             </div>
-                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="addTeam()">Edit</button>
-                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="addTeam()">Delete</button>
+                                            
                                         </div>
                                     </li>
                                 </ul>

@@ -1231,10 +1231,18 @@ angular.module('ma-app')
         
         this.addRule = function(formData) {
             //post rule:            
-            var postString = '{ "league": "' + formData.league._id + '", ';
+            var postString = '{ "league": "' + formData.league + '", ';
             
             if(formData.duration != '') {
                 postString += '"duration_minutes": ' + formData.duration + ', ';
+            }
+            
+            if(formData.break != '') {
+                postString += '"intermission_duration_minutes": ' + formData.break + ', ';
+            }
+                        
+            if(formData.ballsize != '') {
+                postString += '"ball_size": ' + formData.ballsize + ', ';
             }
             
             if(formData.players != '') {
@@ -1266,7 +1274,7 @@ angular.module('ma-app')
             postString += '"offside": "' + formData.offside + '", ';
             postString += '"heading": "' + formData.header + '", ';
             postString += '"build_out_line": "' + formData.buildout + '", ';
-            postString += '"age_group": "' + formData.age._id + '" }';
+            postString += '"age_group": "' + formData.age + '" }';
             
             console.log("Posting rule with string: " + postString);
             
@@ -1285,6 +1293,83 @@ angular.module('ma-app')
                 console.log("Failed on attempt to add rule:");
                 console.log(errResponse);
             });
+        };
+        
+        this.editRule = function(formData) {
+            //post rule:            
+            var postString = '{ "league": "' + formData.league + '", ';
+            
+            if(formData.duration != '') {
+                postString += '"duration_minutes": ' + formData.duration + ', ';
+            }
+            
+            if(formData.break != '') {
+                postString += '"intermission_duration_minutes": ' + formData.break + ', ';
+            }
+                        
+            if(formData.ballsize != '') {
+                postString += '"ball_size": ' + formData.ballsize + ', ';
+            }
+            
+            if(formData.players != '') {
+                postString += '"fielded_players": ' + formData.players + ', ';
+            }
+            
+            if(formData.maxFieldLen != '') {
+                postString += '"max_field_length": ' + formData.maxFieldLen + ', ';
+            }
+            
+            if(formData.maxFieldWidth != '') {
+                postString += '"max_field_width": ' + formData.maxFieldWidth + ', ';
+            }
+            
+            if(formData.goalHeight != '') {
+                postString += '"goal_height_ft": ' + formData.goalHeight + ', ';
+            }
+            if(formData.goalWidth != '') {
+                postString += '"goal_width_ft": ' + formData.goalWidth + ', ';
+            }
+            if(formData.periods != '') {
+                postString += '"num_periods": ' + formData.periods + ', ';
+            }
+            if(formData.periodDuration != '') {
+                postString += '"period_duration_minutes": ' + formData.periodDuration + ', ';
+            }
+            
+            postString += '"goalkeeper": "' + formData.goalkeeper + '", ';   
+            postString += '"offside": "' + formData.offside + '", ';
+            postString += '"heading": "' + formData.header + '", ';
+            postString += '"build_out_line": "' + formData.buildout + '", ';
+            postString += '"age_group": "' + formData.age + '" }';
+            
+            console.log("Posting rule with string: " + postString);
+            
+            $http({
+                url: baseURL + 'rules/' + formData.ruleId,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Successfully updated rule: ");
+                console.log(response);
+                localRefreshRules();
+            }, function(errResponse) {
+                console.log("Failed on attempt to update rule:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.deleteRule = function(rule) {
+            //delete selected rule and refresh the scope:
+            return $http({
+                url: baseURL + 'rules/' + rule._id,
+                method: 'DELETE',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            })
         };
         
         this.addFieldSize = function(formData) {
