@@ -530,6 +530,46 @@ angular.module('ma-app')
             }
         });
         
+        $scope.$watch('ageGroupForm.socceryear', function(socceryear) {
+            if($scope.ageGroupForm != null) {
+                var myName = '';
+                
+                if($scope.ageGroupForm.birthyear != '') {
+                    myName += $scope.ageGroupForm.birthyear;
+                }
+                
+                if($scope.ageGroupForm.birthyear != '' && socceryear != '') {
+                    myName += "/";
+                }
+                
+                if(socceryear != '') {
+                    myName += "U" + socceryear;
+                }
+                
+                $scope.ageGroupForm.name = myName;
+            }            
+        });
+        
+        $scope.$watch('ageGroupForm.birthyear', function(birthyear) {
+            if($scope.ageGroupForm != null) {
+                var myName = '';
+                
+                if(birthyear != '') {
+                    myName += birthyear;
+                }
+                
+                if(birthyear != '' && $scope.ageGroupForm.socceryear != '') {
+                    myName += "/";
+                }
+                
+                if($scope.ageGroupForm.socceryear != '') {
+                    myName += "U" + $scope.ageGroupForm.socceryear;
+                }
+                
+                $scope.ageGroupForm.name = myName;
+            }            
+        });
+        
         
         $scope.userHasSingleClub = function() {
             return userService.getUserHasClub();
