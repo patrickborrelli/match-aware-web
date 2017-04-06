@@ -484,42 +484,49 @@ angular.module('ma-app')
             }
         });
         
-        $scope.$watch('ruleForm.periods', function(ruleForm) {
-            if(ruleForm.periods != 0 && ruleForm.periods != '' &&
-               ruleForm.periodDuration != 0 && ruleForm.periodDuration != '' &&
-               ruleForm.break != 0 && ruleForm.break != '') {
-                var per = parseInt(periods);
-                var pDur = parseInt(ruleForm.periodDuration);
-                var br = parseInt(ruleForm.break);
-                
-                var totalDuration = (per * pDur) + ((per - 1) * br);
-                ruleForm.duration = totalDuration.toString();
+        $scope.$watch('ruleForm.periods', function(periods) {
+            if($scope.ruleForm != null) {
+                if(periods != 0 && periods != '' &&
+                   $scope.ruleForm.periodDuration != 0 && $scope.ruleForm.periodDuration != '' &&
+                   $scope.ruleForm.break != 0 && $scope.ruleForm.break != '') {
+                    var per = parseInt(periods);
+                    var pDur = parseInt($scope.ruleForm.periodDuration);
+                    var br = parseInt($scope.ruleForm.break);
+
+                    var totalDuration = (per * pDur) + ((per - 1) * br);
+                    $scope.ruleForm.duration = totalDuration.toString();
+                }
             }
+            
         });
         
         $scope.$watch('ruleForm.periodDuration', function(periodDuration) {
-            if($scope.ruleForm.periods != 0 && $scope.ruleForm.periods != '' &&
-               periodDuration != 0 && periodDuration != '' &&
-               $scope.ruleForm.break != 0 && $scope.ruleForm.break != '') {
-                var per = parseInt($scope.ruleForm.periods);
-                var pDur = parseInt($scope.ruleForm.periodDuration);
-                var br = parseInt($scope.ruleForm.break);
-                
-                var totalDuration = (per * pDur) + ((per - 1) * br);
-                $scope.ruleForm.duration = totalDuration.toString();
+            if($scope.ruleForm != null) {
+                if($scope.ruleForm.periods != 0 && $scope.ruleForm.periods != '' &&
+                   periodDuration != 0 && periodDuration != '' &&
+                   $scope.ruleForm.break != 0 && $scope.ruleForm.break != '') {
+                    var per = parseInt($scope.ruleForm.periods);
+                    var pDur = parseInt($scope.ruleForm.periodDuration);
+                    var br = parseInt($scope.ruleForm.break);
+
+                    var totalDuration = (per * pDur) + ((per - 1) * br);
+                    $scope.ruleForm.duration = totalDuration.toString();
+                }
             }
         });
         
         $scope.$watch('ruleForm.break', function(breaks) {
-            if($scope.ruleForm.periods != 0 && $scope.ruleForm.periods != '' &&
-               $scope.ruleForm.periodDuration != 0 && $scope.ruleForm.periodDuration != '' &&
-               breaks != 0 && breaks != '') {
-                var per = parseInt($scope.ruleForm.periods);
-                var pDur = parseInt($scope.ruleForm.periodDuration);
-                var br = parseInt($scope.ruleForm.break);
-                
-                var totalDuration = (per * pDur) + ((per - 1) * br);
-                $scope.ruleForm.duration = totalDuration.toString();
+            if($scope.ruleForm != null) {
+                if($scope.ruleForm.periods != 0 && $scope.ruleForm.periods != '' &&
+                   $scope.ruleForm.periodDuration != 0 && $scope.ruleForm.periodDuration != '' &&
+                   breaks != 0 && breaks != '') {
+                    var per = parseInt($scope.ruleForm.periods);
+                    var pDur = parseInt($scope.ruleForm.periodDuration);
+                    var br = parseInt($scope.ruleForm.break);
+
+                    var totalDuration = (per * pDur) + ((per - 1) * br);
+                    $scope.ruleForm.duration = totalDuration.toString();
+                }
             }
         });
         
