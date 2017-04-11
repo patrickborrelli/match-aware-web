@@ -29,7 +29,7 @@
                         <a ng-click="subSelect(1)" aria-controls="requests" role="tab">Requests</a>
                     </li>
                     <li role="presentation" ng-class="{active:subIsSelected(2)}">
-                        <a ng-click="subSelect(2); loadClubUsers();" aria-controls="roles" role="tab">Assign Roles</a>
+                        <a ng-click="subSelect(2); loadClubUsers();" aria-controls="roles" role="tab">Manage Users</a>
                     </li>
                     <li role="presentation" ng-class="{active:subIsSelected(3)}">
                         <a ng-click="subSelect(3)" aria-controls="users" role="tab">Invite Users</a>
@@ -131,9 +131,9 @@
                                                     </div>
                                                     
                                                     <div class="form-group">
-                                                        <button type="submit" class="btn btn-sm btn-success" >Update Roles</button>
-                                                        <button type="button" class="btn btn-sm btn-success" >Edit User</button>
-                                                        <button type="button" class="btn btn-sm btn-success" >Delete User</button>
+                                                        <button type="submit" class="btn btn-sm btn-success">Update Roles</button>
+                                                        <button type="button" class="btn btn-sm btn-success">Edit User</button>
+                                                        <button type="button" class="btn btn-sm btn-success" ng-click="deactivateUser(user);">Deactivate User</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -299,7 +299,7 @@
                                     <h3 class="media-heading">{{team.name}} - {{getTeamLeagueName(team)}}</h3>
                                     <p>{{team.age_group.birth_year}}/{{team.age_group.soccer_year}} {{team.gender.name}}<br />
                                     {{team.club.name}}</p>  
-                                    <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="getTeamLeague(team);">Edit</button>
+                                    <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditTeam(team, getTeamLeague(team));">Edit</button>
                                     <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteTeam(team)">Delete</button>
                                 </div>
                             </li>

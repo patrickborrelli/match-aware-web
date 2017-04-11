@@ -2,8 +2,7 @@
 
 angular.module('ma-app', ['ui.router', 'ngDialog'])
     .config(function($stateProvider, $urlRouterProvider) {
-        $stateProvider
-            
+        $stateProvider            
             .state('app', {
                 url:'/',
                 views: {

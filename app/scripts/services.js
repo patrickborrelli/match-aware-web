@@ -597,7 +597,7 @@ angular.module('ma-app')
                     }).then(function(response) {
                         console.log("Retrieved the users from the API: ");
                         console.log(response);
-                        $rootScope.users = response.data;
+                        $rootScope.users = localPickActiveUsers(response.data);
                         usersLoaded = true;
                     });
                 } else {
@@ -611,7 +611,7 @@ angular.module('ma-app')
                     }).then(function(response) {
                         console.log("Retrieved the users from the API: ");
                         console.log(response);
-                        $rootScope.users = response.data;
+                        $rootScope.users = localPickActiveUsers(response.data);
                         usersLoaded = true;
                     }); 
                 }                
@@ -716,7 +716,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the users from the API: ");
                     console.log(response);
-                    $rootScope.users = response.data;
+                    $rootScope.users = localPickActiveUsers(response.data);
                     usersLoaded = true;
                 });
             } else {
@@ -730,7 +730,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the users from the API: ");
                     console.log(response);
-                    $rootScope.users = response.data;
+                    $rootScope.users = localPickActiveUsers(response.data);
                     usersLoaded = true;
                 }); 
             } 
@@ -1674,7 +1674,19 @@ angular.module('ma-app')
                     console.log(errResponse);
                 });
             }           
-        };        
+        };  
+        
+        this.pickActiveUsers = function(users) {
+            var active = [];
+            for(var i = 0; i < users.length; i++) {
+                if(users[i].active) {
+                    active.push(users[i]);
+                }
+            }
+            return active;
+        };
+        
+        var localPickActiveUsers = this.pickActiveUsers;
     }])
 
     .service('userService', ['$http', 'baseURL', '$q', 'ngDialog', 'coreDataService', 'clubService', function($http,baseURL, $q, ngDialog, coreDataService, clubService) {
@@ -2376,6 +2388,24 @@ angular.module('ma-app')
             });
         };
         
+        this.deactivateUser = function(user) {
+            //deactivate the selected user and then refresh all active users in the scope:
+            $http({
+                url: baseURL + 'users/deactivate/' + user._id,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Successfully deactivated user: ");
+                console.log(response);
+                coreDataService.refreshClubUsers(clubService.getCurrentClubId());
+            }, function(errResponse) {
+                console.log("Failed on attempt to deactivate user:");
+                console.log(errResponse);
+            });
+        }
+        
       }])
 
     .service('clubService', ['$http', 'baseURL', 'ngDialog', '$state', 'coreDataService', function($http, baseURL, ngDialog, $state, coreDataService) {        
@@ -2927,6 +2957,7 @@ angular.module('ma-app')
                 
             }, function(response) {
                 console.log("failed to registered a user.");
+                $scope.showRegLoader = true;
                 var message = '\
                 <div class="ngdialog-message">\
                 <div><h3>Login Unsuccessful</h3></div>' +

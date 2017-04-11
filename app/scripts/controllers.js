@@ -178,6 +178,8 @@ angular.module('ma-app')
             authService.logout();
             ngDialog.close();
         };
+        
+        
     }])
 
     .controller('InviteController', ['$scope', 'ngDialog', '$state', '$stateParams', 'userService', 'coreDataService', 'authService', 'clubService', function($scope, ngDialog, $state, $stateParams, userService, coreDataService, authService, clubService) {
@@ -568,8 +570,7 @@ angular.module('ma-app')
                 
                 $scope.ageGroupForm.name = myName;
             }            
-        });
-        
+        });        
         
         $scope.userHasSingleClub = function() {
             return userService.getUserHasClub();
@@ -734,7 +735,7 @@ angular.module('ma-app')
             };
             
             console.log("\n\nOpening dialog to add team");
-            ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
+            ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
         }; 
         
         $scope.openAddField = function(facility) {
@@ -826,16 +827,9 @@ angular.module('ma-app')
         
         $scope.getTeamLeague = function(team) {
             console.log("RETRIEVING LEAGUE NAME FOR TEAM " + team.name);
-            coreDataService.getTeamLeague(team._id) 
-                .then(function(response) {
-                    console.log("Retrieved league ");
-                    console.log(response.data[0]);
-                    $scope.openEditTeam(team, response.data[0])
-                }, function(err) {
-                    console.log("Error while retrieveing league" );
-                    console.log(err);
-            });
+            var leagues = team.leagues;
             
+            return leagues[0];
         };
         
         $scope.getTeamLeagueName = function(team) {
@@ -863,7 +857,7 @@ angular.module('ma-app')
             console.log("teamForm contains: ");
             console.log($scope.teamForm);
                 
-            ngDialog.open({ template: 'views/editTeam.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
+            ngDialog.open({ template: 'views/editTeam.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
         };
         
         $scope.editTeam = function() {
@@ -1227,6 +1221,12 @@ angular.module('ma-app')
                     console.log(errResponse);
                 });  
             ngDialog.close();
+        };
+        
+        $scope.deactivateUser = function(user) {
+            console.log("Attempting to deactivate user: ");            
+            console.log(user);
+            userService.deactivateUser(user);
         };
         
         $scope.userHasRoles = function() {
