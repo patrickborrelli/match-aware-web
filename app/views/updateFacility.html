@@ -1,10 +1,10 @@
 <div class="ngdialog-message" style="min-height:340px;">
     <div>
         <h4> 
-            <button type="button" disabled ng-show="currentClosure(facilityStatusEntity)" class="btn btn-sm btn-danger" style="margin-right:40px; cursor: default;">CLOSED</button>
-            <button type="button" disabled ng-show="partialClosure(facilityStatusEntity)" class="btn btn-sm btn-warning" style="margin-right:40px; cursor: default;">PARTIAL</button>
-            <button type="button" disabled ng-show="!currentClosure(facilityStatusEntity) && !partialClosure(facilityStatusEntity)" class="btn btn-sm btn-success" style="margin-right:40px; cursor: default;">OPEN</button>
-            Facility Status - {{facilityStatusName}}
+            <button type="button" disabled ng-show="currentClosure(fuForm.entity)" class="btn btn-sm btn-danger" style="margin-right:40px; cursor: default;">CLOSED</button>
+            <button type="button" disabled ng-show="partialClosure(fuForm.entity)" class="btn btn-sm btn-warning" style="margin-right:40px; cursor: default;">PARTIAL</button>
+            <button type="button" disabled ng-show="!currentClosure(fuForm.entity) && !partialClosure(fuForm.entity)" class="btn btn-sm btn-success" style="margin-right:40px; cursor: default;">OPEN</button>
+            Facility Status - {{fuForm.entity.name}}
         </h4>
     </div>
     <div class="row" style="margin-bottom: 10px; padding-bottom:10px;">
@@ -109,9 +109,10 @@
             </div>
         </div>
     </form>
-    <button ng-show="currentClosure(facilityStatusEntity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=openFacility(facilityStatusEntity)>Reopen Facility</button>
-    <button ng-show="partialClosure(facilityStatusEntity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=openFacility(facilityStatusEntity)>Reopen Closed Fields</button>
-    <button ng-show="currentShown && !futureShown" type="button" ng-click="closeFacility()" class="btn btn-sm btn-info btn-custom">Close Facility</button>
+    <button ng-show="currentClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=openFacility(fuForm.entity)>Reopen Facility</button>
+    <button ng-show="partialClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=openFacility(fuForm.entity)>Reopen Closed Fields</button>
+    <button ng-show="currentClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=updateFacilityClosure(fuForm.entity)>Update Closure</button>
+    <button ng-show="currentShown && !futureShown && !currentClosure(fuForm.entity)" type="button" ng-click="closeFacility()" class="btn btn-sm btn-info btn-custom">Close Facility</button>
     <button ng-show="futureShown" type="submit" ng-click="closeFacility()" class="btn btn-sm btn-info btn-custom">Schedule Future Closure</button>
     <button type="button" class="btn btn-sm btn-default btn-custom75" ng-click=closeThisDialog("Cancel")>Cancel</button>
     <div>&nbsp;</div>

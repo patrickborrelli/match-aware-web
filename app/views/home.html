@@ -435,10 +435,10 @@
     <div class="col-xs-12">
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" ng-class="{active:faIsSelected(1)}">
-                <a ng-click="faSelect(1); faSubSelect(1)" aria-controls="users" role="tab">Faciliy Closures</a>
+                <a ng-click="faSelect(1); faSubSelect(1)" aria-controls="closures" role="tab">Faciliy Closures</a>
             </li>
             <li role="presentation" ng-class="{active:faIsSelected(2)}">
-                <a ng-click="faSelect(2); faSubSelect(1)" aria-controls="teams" role="tab">Scheduling</a>
+                <a ng-click="faSelect(2); faSubSelect(1)" aria-controls="scheduling" role="tab">Scheduling</a>
             </li>
             <li role="presentation" ng-class="{active:faIsSelected(3)}">
                 <a ng-click="faSelect(3); faSubSelect(1)" aria-controls="configuration" role="tab">Configuration</a>
@@ -479,7 +479,7 @@
                                         <div class="media-left media-top" >  
                                             <button type="button" disabled style="cursor: default;" ng-show="currentClosure(field)" class="btn btn-sm btn-danger btn-custom75" style="margin-top: 0px;">CLOSED</button>
                                             <button type="button" disabled style="cursor: default;" ng-show="!currentClosure(field)" class="btn btn-sm btn-success btn-custom75"style="margin-top: 0px;">OPEN</button>
-                                            <button type="button" ng-click="openFieldStatus(field)" class="btn btn-sm btn-default btn-custom75">UPDATE</button>
+                                            <button type="button" ng-click="openUpdateFieldStatus(field)" class="btn btn-sm btn-default btn-custom75">UPDATE</button>
                                         </div>
                                         <div class="media-body">
                                             <div class="row">

@@ -2743,13 +2743,13 @@ angular.module('ma-app')
             }).then(function(response) {
                 console.log("Successfully created closure: ");
                 console.log(response);    
-                postString = '{ "closures": ["' + response.data._id + '", ';
+                postString = '{ "closures": ["' + response.data._id + '",';
                 
                 for(var i = 0; i < form.entity.closures.length; i++) {
                     postString += '"' + form.entity.closures[i]._id + '",'
                 }
                 console.log("First: " + postString);
-                postString = postString.slice(0, -2);
+                postString = postString.slice(0, -1);
                 console.log("After: " + postString);
                 postString += ']}';
                 
@@ -2903,8 +2903,8 @@ angular.module('ma-app')
             var returnMilis;
             var returnDate;
             
-            console.log("Combining date portion of " + date.toISOString() + " with time portion of " + date.toISOString());
-            returnDate = new Date(date.getFullYear(), date.getMonth() +1, date.getDate(), time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds());
+            console.log("Combining date portion of " + date.toISOString() + " with time portion of " + time.toISOString());
+            returnDate = new Date(date.getFullYear(), date.getMonth()  , date.getDate(), time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds());
                         
             console.log("Converted date to " + returnDate.toISOString());
             return returnDate;            
@@ -2939,8 +2939,39 @@ angular.module('ma-app')
                 dateString += "PM";
             }   
             
-            return dateString;
+            return dateString;            
+        };  
+        
+        this.determineDuration = function(durationMillis) {
+            var eight = 8 * 60 * 60 * 1000;
+            var twelve = 12 * 60 * 60 * 1000;
+            var eighteen = 18 * 60 * 60 * 1000;
+            var twentyfour = 24 * 60 * 60 * 1000;
             
+            var duration = '';
+            if(isEquivalent(durationMillis, eight)) {
+                duration = '8';
+            } else if(isEquivalent(durationMillis, twelve)) {
+                duration = '12';
+            } else if(isEquivalent(durationMillis, eighteen)) {
+                duration = '18';
+            } else if(isEquivalent(durationMillis, twentyfour)) {
+                duration = '24';
+            }
+            
+            return duration;
+        };
+        
+        function isEquivalent(value, target) {
+            var targetPlus = target + 5000; 
+            var targetMinus = target - 5000;
+            var equivalent = false;
+            
+            //if the times match within 5 seconds, that is close enough:
+            if(value >= targetMinus && value <= targetPlus) {
+                equivalent = true;
+            }
+            return equivalent;
         };
     }])
                              

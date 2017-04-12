@@ -1,9 +1,9 @@
 <div class="ngdialog-message" style="min-height:340px;">
     <div>
         <h4> 
-            <button type="button" disabled ng-show="currentClosure(fieldStatusEntity)" class="btn btn-sm btn-danger" style="margin-right:40px; cursor: default;">CLOSED</button>
-            <button type="button" disabled ng-show="!currentClosure(fieldStatusEntity)" class="btn btn-sm btn-success" style="margin-right:40px; cursor: default;">OPEN</button>
-            Field Status - {{fieldStatusName}}
+            <button type="button" disabled ng-show="currentClosure(fuForm.entity)" class="btn btn-sm btn-danger" style="margin-right:40px; cursor: default;">CLOSED</button>
+            <button type="button" disabled ng-show="!currentClosure(fuForm.entity)" class="btn btn-sm btn-success" style="margin-right:40px; cursor: default;">OPEN</button>
+            Field Status - {{fuForm.entity.name}}
         </h4>
     </div>
     <div class="row" style="margin-bottom: 10px; padding-bottom:10px;">
@@ -109,8 +109,9 @@
             </div>
         </div>
     </form>
-    <button ng-show="currentClosure(fieldStatusEntity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=openField(fieldStatusEntity)>Reopen Field</button>
-    <button ng-show="currentShown && !futureShown" type="button" ng-click="closeField()" class="btn btn-sm btn-info btn-custom">Close Field</button>
+    <button ng-show="currentClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=openField(fuForm.entity)>Reopen Field</button>
+    <button ng-show="currentClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=updateFieldClosure(fuForm.entity)>Update Closure</button>
+    <button ng-show="currentShown && !futureShown && !currentClosure(fuForm.entity)" type="button" ng-click="closeField(fuForm.entity)" class="btn btn-sm btn-info btn-custom">Close Field</button>
     <button ng-show="futureShown" type="submit" ng-click="closeField()" class="btn btn-sm btn-info btn-custom">Schedule Future Closure</button>
     <button type="button" class="btn btn-sm btn-default btn-custom75" ng-click=closeThisDialog("Cancel")>Cancel</button>
     <div>&nbsp;</div>
