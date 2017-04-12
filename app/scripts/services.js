@@ -1466,7 +1466,7 @@ angular.module('ma-app')
             var ps = '{ "name": "' + form.name + '", ';
             
             if(form.club != null) {
-                ps += '"club_affiliation": "' + form.club._id + '", ';
+                ps += '"club_affiliation": "' + form.club + '", ';
             }
             
             if(form.address != '') {
@@ -1675,6 +1675,126 @@ angular.module('ma-app')
                 });
             }           
         };  
+        
+        this.editFacility = function(formData) {
+            var haveAddress = false;
+            var lat;
+            var lon;
+            var address;
+            var city;
+            var state;
+            var zip;
+            var formattedAddress;
+            var formattedLatLon;
+            var postString;
+            
+            //first, if method is address, get geocode coordinates:
+            if(formData.method == 'address') {
+                console.log("Address is provided, requesting geocode coordinates.");
+                haveAddress = true;
+                formattedAddress = 
+                formatAddress(formData.address, formData.city, formData.state, formData.zip);
+            } else {
+                haveAddress = false;
+                formattedLatLon = formData.lat + "," + formData.lon;
+            }          
+            
+            if(haveAddress) {
+                //first send a geocode request:
+                $http({
+                    url: googleGeolocateBaseURL + 'address=' + formattedAddress + '&' + googleGeocodeKey,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json',
+                        'x-access-token': undefined
+                    }
+                }).then(function(response) {
+                    console.log("Successfully retrieved geocode: ");
+                    console.log(response);
+                    
+                    //get the lat/lon:
+                    lat = response.data.results[0].geometry.location.lat;
+                    lon = response.data.results[0].geometry.location.lng;
+                    formData.lat = lat;
+                    formData.lon = lon;
+                    postString = buildFacilityPostString(formData, formattedAddress);
+                    console.log("Sending facility update with string: \n" + postString);
+                    
+                    //post the facility:
+                    $http({
+                        url: baseURL + 'facilities/' + formData.facilityId,
+                        method: 'PUT',
+                        headers: {
+                            'content-type': 'application/json' 
+                        },
+                        data: postString
+                    }).then(function(response) {
+                        console.log("Successfully updated facility: ");
+                        console.log(response);
+                        localRefreshFacilities();
+                    }, function(errResponse) {
+                        console.log("Failed on attempt to updated facility:");
+                        console.log(errResponse);
+                    });  
+                }, function(errResponse) {
+                    console.log("Failed on attempt to retrieve geocode:");
+                    console.log(errResponse);
+                });
+                
+            } else {
+                //fist send a reverse geocode request:
+                $http({
+                    url: googleGeolocateBaseURL + 'latlng=' + formattedLatLon + '&' + googleGeocodeKey,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json',
+                        'x-access-token': undefined
+                    }
+                }).then(function(response) {
+                    console.log("Successfully retrieved address: ");
+                    console.log(response);
+                    console.log("Retrieved address: " + response.data.results[0].formatted_address);
+                    
+                    //get the address components and add them back to the form:
+                    address = response.data.results[0].address_components[0].long_name + " " + 
+                        response.data.results[0].address_components[1].long_name;
+                    city = response.data.results[0].address_components[2].long_name;
+                    state = response.data.results[0].address_components[4].short_name;
+                    zip = response.data.results[0].address_components[6].long_name;
+                    
+                    formData.address = address;
+                    formData.city = city;
+                    formData.state = state;
+                    formData.zip = zip;
+                    
+                    formattedAddress = 
+                        formatAddress(formData.address, formData.city, formData.state, formData.zip);
+                    
+                    postString = buildFacilityPostString(formData, formattedAddress);
+                    console.log("Sending facility update with string: \n" + postString);
+                    
+                    //post the facility:
+                    $http({
+                        url: baseURL + 'facilities/' + formData.facilityId,
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json' 
+                        },
+                        data: postString
+                    }).then(function(response) {
+                        console.log("Successfully updated facility: ");
+                        console.log(response);
+                        localRefreshFacilities();
+                    }, function(errResponse) {
+                        console.log("Failed on attempt to update facility:");
+                        console.log(errResponse);
+                    });  
+                }, function(errResponse) {
+                    console.log("Failed on attempt to retrieve geocode:");
+                    console.log(errResponse);
+                });
+            }           
+        }; 
         
         this.pickActiveUsers = function(users) {
             var active = [];
@@ -2611,24 +2731,52 @@ angular.module('ma-app')
             startMilli = startTime.getTime();
             endMilli = endTime.getTime();
             
-            var putString = '{ "closure": true, "close_start": ' + startMilli + ', "close_end": ' + endMilli + ', "closure_type": "' + type + '" }';
+            var postString = '{ "message": "' + form.message + '", "start": ' + startMilli + ', "end": ' + endMilli + ', "type": "' + type + '" }';
             
             $http({
-                url: baseURL + 'fields/' + form.entity._id,
-                method: 'PUT',
+                url: baseURL + 'closures/',
+                method: 'POST',
                 headers: {
                     'content-type': 'application/json' 
                 },
-                data: putString
+                data: postString
             }).then(function(response) {
-                console.log("Successfully closed field: ");
-                console.log(response);                
-                coreDataService.refreshFacilities();
-                coreDataService.refreshFields();
+                console.log("Successfully created closure: ");
+                console.log(response);    
+                postString = '{ "closures": ["' + response.data._id + '", ';
+                
+                for(var i = 0; i < form.entity.closures.length; i++) {
+                    postString += '"' + form.entity.closures[i]._id + '",'
+                }
+                console.log("First: " + postString);
+                postString = postString.slice(0, -2);
+                console.log("After: " + postString);
+                postString += ']}';
+                
+                console.log("Updating field with string : " + postString);
+                    
+                //next submit closure to field:
+                $http({
+                    url: baseURL + 'fields/' + form.entity._id,
+                    method: 'PUT',
+                    headers: {
+                        'content-type': 'application/json' 
+                    },
+                    data: postString
+                }).then(function(fieldResponse) {
+                    console.log("Successfully closed field: ");
+                    console.log(fieldResponse); 
+                    coreDataService.refreshFacilities();
+                    coreDataService.refreshFields();
+                }, function(closeError) {
+                    console.log("Failed on attempt to close field:");
+                    console.log(closeError);
+                });                
+                
             }, function(errResponse) {
                 console.log("Failed on attempt to close field:");
                 console.log(errResponse);
-            });            
+            }); 
         };
         
         this.openField = function(form) {
@@ -2676,21 +2824,36 @@ angular.module('ma-app')
             startMilli = startTime.getTime();
             endMilli = endTime.getTime();
             
-            var putString = '{ "closure": true, "close_start": ' + startMilli + ', "close_end": ' + endMilli + ', "closure_type": "' + type + '" }';
+            var postString = '{ "message": "' + form.message + '", "start": ' + startMilli + ', "end": ' + endMilli + ', "type": "' + type + '" }';
             
             $http({
-                url: baseURL + 'facilities/closeFacility/' + form.entity._id,
-                method: 'PUT',
+                url: baseURL + 'closures/',
+                method: 'POST',
                 headers: {
                     'content-type': 'application/json' 
                 },
-                data: putString
+                data: postString
             }).then(function(response) {
-                console.log("Successfully closed facility: ");
+                console.log("Successfully created closure: ");
                 console.log(response);    
                 
-                coreDataService.refreshFacilities();
-                coreDataService.refreshFields();
+                //next submit closure to facility:
+                $http({
+                    url: baseURL + 'facilities/closeFacility/' + form.entity._id + '/' + response.data._id,
+                    method: 'PUT',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(closeResponse) {
+                    console.log("Successfully closed facility: ");
+                    console.log(closeResponse); 
+                    coreDataService.refreshFacilities();
+                    coreDataService.refreshFields();
+                }, function(closeError) {
+                    console.log("Failed on attempt to close facility:");
+                    console.log(closeError);
+                });                
+                
             }, function(errResponse) {
                 console.log("Failed on attempt to close facility:");
                 console.log(errResponse);

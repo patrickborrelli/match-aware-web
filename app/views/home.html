@@ -71,7 +71,7 @@
                                                 <p>{{user.email_address}}<br />{{user.mobile}}</p>  
                                             </div>
                                             <div class="col-sm-9" style="padding-top: 10px;">
-                                                <form class="form-inline" ng-submit="openUpdate(user)">
+                                                <form class="form-inline" ng-submit="openUpdateUserRoles(user)">
                                                     <div class="form-group">
                                                         <div class="form-check form-check-inline">
                                                             <div class="row">
@@ -453,11 +453,11 @@
                         <ul class="media-list" ng-show="areFacilities()">
                             <li class="media" ng-repeat="facility in facilities" style="padding:10px; background: lightGray;">
                                 <div class="media-left media-top" >
-                                        <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{facility.club_affiliation.logo_url}} alt="club logo">
-                                        <button type="button" disabled style="cursor: default;" ng-show="currentClosure(facility)" class="btn btn-sm btn-danger btn-custom75">CLOSED</button>
-                                        <button type="button" disabled style="cursor: default;" ng-show="partialClosure(facility)" class="btn btn-sm btn-warning btn-custom75">PARTIAL</button>
-                                        <button type="button" disabled style="cursor: default;" ng-show="!currentClosure(facility) && !partialClosure(facility)" class="btn btn-sm btn-success btn-custom75">OPEN</button>
-                                        <button type="button" ng-click="openFacilityStatus(facility)" class="btn btn-sm btn-default btn-custom75">UPDATE</button>
+                                    <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{facility.club_affiliation.logo_url}} alt="club logo">
+                                    <button type="button" disabled style="cursor: default;" ng-show="currentClosure(facility)" class="btn btn-sm btn-danger btn-custom75">CLOSED</button>
+                                    <button type="button" disabled style="cursor: default;" ng-show="partialClosure(facility)" class="btn btn-sm btn-warning btn-custom75">PARTIAL</button>
+                                    <button type="button" disabled style="cursor: default;" ng-show="!currentClosure(facility) && !partialClosure(facility)" class="btn btn-sm btn-success btn-custom75">OPEN</button>
+                                    <button type="button" ng-click="openUpdateFacilityStatus(facility)" class="btn btn-sm btn-default btn-custom75">UPDATE</button>
                                 </div>
                                 <div class="media-body">
                                     <div class="col-xs-12 col-sm-7">
@@ -476,10 +476,10 @@
                                 <ul class="media-list collapse" id="sublist{{facility.short_name}}">
                                     <h4 ng-show="!hasFields(facility)">No current fields.</h4>
                                     <li class="media" ng-repeat="field in facility.fields" style="padding:10px; margin-top: 10px; margin-left:50px; background: Gainsboro;">
-                                        <div class="media-left media-top" >                                                
-                                                <button type="button" disabled style="cursor: default;" ng-show="currentFieldClosure(field)" class="btn btn-sm btn-danger btn-custom75" style="margin-top: 0px;">CLOSED</button>
-                                                <button type="button" disabled style="cursor: default;" ng-show="!currentFieldClosure(field)" class="btn btn-sm btn-success btn-custom75"style="margin-top: 0px;">OPEN</button>
-                                                <button type="button" ng-click="openFieldStatus(field)" class="btn btn-sm btn-default btn-custom75">UPDATE</button>
+                                        <div class="media-left media-top" >  
+                                            <button type="button" disabled style="cursor: default;" ng-show="currentClosure(field)" class="btn btn-sm btn-danger btn-custom75" style="margin-top: 0px;">CLOSED</button>
+                                            <button type="button" disabled style="cursor: default;" ng-show="!currentClosure(field)" class="btn btn-sm btn-success btn-custom75"style="margin-top: 0px;">OPEN</button>
+                                            <button type="button" ng-click="openFieldStatus(field)" class="btn btn-sm btn-default btn-custom75">UPDATE</button>
                                         </div>
                                         <div class="media-body">
                                             <div class="row">

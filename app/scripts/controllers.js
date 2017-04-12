@@ -408,53 +408,13 @@ angular.module('ma-app')
             email: '',
             role: ''
         };
-                    
-        $scope.facilityForm = {
-            name: '',
-            shortname: '',
-            club: null,
-            address: '',
-            city: '',
-            state: '',
-            zip: '',
-            lat: '',
-            lon: '',
-            sunStart: '',
-            sunStop: '',
-            monStart: '',
-            monStop: '',
-            tueStart: '',
-            tueStop: '',
-            wedStart: '',
-            wedStop: '',
-            thuStart: '',
-            thuStop: '',
-            friStart: '',
-            friStop: '',
-            satStart: '',
-            satStop: '',
-            indoor: false,
-            method: 'address'
-        };
-        
-        $rootScope.fuForm = {
-            duration: '8',
-            enddate: '',
-            endtime: '',
-            timespan: 'current',
-            futureStartDate: '',
-            futureStartTime: '',
-            futureEndDate: '',
-            futureEndTime: '',
-            entity: null
-        };
         
         $scope.$watch('fuForm.timespan', function(duration) {
             if(duration === 'current') {
-                $scope.currentShowm = true;
+                $scope.currentShown = true;
                 $scope.futureShown = false;
             } else if(duration === 'future') {
-                $scope.currentShowm = false;
+                $scope.currentShown = false;
                 $scope.futureShown = true;  
             }
         });
@@ -585,6 +545,10 @@ angular.module('ma-app')
             console.log("Returing map URL: " + url);
         };
         
+        /**
+         * functions to confirm objects exist
+         */
+        
         $scope.arePendingAccessRequests = function() {
             return coreDataService.getAccessRequests().length > 0;
         };
@@ -627,28 +591,461 @@ angular.module('ma-app')
             } else { 
                 return false;
             }
+        };        
+        
+        
+        
+        //ACCESS REQUESTS
+        $scope.acceptAccess = function(accessRequest) {
+            userService.processAccessRequestAccept(accessRequest);            
         };
         
-        $scope.sendInvite = function() {
-            console.log("Received invite for: " + $scope.invite.email + " " + $scope.invite.mobile);            
-            console.log("data is ");
-            console.log($scope.invite); 
-            userService.sendUserInvite($scope.invite);
-            $scope.invite = {
-                email: '',
-                role: ''
+        $scope.declineAccess = function(accessRequest) {            
+            userService.processAccessRequestDecline(accessRequest);  
+        };
+        
+        
+        
+        //AGE_GROUP
+        $scope.openAddAgeGroup = function() {
+            $scope.ageGroupForm = {
+                name: '',
+                birthyear: '',
+                socceryear: '' 
             };
+            console.log("\n\nOpening dialog to add age group");
+            ngDialog.open({ template: 'views/addAgeGroup.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
         };
         
-        $scope.getInviteSentDate = function(inviteKey) {
-            return datetimeService.getIsoDate(inviteKey);
+        $scope.addAgeGroup = function() {
+            console.log("\n\nAdding age group");
+            console.log($scope.ageGroupForm);
+            coreDataService.addAgeGroup($scope.ageGroupForm);  
         };
         
-        $scope.revokeInvite = function(invite) {
-            console.log("Revoking invite with key: " + invite.invite_key);
-            userService.revokeUserInvite(invite.invite_key);
+        $scope.openEditAgeGroup = function(ageGroup) {
+            console.log("\n\nOpening dialog to edit age group");
+            console.log(ageGroup);
+            $scope.editingAgeGroupId = ageGroup._id;
+            var mySocceryear = ageGroup.soccer_year.slice(1);
+            
+            $scope.ageGroupForm = {
+                name: ageGroup.name,
+                birthyear: ageGroup.birth_year,
+                socceryear: mySocceryear 
+            };
+                
+            console.log("Current entries include: ");
+            console.log($scope.ageGroupForm);
+            ngDialog.open({ template: 'views/editAgeGroup.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
         };
         
+        $scope.editAgeGroup = function() {
+            console.log("\n\nEditing age group");
+            console.log($scope.ageGroupForm);
+            coreDataService.editAgeGroup($scope.ageGroupForm, $scope.editingAgeGroupId);
+            ngDialog.close();
+        };
+        
+        $scope.deleteAgeGroup = function(ageGroup) {
+            console.log("\n\nDeleting age group");
+            console.log(ageGroup);
+            coreDataService.deleteAgeGroup(ageGroup);
+            ngDialog.close();
+        };
+        
+        
+        //FACILITY        
+        $scope.openAddFacility = function() {
+            console.log("\n\nOpening dialog to add facility");
+            $scope.facilityForm = {
+                name: '',
+                shortname: '',
+                club: null,
+                address: '',
+                city: '',
+                state: '',
+                zip: '',
+                lat: '',
+                lon: '',
+                sunStart: '',
+                sunStop: '',
+                monStart: '',
+                monStop: '',
+                tueStart: '',
+                tueStop: '',
+                wedStart: '',
+                wedStop: '',
+                thuStart: '',
+                thuStop: '',
+                friStart: '',
+                friStop: '',
+                satStart: '',
+                satStop: '',
+                indoor: false,
+                method: 'address',
+                facilityId: ''
+            };
+            ngDialog.open({ template: 'views/addFacility.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
+        }; 
+        
+        $scope.addFacility = function() {
+            console.log("\n\nAdding facility");
+            console.log($scope.facilityForm);
+            coreDataService.addFacility($scope.facilityForm);
+            ngDialog.close();
+        };
+        
+        $scope.openEditFacility = function(facility) {
+            console.log("\n\nOpening dialog to edit facility");
+            $scope.facilityForm = {
+                name: facility.name,
+                shortname: facility.short_name,
+                club: facility.club_affiliation._id,
+                address: facility.address,
+                city: facility.city,
+                state: facility.state,
+                zip: facility.postal_code,
+                lat: facility.latitude,
+                lon: facility.longitude,
+                sunStart: facility.sun_start_time,
+                sunStop: facility.sun_stop_time,
+                monStart: facility.mon_start_time,
+                monStop: facility.mon_stop_time,
+                tueStart: facility.tue_start_time,
+                tueStop: facility.tue_stop_time,
+                wedStart: facility.wed_start_time,
+                wedStop: facility.wed_stop_time,
+                thuStart: facility.thu_start_time,
+                thuStop: facility.thu_stop_time,
+                friStart: facility.fri_start_time,
+                friStop: facility.fri_stop_time,
+                satStart: facility.sat_start_time,
+                satStop: facility.sat_stop_time,
+                indoor: facility.indoor,
+                method: 'address', 
+                facilityId: facility._id
+            };
+            ngDialog.open({ template: 'views/editFacility.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
+        }; 
+        
+        $scope.editFacility = function() {
+            console.log("\n\nUpdating facility");
+            console.log($scope.facilityForm);
+            coreDataService.editFacility($scope.facilityForm);
+            ngDialog.close();
+        };
+        
+        //TODO: missing delete facility functionality
+        
+        $scope.openUpdateFacilityStatus = function(facility) {
+            console.log("\n\nOpening dialog to change facility status");
+            $rootScope.facilityStatusName = facility.name;
+            $rootScope.facilityStatusEntity = facility;
+            $scope.fuForm = {
+                duration: '8',
+                enddate: '',
+                endtime: '',
+                timespan: 'current',
+                futureStartDate: '',
+                futureStartTime: '',
+                futureEndDate: '',
+                futureEndTime: '',
+                entity: null, 
+                message: '',
+                entity: facility
+            };
+            ngDialog.open({ template: 'views/updateFacility.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
+        };
+        
+        $scope.openFacility = function(facility) {
+            console.log("\n\Opening facility");
+            console.log($rootScope.facilityStatusEntity);
+            $scope.fuForm.entity = $rootScope.facilityStatusEntity;
+            console.log($scope.fuForm);
+            schedulingService.openFacility($scope.fuForm);
+            ngDialog.close();
+        };
+        
+        $scope.closeFacility = function(facility) {
+            console.log("\n\Closing facility");            
+            console.log($rootScope.facilityStatusEntity);
+            $scope.fuForm.entity = $rootScope.facilityStatusEntity;
+            console.log($scope.fuForm);
+            schedulingService.closeFacility($scope.fuForm);
+            ngDialog.close();
+        };
+        
+        $scope.getFacilityStatusString = function(entity) {
+            var result = "OPEN";
+            var fields = entity.fields;
+            
+            if(!entity.closure || (entity.closure && entity.closure_type != "CURRENT")) {
+                //iterate through all fields:
+                for(var i = 0; i < fields.length; i++) {
+                    if(fields[i].closure && fields[i].closure_type == "CURRENT") {
+                        result = "PARTIAL";
+                        break;
+                    }
+                }
+            }
+            
+            if(entity.closure && entity.closure_type == "CURRENT") {
+                result = "CLOSED";
+            }
+            return result;                
+        };
+        
+        $scope.currentClosure = function(entity) {
+            var closed = false;
+            var closures = entity.closures;
+            var currenttime = new Date().getTime();
+            
+            if(closures != null && closures.length > 0) {
+                //walk through closures and see if any are current:
+                for(var i = 0; i < closures.length; i++) {
+                    if(closures[i].start <= currenttime && closures[i].end > currenttime) {
+                        closed = true;
+                        break;
+                    }
+                }
+            }
+            return closed;
+        };
+        
+        $scope.getClosureMessage = function(entity) {
+            var message = '';
+            var closures = entity.closures;
+            var currenttime = new Date().getTime();
+            //console.log("Using current time of " + currenttime);
+            
+            if(closures != null && closures.length > 0) {
+                //walk through closures and see if any are current:
+                for(var i = 0; i < closures.length; i++) {
+                    if(closures[i].start <= currenttime && closures[i].end > currenttime) {
+                        message = closures[i].message;
+                        break;
+                    }
+                }
+            }
+            return message;
+        };
+        
+        $scope.partialClosure = function(facility) {
+            var partial = false;
+            var fields = facility.fields;
+            var currenttime = new Date().getTime();
+            
+            //if the facility is open, but any of its fields are closed, the status is partial:
+            if(!$scope.currentClosure(facility)) {
+                //iterate through all fields:
+                for(var i = 0; i < fields.length; i++) {
+                    if(fields[i].closures.length > 0) {
+                        //this field has closures, so lets go through them
+                        var closures = fields[i].closures;
+                        for(var j = 0; j < closures.length; i++) {
+                            if(closures[j].start <= currenttime && closures[j].end > currenttime) {
+                                partial = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(partial) break;
+                }
+            }
+            return partial;
+        };
+        
+        
+        
+        //FIELDS
+        
+        $scope.openAddField = function(facility) {
+            console.log("\nOpening dialog to add field");
+            $scope.short_name = facility.short_name;
+            $scope.facilityName = facility.name;
+            $scope.tempFacility = facility;
+            $scope.fieldForm = {
+                name: '',
+                size: {},
+                lights: false,
+                game: false,
+                practice: false,
+                tournament: false,
+                training: false,
+                surface: ''
+            };
+            
+            ngDialog.open({ template: 'views/addField.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:'HomeController'});
+        };
+        
+        $scope.addField = function() {
+            console.log("\n\nAdding field");
+            $scope.fieldForm.facility = $scope.tempFacility;
+            console.log($scope.fieldForm);
+            coreDataService.addField($scope.fieldForm);
+            ngDialog.close();
+        };
+        
+        $scope.openEditField = function(field, myFacility) {
+            console.log("\n\nOpening dialog to edit field");
+            console.log(field);
+            $scope.short_name = myFacility.short_name;
+            $scope.facilityName = myFacility.name;
+            $scope.fieldForm = {
+                name: field.name,
+                facility: myFacility,
+                size: field.size,
+                lights: field.lights,
+                game: field.game,
+                practice: field.practice,
+                tournament: field.tournament,
+                training: field.training,
+                condition: field.condition,
+                surface: field.surface,
+                id: field._id
+            };
+                
+            console.log("Current entries include: ");
+            console.log($scope.fieldForm);
+            ngDialog.open({ template: 'views/editField.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
+        };
+        
+        $scope.editField = function() {
+            console.log("\n\nEditing field");
+            console.log($scope.fieldForm);
+            coreDataService.editField($scope.fieldForm);
+            ngDialog.close();
+        };
+        
+        $scope.openField = function(field) {
+            console.log("\n\Opening field");
+            console.log($rootScope.fieldStatusEntity);
+            $scope.fuForm.entity = $rootScope.fieldStatusEntity;
+            console.log($scope.fuForm);
+            schedulingService.openField($scope.fuForm);
+            ngDialog.close();
+        };
+        
+        $scope.closeField = function(field) {
+            console.log("\n\Closing field");
+            console.log($rootScope.fieldStatusEntity);
+            $scope.fuForm.entity = $rootScope.fieldStatusEntity;
+            console.log($scope.fuForm);
+            schedulingService.closeField($scope.fuForm);
+            ngDialog.close();
+        };
+        
+        $scope.getFieldStatusString = function(entity) {
+            var result = "OPEN";
+            
+            if(entity.closure && entity.closure_type == "CURRENT") {
+                result = "CLOSED";
+            }
+            return result;                
+        };
+        
+        $scope.openFieldStatus = function(field) {
+            console.log("\n\nOpening dialog to change field status");
+            $rootScope.fieldStatusName = field.name;
+            $rootScope.fieldStatusEntity = field;         
+            $scope.fuForm.entity = field;
+            ngDialog.open({ template: 'views/updateField.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
+        };
+        
+        $scope.getFieldUsage = function(field) {
+            var use = '';
+            if(field.game) use += "Game - ";
+            if(field.practice) use += "Practice - ";
+            if(field.training) use += "Training - ";
+            if(field.tournament) use += "Tournament - ";
+            use = use.slice(0, -3);
+            return use;            
+        };
+        
+        $scope.hasLights = function(field) {
+            var lights = "No";
+            if(field.lights) 
+                lights = "Yes";
+            
+            return lights;          
+        };
+        
+        $scope.currentFieldClosure = function(field) {
+            var closed = false;
+            var closures = field.closures;
+            var currenttime = new Date().getTime();
+            
+            if(closures != null && closures.length > 0) {
+                //walk through closures and see if any are current:
+                console.log(closures);
+                for(var i = 0; i < closures.length; i++) {
+                    if(closures[i].start <= currenttime && closures[i].end > currenttime) {
+                        closed = true;
+                    }
+                }
+            }
+            return closed;
+        };
+        
+        
+        
+        //FIELD SIZE        
+        $scope.openAddFieldSize = function() {
+            console.log("\n\nOpening dialog to add field size");
+            ngDialog.open({ template: 'views/addFieldSize.html', scope: $scope, className: 'ngdialog-theme-default custom-width-500', controller:"HomeController" });
+        };
+        
+        $scope.addFieldSize = function() {
+            console.log("\n\nAdding field size");
+            $scope.fieldSizeForm = {
+                name: '',
+                unit: null,
+                maxlength: '',
+                maxwidth: '',
+                minlength: '',
+                minwidth: '',
+                id: null                
+            };
+            console.log($scope.fieldSizeForm);
+            coreDataService.addFieldSize($scope.fieldSizeForm);
+            ngDialog.close();
+        };
+        
+        $scope.openEditFieldSize = function(fieldsize) {
+            console.log("\n\nOpening dialog to edit field size");
+            console.log(fieldsize);
+            $scope.fieldSizeForm = {
+                name: fieldsize.name,
+                unit: fieldsize.unit,
+                maxlength: fieldsize.max_length,
+                maxwidth: fieldsize.max_width,
+                minlength: fieldsize.min_length,
+                minwidth: fieldsize.min_width,
+                id: fieldsize._id                
+            };
+                
+            console.log("Current entries include: ");
+            console.log($scope.fieldSizeForm);
+            ngDialog.open({ template: 'views/editFieldSize.html', scope: $scope, className: 'ngdialog-theme-default custom-width-500', controller:"HomeController" });
+        };
+        
+        $scope.editFieldSize = function() {
+            console.log("\n\nEditing field size");
+            console.log($scope.fieldSizeForm);
+            coreDataService.editFieldSize($scope.fieldSizeForm);
+            ngDialog.close();
+        };
+        
+        //TODO: missing delete        
+        $scope.getUnitPrettyName = function(unit) {
+            return coreDataService.getUnitPrettyName(unit);            
+        };
+                
+        
+        
+        
+        //LEAGUES        
         $scope.openAddLeague = function() {
             console.log("\n\nOpening dialog to add league");
             
@@ -725,235 +1122,104 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
-        $scope.openAddTeam = function() {            
-            $scope.teamForm = {
-                name: '',
-                ageGroup: '',
-                gender: '',
-                league: '',
-                teamId: ''
-            };
-            
-            console.log("\n\nOpening dialog to add team");
-            ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
-        }; 
-        
-        $scope.openAddField = function(facility) {
-            console.log("\nOpening dialog to add field");
-            $scope.short_name = facility.short_name;
-            $scope.facilityName = facility.name;
-            $scope.tempFacility = facility;
-            $scope.fieldForm = {
-                name: '',
-                size: {},
-                lights: false,
-                game: false,
-                practice: false,
-                tournament: false,
-                training: false,
-                surface: ''
-            };
-            
-            ngDialog.open({ template: 'views/addField.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:'HomeController'});
-        };
-        
-        $scope.addField = function() {
-            console.log("\n\nAdding field");
-            $scope.fieldForm.facility = $scope.tempFacility;
-            console.log($scope.fieldForm);
-            coreDataService.addField($scope.fieldForm);
-            ngDialog.close();
-        };
-        
-        $scope.openEditField = function(field, myFacility) {
-            console.log("\n\nOpening dialog to edit field");
-            console.log(field);
-            $scope.short_name = myFacility.short_name;
-            $scope.facilityName = myFacility.name;
-            $scope.fieldForm = {
-                name: field.name,
-                facility: myFacility,
-                size: field.size,
-                lights: field.lights,
-                game: field.game,
-                practice: field.practice,
-                tournament: field.tournament,
-                training: field.training,
-                condition: field.condition,
-                surface: field.surface,
-                id: field._id
-            };
-                
-            console.log("Current entries include: ");
-            console.log($scope.fieldForm);
-            ngDialog.open({ template: 'views/editField.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
-        };
-        
-        $scope.editField = function() {
-            console.log("\n\nEditing field");
-            console.log($scope.fieldForm);
-            coreDataService.editField($scope.fieldForm);
-            ngDialog.close();
-        };
-        
-        $scope.addFieldSize = function() {
-            console.log("\n\nAdding field size");
-            console.log($scope.fieldSizeForm);
-            coreDataService.addFieldSize($scope.fieldSizeForm);
-            ngDialog.close();
-        };
-        
-        $scope.addTeam = function() {
-            console.log("\n\nAdding team");
-            console.log($scope.teamForm);
-            clubService.addTeam($scope.teamForm);
-            ngDialog.close();
-        };
-        
-        $scope.deleteTeam = function(team) {
-            console.log("\n\nDeleting team" );
-            console.log(team);
-            
-            coreDataService.deleteTeam(team)
-                .then(function(response) {
-                    console.log("Successfully deleted team: ");
-                    console.log(response);
-                    coreDataService.refreshTeams(clubService.getCurrentClubId());
-                }, function(errResponse) {
-                    console.log("Failed on attempt to delete league:");
-                    console.log(errResponse);
-                });
-        };
-        
-        $scope.getTeamLeague = function(team) {
-            console.log("RETRIEVING LEAGUE NAME FOR TEAM " + team.name);
-            var leagues = team.leagues;
-            
-            return leagues[0];
-        };
-        
-        $scope.getTeamLeagueName = function(team) {
-            var leagues = team.leagues;
-            
-            var leagueString = '';
-            for(var i = 0; i < leagues.length; i++) {
-                leagueString += leagues[i].name + '\n';
-            }
-            return leagueString;
-        };
-        
-        $scope.openEditTeam = function(team, league) {
-            console.log("\n\nOpening dialog to edit team");
-            console.log(team);
-            
-            $scope.teamForm = {
-                name: team.name,
-                ageGroup: team.age_group._id,
-                gender: team.gender._id,
-                league: league._id,
-                teamId: team._id
-            };  
-            
-            console.log("teamForm contains: ");
-            console.log($scope.teamForm);
-                
-            ngDialog.open({ template: 'views/editTeam.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
-        };
-        
-        $scope.editTeam = function() {
-            console.log("\n\nEditing team");
-            console.log($scope.teamForm);
-            clubService.editTeam($scope.teamForm);
-            ngDialog.close();
-        };
-        
-        $scope.openAddAgeGroup = function() {
-            $scope.ageGroupForm = {
-                name: '',
-                birthyear: '',
-                socceryear: '' 
-            };
-            console.log("\n\nOpening dialog to add age group");
-            ngDialog.open({ template: 'views/addAgeGroup.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
-        };
-        
-        $scope.addAgeGroup = function() {
-            console.log("\n\nAdding age group");
-            console.log($scope.ageGroupForm);
-            coreDataService.addAgeGroup($scope.ageGroupForm);  
-        };
-        
-        $scope.openEditAgeGroup = function(ageGroup) {
-            console.log("\n\nOpening dialog to edit age group");
-            console.log(ageGroup);
-            $scope.editingAgeGroupId = ageGroup._id;
-            var mySocceryear = ageGroup.soccer_year.slice(1);
-            
-            $scope.ageGroupForm = {
-                name: ageGroup.name,
-                birthyear: ageGroup.birth_year,
-                socceryear: mySocceryear 
-            };
-                
-            console.log("Current entries include: ");
-            console.log($scope.ageGroupForm);
-            ngDialog.open({ template: 'views/editAgeGroup.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
-        };
-        
-        $scope.editAgeGroup = function() {
-            console.log("\n\nEditing age group");
-            console.log($scope.ageGroupForm);
-            coreDataService.editAgeGroup($scope.ageGroupForm, $scope.editingAgeGroupId);
-            ngDialog.close();
-        };
-        
-        $scope.deleteAgeGroup = function(ageGroup) {
-            console.log("\n\nDeleting age group");
-            console.log(ageGroup);
-            coreDataService.deleteAgeGroup(ageGroup);
-            ngDialog.close();
-        };
-        
-        $scope.openAddFieldSize = function() {
-            console.log("\n\nOpening dialog to add field size");
-            ngDialog.open({ template: 'views/addFieldSize.html', scope: $scope, className: 'ngdialog-theme-default custom-width-500', controller:"HomeController" });
-        };
-        
-        $scope.openEditFieldSize = function(fieldsize) {
-            console.log("\n\nOpening dialog to edit field size");
-            console.log(fieldsize);
-            $scope.fieldSizeForm = {
-                name: fieldsize.name,
-                unit: fieldsize.unit,
-                maxlength: fieldsize.max_length,
-                maxwidth: fieldsize.max_width,
-                minlength: fieldsize.min_length,
-                minwidth: fieldsize.min_width,
-                id: fieldsize._id                
-            };
-                
-            console.log("Current entries include: ");
-            console.log($scope.fieldSizeForm);
-            ngDialog.open({ template: 'views/editFieldSize.html', scope: $scope, className: 'ngdialog-theme-default custom-width-500', controller:"HomeController" });
-        };
-        
-        $scope.editFieldSize = function() {
-            console.log("\n\nEditing field size");
-            console.log($scope.fieldSizeForm);
-            coreDataService.editFieldSize($scope.fieldSizeForm);
-            ngDialog.close();
-        };
-        
-        $scope.clearFieldSizeForm = function() {
-            $scope.fieldSizeForm = {};
-        };
-        
         $scope.deleteLeague = function(league) {
             console.log("\n\nDeleting league");
             console.log(league);
             coreDataService.deleteLeague(league);
         };
         
+        
+        
+        //ROLES        
+        $scope.getCurrentRole = function() {
+            return userService.getCurrentRole();
+        };
+        
+        $scope.openUpdateUserRoles = function(user) {
+            console.log("\n\nOpening dialog to update user: ");
+            console.log(user);
+            $scope.currentAssignmentUser = user;
+            
+            //set values for myUser form:
+            $scope.myUser.caCheck = $scope.userHasRoleActive('CLUB_ADMIN', user);
+            $scope.myUser.faCheck = $scope.userHasRoleActive('FIELD_ADMIN', user);
+            $scope.myUser.raCheck = $scope.userHasRoleActive('REFEREE_ASSIGNOR', user);
+            $scope.myUser.taCheck = $scope.userHasRoleActive('TRAINING_ADMIN', user);
+            $scope.myUser.coCheck = $scope.userHasRoleActive('COACH', user);
+            $scope.myUser.trCheck = $scope.userHasRoleActive('TRAINER', user);
+            $scope.myUser.reCheck = $scope.userHasRoleActive('REFEREE', user);
+            $scope.myUser.plCheck = $scope.userHasRoleActive('PLAYER', user);
+            $scope.myUser.paCheck = $scope.userHasRoleActive('PARENT', user);
+            console.log("HAVE SET MYUSER FORM IN SCOPE WITH VALUES: ");
+            console.log($scope.myUser);
+            
+            ngDialog.open({ template: 'views/assignmentUpdate.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
+        };
+                
+        $scope.updateUserRoles = function(user) {
+            console.log("Received update for user: " + user._id);            
+            console.log("data is ");
+            console.log($scope.myUser); 
+            userService.updateUserRoles(user, $scope.myUser)
+                .then(function(response) {
+                    console.log("added new user roles");
+                    console.log(response); 
+                    userService.setCurrentRolesStale();
+                    //retrieve user's club_roles:
+                    userService.retrieveUserRoles(true)
+                        .then(function(response) {
+                            console.log("Retrieved the user's club_roles: " );
+                            console.log(response);
+
+                            userService.setUserClubRoles(response.data);
+
+                            //create an array of Role objects:
+                            var userRoles = [];
+                            for(var i = 0; i < response.data.length; i++) {
+                                userRoles.push(response.data[i].role);
+                            }
+
+                            //create an array of Club objects:
+                            var userClubs = [];
+                            for(var i = 0; i < response.data.length; i++) {
+                                userClubs.push(response.data[i].club);
+                            }
+
+                            userService.populateUserRoles(userRoles);  
+                            userService.populateUsersClubs(userClubs);
+
+                            //do app data load:
+                            coreDataService.refreshClubUsersAndWait(clubService.getCurrentClubId())
+                                .then(function(response) {
+                                    console.log("Retrieved the users from the API: ");
+                                    console.log(response);
+                                    $rootScope.users = response.data;
+                                    coreDataService.setUsersLoaded(true);
+                                });
+                    }, function(errResponse) {
+                        console.log("Failed in attempt to retrieve users club_roles.");
+                        console.log(errResponse);
+                    });
+                }, function(errResponse) {
+                    console.log("failed to add new user roles");
+                    console.log(errResponse);
+                });  
+            ngDialog.close();
+        };
+                
+        $scope.userHasRoleActive = function(roleName, user) {            
+            var result = false;            
+            result = userService.userHasRole(user._id, roleName); 
+            return result;
+        };
+        
+        $scope.getRolePrettyName = function(roleName) {
+            return coreDataService.getRolePrettyName(roleName);            
+        };
+        
+        
+        
+        //RULES          
         $scope.openAddRule = function() {
             console.log("\n\nOpening dialog to add rule");
             
@@ -1035,271 +1301,138 @@ angular.module('ma-app')
                 });
         };
         
-        $scope.openAddFacility = function() {
-            console.log("\n\nOpening dialog to add facility");
-            ngDialog.open({ template: 'views/addFacility.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
+        
+        
+        //TEAMS
+        $scope.openAddTeam = function() {            
+            $scope.teamForm = {
+                name: '',
+                ageGroup: '',
+                gender: '',
+                league: '',
+                teamId: ''
+            };
+            
+            console.log("\n\nOpening dialog to add team");
+            ngDialog.open({ template: 'views/addTeam.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
         }; 
         
-        $scope.addFacility = function() {
-            console.log("\n\nAdding facility");
-            console.log($scope.facilityForm);
-            coreDataService.addFacility($scope.facilityForm);
+        $scope.addTeam = function() {
+            console.log("\n\nAdding team");
+            console.log($scope.teamForm);
+            clubService.addTeam($scope.teamForm);
             ngDialog.close();
         };
         
-        $scope.openFacilityStatus = function(facility) {
-            console.log("\n\nOpening dialog to change facility status");
-            $rootScope.facilityStatusName = facility.name;
-            $rootScope.facilityStatusEntity = facility;
-            $scope.fuForm.entity = facility;
-            ngDialog.open({ template: 'views/updateFacility.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
-        };
-        
-        $scope.openFieldStatus = function(field) {
-            console.log("\n\nOpening dialog to change field status");
-            $rootScope.fieldStatusName = field.name;
-            $rootScope.fieldStatusEntity = field;         
-            $scope.fuForm.entity = field;
-            ngDialog.open({ template: 'views/updateField.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
-        };
-        
-        $scope.closeFacility = function(facility) {
-            console.log("\n\Closing facility");            
-            console.log($rootScope.facilityStatusEntity);
-            $scope.fuForm.entity = $rootScope.facilityStatusEntity;
-            console.log($scope.fuForm);
-            schedulingService.closeFacility($scope.fuForm);
-            ngDialog.close();
-        };
-        
-        $scope.closeField = function(field) {
-            console.log("\n\Closing field");
-            console.log($rootScope.fieldStatusEntity);
-            $scope.fuForm.entity = $rootScope.fieldStatusEntity;
-            console.log($scope.fuForm);
-            schedulingService.closeField($scope.fuForm);
-            ngDialog.close();
-        };
-        
-        $scope.openFacility = function(facility) {
-            console.log("\n\Opening facility");
-            console.log($rootScope.facilityStatusEntity);
-            $scope.fuForm.entity = $rootScope.facilityStatusEntity;
-            console.log($scope.fuForm);
-            schedulingService.openFacility($scope.fuForm);
-            ngDialog.close();
-        };
-        
-        $scope.openField = function(field) {
-            console.log("\n\Opening field");
-            console.log($rootScope.fieldStatusEntity);
-            $scope.fuForm.entity = $rootScope.fieldStatusEntity;
-            console.log($scope.fuForm);
-            schedulingService.openField($scope.fuForm);
-            ngDialog.close();
-        };
-        
-        $scope.getFieldStatusString = function(entity) {
-            var result = "OPEN";
+        $scope.openEditTeam = function(team, league) {
+            console.log("\n\nOpening dialog to edit team");
+            console.log(team);
             
-            if(entity.closure && entity.closure_type == "CURRENT") {
-                result = "CLOSED";
-            }
-            return result;                
-        };
-        
-        $scope.getFacilityStatusString = function(entity) {
-            var result = "OPEN";
-            var fields = entity.fields;
+            $scope.teamForm = {
+                name: team.name,
+                ageGroup: team.age_group._id,
+                gender: team.gender._id,
+                league: league._id,
+                teamId: team._id
+            };  
             
-            if(!entity.closure || (entity.closure && entity.closure_type != "CURRENT")) {
-                //iterate through all fields:
-                for(var i = 0; i < fields.length; i++) {
-                    if(fields[i].closure && fields[i].closure_type == "CURRENT") {
-                        result = "PARTIAL";
-                        break;
-                    }
-                }
-            }
-            
-            if(entity.closure && entity.closure_type == "CURRENT") {
-                result = "CLOSED";
-            }
-            return result;                
-        };
-        
-        $scope.openUpdate = function(user) {
-            console.log("\n\nOpening dialog to update user: ");
-            console.log(user);
-            $scope.currentAssignmentUser = user;
-            
-            //set values for myUser form:
-            $scope.myUser.caCheck = $scope.userHasRoleActive('CLUB_ADMIN', user);
-            $scope.myUser.faCheck = $scope.userHasRoleActive('FIELD_ADMIN', user);
-            $scope.myUser.raCheck = $scope.userHasRoleActive('REFEREE_ASSIGNOR', user);
-            $scope.myUser.taCheck = $scope.userHasRoleActive('TRAINING_ADMIN', user);
-            $scope.myUser.coCheck = $scope.userHasRoleActive('COACH', user);
-            $scope.myUser.trCheck = $scope.userHasRoleActive('TRAINER', user);
-            $scope.myUser.reCheck = $scope.userHasRoleActive('REFEREE', user);
-            $scope.myUser.plCheck = $scope.userHasRoleActive('PLAYER', user);
-            $scope.myUser.paCheck = $scope.userHasRoleActive('PARENT', user);
-            console.log("HAVE SET MYUSER FORM IN SCOPE WITH VALUES: ");
-            console.log($scope.myUser);
-            
-            ngDialog.open({ template: 'views/assignmentUpdate.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
-        };
-        
-        $scope.loadClubUsers = function() {
-            coreDataService.refreshClubUsers(clubService.getCurrentClubId());
-        };     
-        
-        $scope.loadAgeGroups = function() {
-            $scope.ageGroups = coreDataService.getAgeGroups();
-        };
-        
-        $scope.loadRequests = function() {           
-            $scope.accessRequests = coreDataService.getAccessRequests();
-            return true;
-        };   
-        
-        $scope.getCurrentRole = function() {
-            return userService.getCurrentRole();
-        };
+            console.log("teamForm contains: ");
+            console.log($scope.teamForm);
                 
-        $scope.userHasRoleActive = function(roleName, user) {            
-            var result = false;            
-            result = userService.userHasRole(user._id, roleName); 
-            return result;
+            ngDialog.open({ template: 'views/editTeam.html', scope: $scope, className: 'ngdialog-theme-default', controller:"HomeController" });
         };
-                
-        $scope.updateUserRoles = function(user) {
-            console.log("Received update for user: " + user._id);            
-            console.log("data is ");
-            console.log($scope.myUser); 
-            userService.updateUserRoles(user, $scope.myUser)
+        
+        $scope.editTeam = function() {
+            console.log("\n\nEditing team");
+            console.log($scope.teamForm);
+            clubService.editTeam($scope.teamForm);
+            ngDialog.close();
+        }; 
+        
+        $scope.deleteTeam = function(team) {
+            console.log("\n\nDeleting team" );
+            console.log(team);
+            
+            coreDataService.deleteTeam(team)
                 .then(function(response) {
-                    console.log("added new user roles");
-                    console.log(response); 
-                    userService.setCurrentRolesStale();
-                    //retrieve user's club_roles:
-                    userService.retrieveUserRoles(true)
-                        .then(function(response) {
-                            console.log("Retrieved the user's club_roles: " );
-                            console.log(response);
-
-                            userService.setUserClubRoles(response.data);
-
-                            //create an array of Role objects:
-                            var userRoles = [];
-                            for(var i = 0; i < response.data.length; i++) {
-                                userRoles.push(response.data[i].role);
-                            }
-
-                            //create an array of Club objects:
-                            var userClubs = [];
-                            for(var i = 0; i < response.data.length; i++) {
-                                userClubs.push(response.data[i].club);
-                            }
-
-                            userService.populateUserRoles(userRoles);  
-                            userService.populateUsersClubs(userClubs);
-
-                            //do app data load:
-                            coreDataService.refreshClubUsersAndWait(clubService.getCurrentClubId())
-                                .then(function(response) {
-                                    console.log("Retrieved the users from the API: ");
-                                    console.log(response);
-                                    $rootScope.users = response.data;
-                                    coreDataService.setUsersLoaded(true);
-                                });
-                    }, function(errResponse) {
-                        console.log("Failed in attempt to retrieve users club_roles.");
-                        console.log(errResponse);
-                    });
+                    console.log("Successfully deleted team: ");
+                    console.log(response);
+                    coreDataService.refreshTeams(clubService.getCurrentClubId());
                 }, function(errResponse) {
-                    console.log("failed to add new user roles");
+                    console.log("Failed on attempt to delete league:");
                     console.log(errResponse);
-                });  
-            ngDialog.close();
+                });
+        };      
+        
+        $scope.getTeamLeague = function(team) {
+            console.log("RETRIEVING LEAGUE NAME FOR TEAM " + team.name);
+            var leagues = team.leagues;
+            
+            return leagues[0];
         };
         
+        $scope.getTeamLeagueName = function(team) {
+            var leagues = team.leagues;
+            
+            var leagueString = '';
+            for(var i = 0; i < leagues.length; i++) {
+                leagueString += leagues[i].name + '\n';
+            }
+            return leagueString;
+        };
+        
+        
+        //USERS        
         $scope.deactivateUser = function(user) {
             console.log("Attempting to deactivate user: ");            
             console.log(user);
             userService.deactivateUser(user);
         };
+        //TODO: add activate user and a mechanism to display inactive users
+        //TODO: add edit user (for user details)
         
+        
+        
+        
+        //USER INVITES
+        $scope.sendInvite = function() {
+            console.log("Received invite for: " + $scope.invite.email + " " + $scope.invite.mobile);            
+            console.log("data is ");
+            console.log($scope.invite); 
+            userService.sendUserInvite($scope.invite);
+            $scope.invite = {
+                email: '',
+                role: ''
+            };
+        };
+        
+        $scope.getInviteSentDate = function(inviteKey) {
+            return datetimeService.getIsoDate(inviteKey);
+        };
+        
+        $scope.revokeInvite = function(invite) {
+            console.log("Revoking invite with key: " + invite.invite_key);
+            userService.revokeUserInvite(invite.invite_key);
+        }; 
+        
+        
+        
+        
+        //TODO: confirm this is necessary
+        $scope.loadClubUsers = function() {
+            coreDataService.refreshClubUsers(clubService.getCurrentClubId());
+        };  
+        //TODO: confirm this is necessary
+        $scope.loadRequests = function() {           
+            $scope.accessRequests = coreDataService.getAccessRequests();
+            return true;
+        };   
+        
+        //TODO: confirm this is necessary, may be duplicate:
         $scope.userHasRoles = function() {
             console.log("Checking if user has any defined roles.");
             var hasRole = authService.userHasRoles();
             return hasRole;
-        };
-        
-        $scope.getRolePrettyName = function(roleName) {
-            return coreDataService.getRolePrettyName(roleName);            
-        };
-        
-        $scope.getUnitPrettyName = function(unit) {
-            return coreDataService.getUnitPrettyName(unit);            
-        };
-        
-        $scope.getFieldUsage = function(field) {
-            var use = '';
-            if(field.game) use += "Game - ";
-            if(field.practice) use += "Practice - ";
-            if(field.training) use += "Training - ";
-            if(field.tournament) use += "Tournament - ";
-            use = use.slice(0, -3);
-            return use;            
-        };
-        
-        $scope.hasLights = function(field) {
-            var lights = "No";
-            if(field.lights) 
-                lights = "Yes";
-            
-            return lights;          
-        };
-        
-        $scope.currentClosure = function(facility) {
-            var closed = false;
-            if(facility.closure && facility.closure_type == "CURRENT") {
-                closed = true;
-            }
-            return closed;
-        };
-        
-        $scope.partialClosure = function(facility) {
-            var partial = false;
-            var fields = facility.fields;
-            
-            //if the facility is open, but any of its fields are closed, the status is partial:
-            if(!facility.closure || (facility.closure && facility.closure_type != "CURRENT")) {
-                //iterate through all fields:
-                for(var i = 0; i < fields.length; i++) {
-                    if(fields[i].closure && fields[i].closure_type == "CURRENT") {
-                        partial = true;
-                        break;
-                    }
-                }
-            }
-            return partial;
-        };
-        
-        $scope.currentFieldClosure = function(field) {
-            var closed = false;
-            if(field.closure && field.closure_type == "CURRENT") {
-                closed = true;
-            }
-            return closed;
-        };
-        
-        $scope.acceptAccess = function(accessRequest) {
-            userService.processAccessRequestAccept(accessRequest);            
-        };
-        
-        $scope.declineAccess = function(accessRequest) {            
-            userService.processAccessRequestDecline(accessRequest);  
         };
     }])
 ;
