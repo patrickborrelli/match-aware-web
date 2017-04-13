@@ -153,114 +153,450 @@
             </div>
             
             <div class="form-group" style="padding-bottom: 0px; margin-bottom: 0px;"> 
-                <div class="col-xs-1" style="padding-right:0px; margin-right: 0px;"> </div>
-                <div class="col-xs-3" style="padding:0px; margin: 0px;"></div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <div class="input-group">
-                        <div class="input-group-addon">Sun</div>
-                    </div>
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <div class="input-group">
-                        <div class="input-group-addon">Mon</div>
-                    </div>
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <div class="input-group">
-                        <div class="input-group-addon">Tue</div>
-                    </div>
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <div class="input-group">
-                        <div class="input-group-addon">Wed</div>
-                    </div>
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <div class="input-group">
-                        <div class="input-group-addon">Thu</div>
-                    </div>
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <div class="input-group">
-                        <div class="input-group-addon">Fri</div>
-                    </div>
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <div class="input-group">
-                        <div class="input-group-addon">Sat</div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group" style="padding-bottom: 0px; margin-bottom: 0px;">  
-                <div class="col-xs-1" style="padding-right:0px; margin-right: 0px;"> </div>
-                <div class="col-xs-3" style="padding-right:0px; margin-right: 0px;">
-                    <div class="input-group">
-                        <div class="input-group-addon">Start Time</div>
-                    </div>
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="sunStart">Sunday Start Time</label>
-                    <input type="text" id="sunStart" class="form-control input-sm" ng-model="facilityForm.sunStart">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="monStart">Monday Start Time</label>
-                    <input type="text" id="monStart" class="form-control input-sm" ng-model="facilityForm.monStart">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="tueStart">Tuesday Start Time</label>
-                    <input type="text" id="ztueStartip" class="form-control input-sm" ng-model="facilityForm.tueStart">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="wedStart">Wednesday Start Time</label>
-                    <input type="text" id="wedStart" class="form-control input-sm" ng-model="facilityForm.wedStart">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="thuStart">Thursday Start Time</label>
-                    <input type="text" id="thuStart" class="form-control input-sm" ng-model="facilityForm.thuStart">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="friStart">Friday Start Time</label>
-                    <input type="text" id="friStart" class="form-control input-sm" ng-model="facilityForm.friStart">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="satStart">Saturday Start Time</label>
-                    <input type="text" id="satStart" class="form-control input-sm" ng-model="facilityForm.satStart">
-                </div>
-            </div>
-            <div class="form-group" style="padding-bottom: 5px; margin-bottom: 0px;"> 
-                <div class="col-xs-1" style="padding-right:0px; margin-right: 0px;"> </div>
-                <div class="col-xs-3" style="padding-right:0px; margin-right: 0px;">
-                    <div class="input-group">
-                        <div class="input-group-addon">Stop Time</div>
-                    </div>
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="sunStop">Sunday Stop Time</label>
-                    <input type="text" id="sunStop" class="form-control input-sm" ng-model="facilityForm.sunStop">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="monStop">Monday Stop Time</label>
-                    <input type="text" id="monStop" class="form-control input-sm" ng-model="facilityForm.monStop">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="tueStop">Tuesday Stop Time</label>
-                    <input type="text" id="tueStop" class="form-control input-sm" ng-model="facilityForm.tueStop">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="wedStop">Wednesday Stop Time</label>
-                    <input type="text" id="wedStop" class="form-control input-sm" ng-model="facilityForm.wedStop">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="thuStop">Thursday Stop Time</label>
-                    <input type="text" id="thuStop" class="form-control input-sm" ng-model="facilityForm.thuStop">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="friStop">Friday Stop Time</label>
-                    <input type="text" id="friStop" class="form-control input-sm" ng-model="facilityForm.friStop">
-                </div>
-                <div class="col-xs-1" style="padding:0px; margin: 0px;">
-                    <label class="sr-only" for="satStop">Saturday Stop Time</label>
-                    <input type="text" id="satStop" class="form-control input-sm" ng-model="facilityForm.satStop">
+                <div class="col-xs-12">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th style="padding: 0px; margin: 0px;"><div class="input-group-addon">&nbsp;</div></th>  
+                                <th style="padding: 0px; margin: 0px;"><div class="input-group-addon">Sun</div></th>
+                                <th style="padding: 0px; margin: 0px;"><div class="input-group-addon">Mon</div></th>
+                                <th style="padding: 0px; margin: 0px;"><div class="input-group-addon">Tue</div></th>
+                                <th style="padding: 0px; margin: 0px;"><div class="input-group-addon">Wed</div></th>
+                                <th style="padding: 0px; margin: 0px;"><div class="input-group-addon">Thu</div></th>
+                                <th style="padding: 0px; margin: 0px;"><div class="input-group-addon">Fri</div></th>
+                                <th style="padding: 0px; margin: 0px;"><div class="input-group-addon">Sat</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 0px; margin: 0px;"><div class="input-group-addon">Start Time</div></td>  
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="sunStart">Sunday Start Time</label>
+                                    <select id="sunStart" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.sunStart">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="monStart">Monday Start Time</label>
+                                    <select id="monStart" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.monStart">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="tueStart">Tuesday Start Time</label>
+                                    <select id="tueStart" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.tueStart">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">                                
+                                    <label class="sr-only" for="wedStart">Wednesday Start Time</label>
+                                    <select id="wedStart" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.wedStart">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="thuStart">Thursday Start Time</label>
+                                    <select id="thuStart" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.thuStart">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>                                
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="friStart">Friday Start Time</label>
+                                    <select id="friStart" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.friStart">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>                               
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="satStart">Saturday Start Time</label>
+                                    <select id="satStart" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.satStart">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>                                
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td style="padding: 0px; margin: 0px;"><div class="input-group-addon">Stop Time</div></td>  
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="sunStop">Sunday Stop Time</label>
+                                    <select id="sunStop" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.sunStop">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="monStop">Monday Stop Time</label>
+                                    <select id="monStop" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.monStop">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="tueStop">Tuesday Stop Time</label>
+                                    <select id="tueStop" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.tueStop">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">                                
+                                    <label class="sr-only" for="wedStop">Wednesday Stop Time</label>
+                                    <select id="wedStop" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.wedStop">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="thuStop">Thursday Stop Time</label>
+                                    <select id="thuStop" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.thuStop">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>                                
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="friStop">Friday Stop Time</label>
+                                    <select id="friStop" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.friStop">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>                               
+                                </td>
+                                <td style="padding: 0px; margin: 0px;">
+                                    <label class="sr-only" for="satStop">Saturday Stop Time</label>
+                                    <select id="satStop" class="form-control input-sm" style="font-size: 12px;" ng-model="facilityForm.satStop">
+                                        <option value=""></option>
+                                        <option value="0000">12:00AM</option>
+                                        <option value="0100">1:00AM</option>
+                                        <option value="0200">2:00AM</option>
+                                        <option value="0300">3:00AM</option>
+                                        <option value="0400">4:00AM</option>
+                                        <option value="0500">5:00AM</option>
+                                        <option value="0600">6:00AM</option>
+                                        <option value="0700">7:00AM</option>
+                                        <option value="0800">8:00AM</option>
+                                        <option value="0900">9:00AM</option>
+                                        <option value="1000">10:00AM</option>
+                                        <option value="1100">11:00AM</option>
+                                        <option value="1200">12:00PM</option>
+                                        <option value="1300">1:00PM</option>
+                                        <option value="1400">2:00PM</option>
+                                        <option value="1500">3:00PM</option>
+                                        <option value="1600">4:00PM</option>
+                                        <option value="1700">5:00PM</option>
+                                        <option value="1800">6:00PM</option>
+                                        <option value="1900">7:00PM</option>
+                                        <option value="2000">8:00PM</option>
+                                        <option value="2100">9:00PM</option>
+                                        <option value="2200">10:00PM</option>
+                                        <option value="2300">11:00PM</option>                        
+                                    </select>                                
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
