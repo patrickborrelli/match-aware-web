@@ -6,7 +6,7 @@ angular.module('ma-app')
     .constant("googleGeolocateBaseURL", "https://maps.googleapis.com/maps/api/geocode/json?")
     .constant("googleMapsBaseURL", "https://www.google.com/maps/embed/v1/place?")
 
-    .service('coreDataService', ['$http', '$rootScope', 'baseURL', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', 'ngDialog', function($http, $rootScope, baseURL, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL, ngDialog) {
+    .service('coreDataService', ['$http', '$rootScope', 'baseURL', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', 'ngDialog', 'datetimeService', function($http, $rootScope, baseURL, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL, ngDialog, datetimeService) {
         $rootScope.clubs = {};
         $rootScope.roles = {};   
         $rootScope.ageGroups = {};
@@ -3064,6 +3064,12 @@ angular.module('ma-app')
             }
             
             return duration;
+        };
+        
+        this.convertToMilitary = function(time) {
+            var militaryTime = '0000';
+            console.log("Received time: " + time);
+            return militaryTime;
         };
         
         function isEquivalent(value, target) {
