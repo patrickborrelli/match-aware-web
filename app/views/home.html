@@ -501,7 +501,31 @@
                 </div>
             </div>
             <div id="tabContent" class="tab-pane fade in active" ng-show="faIsSelected(2)">
-                <h3 style="text-align:center;">Handle Scheduling - need three tabs</h3>
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" ng-class="{active:faSubIsSelected(1)}">
+                        <a ng-click="faSubSelect(1)" aria-controls="preseason" role="tab">Pre-Season</a>
+                    </li>
+                    <li role="presentation" ng-class="{active:faSubIsSelected(2)}">
+                        <a ng-click="faSubSelect(2)" aria-controls="pending" role="tab">Pending</a>
+                    </li>                    
+                    <li role="presentation" ng-class="{active:faSubIsSelected(3)}">
+                        <a ng-click="faSubSelect(3)" aria-controls="create" role="tab">Create Event</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="faSubIsSelected(1)">
+                    </div>
+                </div>
+                
+                <div class="tab-content">
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="faSubIsSelected(2)">
+                    </div>
+                </div>
+                
+                <div class="tab-content">
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="faSubIsSelected(3)">
+                    </div>
+                </div>               
             </div>
             <div id="tabContent" class="tab-pane fade in active" ng-show="faIsSelected(3)">
                 <ul class="nav nav-tabs" role="tablist">
