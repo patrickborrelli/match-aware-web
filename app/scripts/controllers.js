@@ -6,6 +6,7 @@ angular.module('ma-app')
             return $sce.trustAsResourceUrl(url);
         };
     })
+
     .controller('HeaderController', ['$scope', '$rootScope', 'ngDialog', 'userService', 'coreDataService', 'authService', 'clubService',  function($scope, $rootScope, ngDialog, userService, coreDataService, authService, clubService) {
         $scope.openRegister = function () {
             ngDialog.open({ template: 'views/register.html', scope: $scope, className: 'ngdialog-theme-default custom-width', controller:"RegisterController" });
@@ -381,12 +382,10 @@ angular.module('ma-app')
         };        
         
         //initialize all form data:
-        $scope.addressHidden = false;
-        
+        $scope.addressHidden = false;        
         $rootScope.rangeShown = true;        
         $rootScope.futureShown = false;        
-        $rootScope.currentShown = true;
-        
+        $rootScope.currentShown = true;        
         $scope.gpsHidden = true;
         $scope.fineHidden = true;
         $scope.editingAgeGroupId;        
@@ -772,9 +771,7 @@ angular.module('ma-app')
                 
                 if(currentClosure != null) {
                     //if we have one, determine the duration and set the form contents:
-                    var duration;
-                    var enddate;
-                    var endtime;
+                    var endDate;
                     var durationMilliseconds = currentClosure.end - currentClosure.start;
                     
                     var myDuration = datetimeService.determineDuration(durationMilliseconds);
@@ -782,7 +779,7 @@ angular.module('ma-app')
                     
                     if(myDuration == '') {
                         //not a preset time interval, so determine the end date and time and set duration to other:
-                        var endDate = new Date(currentClosure.end);
+                        endDate = new Date(currentClosure.end);
                         
                         $scope.fuForm = {
                             duration: 'other',
@@ -794,20 +791,23 @@ angular.module('ma-app')
                             futureEndDate: '',
                             futureEndTime: '',
                             message: currentClosure.message,
-                            entity: facility
+                            entity: facility,
+                            currentClosure: currentClosure
                         };
                     } else {
+                        endDate = new Date(currentClosure.end);
                         $scope.fuForm = {
                             duration: myDuration,
-                            enddate: '',
-                            endtime: '',
+                            enddate: endDate,
+                            endtime: endDate,
                             timespan: 'current',
                             futureStartDate: '',
                             futureStartTime: '',
                             futureEndDate: '',
                             futureEndTime: '',
                             message: currentClosure.message,
-                            entity: facility
+                            entity: facility,
+                            currentClosure: currentClosure
                         };
                     }                  
                     
@@ -846,6 +846,15 @@ angular.module('ma-app')
             $scope.fuForm.entity = facility;
             console.log($scope.fuForm);
             schedulingService.closeFacility($scope.fuForm);
+            ngDialog.close();
+        };
+        
+        $scope.updateFacilityClosure = function(facility) {
+            console.log("\n\Updating closure for Facility");
+            console.log(facility);
+            $scope.fuForm.entity = facility;
+            console.log($scope.fuForm);
+            schedulingService.updateClosure($scope.fuForm);
             ngDialog.close();
         };
         
@@ -926,6 +935,27 @@ angular.module('ma-app')
                     if(partial) break;
                 }
             }
+            
+            //likewise, if the facility is closed, but any of its fields are open, the status is partial:
+            if($scope.currentClosure(facility)) {
+                //iterate through all fields:
+                var foundCurrentClosure;
+                for(var i = 0; i < fields.length; i++) {
+                    foundCurrentClosure = false;
+                    if(fields[i].closures.length > 0) {
+                        //this field has closures, so lets go through them
+                        var closures = fields[i].closures;
+                        for(var j = 0; j < closures.length; j++) {
+                            if(closures[j].start <= currenttime && closures[j].end > currenttime) {
+                                foundCurrentClosure = true;
+                                break;
+                            }
+                        }
+                        partial = !foundCurrentClosure;
+                    }
+                    if(partial) break;
+                }
+            }            
             return partial;
         };
         
@@ -991,7 +1021,7 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
-        $scope.openField = function(field) {
+        $scope.openField = function(field, facility) {
             console.log("\n\Opening field");
             console.log(field);
             $scope.fuForm.entity = field;
@@ -1009,6 +1039,15 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
+        $scope.updateFieldClosure = function(field) {
+            console.log("\n\Updating field closure for field");
+            console.log(field);
+            $scope.fuForm.entity = field;
+            console.log($scope.fuForm);
+            schedulingService.updateClosure($scope.fuForm);
+            ngDialog.close();
+        };
+        
         $scope.getFieldStatusString = function(entity) {
             var result = "OPEN";
             
@@ -1018,7 +1057,7 @@ angular.module('ma-app')
             return result;                
         };
         
-        $scope.openUpdateFieldStatus = function(field) {
+        $scope.openUpdateFieldStatus = function(field, facility) {
             console.log("\n\nOpening dialog to change field status");    
             var currentClosure = null;
             
@@ -1032,7 +1071,8 @@ angular.module('ma-app')
                 futureEndDate: '',
                 futureEndTime: '',
                 message: '',
-                entity: field
+                entity: field, 
+                facility: facility
             };
             
             var currenttime = new Date().getTime();
@@ -1053,9 +1093,7 @@ angular.module('ma-app')
                 
                 //if we have one, determine the duration and set the form contents:
                 if(currentClosure != null) {
-                    var duration;
-                    var enddate;
-                    var endtime;
+                    var endDate;
                     var durationMilliseconds = currentClosure.end - currentClosure.start;
                     
                     var myDuration = datetimeService.determineDuration(durationMilliseconds);
@@ -1063,7 +1101,7 @@ angular.module('ma-app')
                     
                     if(myDuration == '') {
                         //not a preset time interval, so determine the end date and time and set duration to other:
-                        var endDate = new Date(currentClosure.end);
+                        endDate = new Date(currentClosure.end);
                         
                         $scope.fuForm = {
                             duration: 'other',
@@ -1075,23 +1113,27 @@ angular.module('ma-app')
                             futureEndDate: '',
                             futureEndTime: '',
                             message: currentClosure.message,
-                            entity: field
+                            entity: field,
+                            currentClosure: currentClosure, 
+                            facility: facility
                         };
                     } else {
+                        endDate = new Date(currentClosure.end);
                         $scope.fuForm = {
                             duration: myDuration,
-                            enddate: '',
-                            endtime: '',
+                            enddate: endDate,
+                            endtime: endDate,
                             timespan: 'current',
                             futureStartDate: '',
                             futureStartTime: '',
                             futureEndDate: '',
                             futureEndTime: '',
                             message: currentClosure.message,
-                            entity: field
+                            entity: field,
+                            currentClosure: currentClosure, 
+                            facility: facility
                         };
-                    }                  
-                    
+                    } 
                 }
             } else {
                 //no current closure found:
@@ -1105,7 +1147,8 @@ angular.module('ma-app')
                     futureEndDate: '',
                     futureEndTime: '',
                     message: '',
-                    entity: field
+                    entity: field, 
+                    facility: facility
                 };
             }               
             ngDialog.open({ template: 'views/updateField.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });

@@ -2781,24 +2781,102 @@ angular.module('ma-app')
         
         this.openField = function(form) {
             console.log("Attempting to open field " + form.entity.name);
-            var putString = '{ "closure": false, "close_start": 0, "close_end": 0, "closure_type": "" }';
+            console.log("in facility " + form.facility.name);
+            var facilityWide = false;
+            
+            //first, check if the facility is affected by the same closure as the field
+            var currentClosureId = form.currentClosure._id;
+            var facilityClosures = form.facility.closures;
+            
+            if(facilityClosures.length > 0) {
+                for(var i = 0; i < facilityClosures.length; i++) {
+                    if(facilityClosures[i]._id == currentClosureId) {
+                        facilityWide = true;
+                        break;
+                    }
+                }
+            }
+            
+            if(facilityWide) {
+                console.log("Determined that this is a facility wide closure.");
+                $http({ 
+                    url: baseURL + 'closures/openFieldOnly/' + form.entity._id + '/' + currentClosureId,
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("Successfully opened field: " + form.entity.name);  
+                    console.log(response);
+                    coreDataService.refreshFacilities();
+                    coreDataService.refreshFields(); 
+                }, function(errResponse) {
+                    console.log("Failed on attempt to open field:");
+                    console.log(errResponse);
+                });              
+            } else {
+                console.log("Determined that this closure only affects this field.");
+                var putString = '{ "end": ' + new Date().getTime() + '}';
+            
+                $http({
+                    url: baseURL + 'closures/' + form.currentClosure._id,
+                    method: 'PUT',
+                    headers: {
+                        'content-type': 'application/json' 
+                    },
+                    data: putString
+                }).then(function(response) {
+                    console.log("Successfully opened field: " + form.entity.name);    
+                    coreDataService.refreshFacilities();
+                    coreDataService.refreshFields(); 
+                }, function(errResponse) {
+                    console.log("Failed on attempt to close field:");
+                    console.log(errResponse);
+                }); 
+            }
+        };
+        
+        this.updateClosure = function(form) {
+            console.log("Attempting to update closure for " + form.entity.name);
+            var startTime;
+            var endTime;
+            var startMilli;
+            var endMilli;
+            var type = "CURRENT";
+            
+            if(form.duration != "other" && form.duration != "future") {
+                startTime = new Date(form.currentClosure.start);
+                endTime = datetimeService.addHours(form.duration, new Date(form.currentClosure.start));
+            } else if(form.duration == "other") {
+                startTime = new Date(form.currentClosure.start);
+                endTime = datetimeService.combineDateTime(form.enddate, form.endtime);
+            } else if(form.duration == "future") {
+                startTime = datetimeService.combineDateTime(form.futureStartDate, form.futureStartTime);
+                endTime = datetimeService.combineDateTime(form.futureEndDate, form.futureEndTime);
+                type = "FUTURE";
+            }
+            
+            startMilli = startTime.getTime();
+            endMilli = endTime.getTime();
+            
+            var putString = '{ "message": "' + form.message + '", "start": ' + startMilli + ', "end": ' + endMilli + ', "type": "' + type + '" }';
             
             $http({
-                url: baseURL + 'fields/' + form.entity._id,
+                url: baseURL + 'closures/' + form.currentClosure._id,
                 method: 'PUT',
                 headers: {
                     'content-type': 'application/json' 
                 },
                 data: putString
             }).then(function(response) {
-                console.log("Successfully opened field: ");
-                console.log(response);                
+                console.log("Successfully updated closure: ");
+                console.log(response);    
                 coreDataService.refreshFacilities();
                 coreDataService.refreshFields();
             }, function(errResponse) {
-                console.log("Failed on attempt to open field:");
+                console.log("Failed on attempt to update closure:");
                 console.log(errResponse);
-            });            
+            });
         };
         
         this.closeFacility = function(form) {

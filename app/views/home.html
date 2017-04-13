@@ -454,7 +454,7 @@
                             <li class="media" ng-repeat="facility in facilities" style="padding:10px; background: lightGray;">
                                 <div class="media-left media-top" >
                                     <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{facility.club_affiliation.logo_url}} alt="club logo">
-                                    <button type="button" disabled style="cursor: default;" ng-show="currentClosure(facility)" class="btn btn-sm btn-danger btn-custom75">CLOSED</button>
+                                    <button type="button" disabled style="cursor: default;" ng-show="currentClosure(facility) && !partialClosure(facility)" class="btn btn-sm btn-danger btn-custom75">CLOSED</button>
                                     <button type="button" disabled style="cursor: default;" ng-show="partialClosure(facility)" class="btn btn-sm btn-warning btn-custom75">PARTIAL</button>
                                     <button type="button" disabled style="cursor: default;" ng-show="!currentClosure(facility) && !partialClosure(facility)" class="btn btn-sm btn-success btn-custom75">OPEN</button>
                                     <button type="button" ng-click="openUpdateFacilityStatus(facility)" class="btn btn-sm btn-default btn-custom75">UPDATE</button>
@@ -479,7 +479,7 @@
                                         <div class="media-left media-top" >  
                                             <button type="button" disabled style="cursor: default;" ng-show="currentClosure(field)" class="btn btn-sm btn-danger btn-custom75" style="margin-top: 0px;">CLOSED</button>
                                             <button type="button" disabled style="cursor: default;" ng-show="!currentClosure(field)" class="btn btn-sm btn-success btn-custom75"style="margin-top: 0px;">OPEN</button>
-                                            <button type="button" ng-click="openUpdateFieldStatus(field)" class="btn btn-sm btn-default btn-custom75">UPDATE</button>
+                                            <button type="button" ng-click="openUpdateFieldStatus(field, facility)" class="btn btn-sm btn-default btn-custom75">UPDATE</button>
                                         </div>
                                         <div class="media-body">
                                             <div class="row">

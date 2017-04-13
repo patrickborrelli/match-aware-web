@@ -109,10 +109,10 @@
             </div>
         </div>
     </form>
-    <button ng-show="currentClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=openField(fuForm.entity)>Reopen Field</button>
+    <button ng-show="currentClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click='openField(fuForm.entity, fuForm.facility)'>Reopen Field</button>
     <button ng-show="currentClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=updateFieldClosure(fuForm.entity)>Update Closure</button>
     <button ng-show="currentShown && !futureShown && !currentClosure(fuForm.entity)" type="button" ng-click="closeField(fuForm.entity)" class="btn btn-sm btn-info btn-custom">Close Field</button>
-    <button ng-show="futureShown" type="submit" ng-click="closeField()" class="btn btn-sm btn-info btn-custom">Schedule Future Closure</button>
+    <button ng-show="futureShown" type="submit" ng-click="closeField(fuForm.entity)" class="btn btn-sm btn-info btn-custom">Schedule Future Closure</button>
     <button type="button" class="btn btn-sm btn-default btn-custom75" ng-click=closeThisDialog("Cancel")>Cancel</button>
     <div>&nbsp;</div>
 </div>
