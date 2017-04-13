@@ -849,6 +849,24 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
+        $scope.reopenClosedFields = function(facility) {
+            console.log("\n\Reopening all closed fields in facility " + facility.name);
+            console.log(facility);
+            $scope.fuForm.entity = facility;
+            console.log($scope.fuForm);
+            schedulingService.reopenClosedFields($scope.fuForm)
+                .then(function(response) {
+                    console.log("Successfully reopened fields at facility: ");
+                    console.log(response); 
+                    coreDataService.refreshFacilities();
+                    coreDataService.refreshFields();
+                }, function(errResponse) {
+                    console.log("Failed on attempt to reopened fields at facility:");
+                    console.log(errResponse);
+                });   
+            ngDialog.close();
+        };
+        
         $scope.updateFacilityClosure = function(facility) {
             console.log("\n\Updating closure for Facility");
             console.log(facility);
@@ -970,13 +988,14 @@ angular.module('ma-app')
             $scope.tempFacility = facility;
             $scope.fieldForm = {
                 name: '',
-                size: {},
+                size: '',
                 lights: false,
                 game: false,
                 practice: false,
                 tournament: false,
                 training: false,
-                surface: ''
+                surface: '', 
+                condition: ''
             };
             
             ngDialog.open({ template: 'views/addField.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:'HomeController'});
@@ -998,13 +1017,13 @@ angular.module('ma-app')
             $scope.fieldForm = {
                 name: field.name,
                 facility: myFacility,
-                size: field.size,
+                size: field.size._id,
                 lights: field.lights,
                 game: field.game,
                 practice: field.practice,
                 tournament: field.tournament,
                 training: field.training,
-                condition: field.condition,
+                condition: field.condition.toString(),
                 surface: field.surface,
                 id: field._id
             };
@@ -1019,6 +1038,21 @@ angular.module('ma-app')
             console.log($scope.fieldForm);
             coreDataService.editField($scope.fieldForm);
             ngDialog.close();
+        };
+        
+        $scope.deleteField = function(field, facility) {
+            console.log("\n\nDeleting field " + facility.name + " " + field.name);
+            console.log(field);
+            coreDataService.deleteField(field)
+                .then(function(response) {
+                    console.log("Successfully deleted field: ");
+                    console.log(response);
+                    coreDataService.refreshFacilities();
+                    coreDataService.refreshFields();
+                }, function(errResponse) {
+                    console.log("Failed on attempt to delete field:");
+                    console.log(errResponse);
+                });
         };
         
         $scope.openField = function(field, facility) {

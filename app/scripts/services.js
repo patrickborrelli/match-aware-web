@@ -1153,7 +1153,7 @@ angular.module('ma-app')
             postString += '"practice": "' + formData.practice + '", ';
             postString += '"tournament": "' + formData.tournament + '", ';
             postString += '"training": "' + formData.training + '", ';
-            postString += '"size": "' + formData.size._id + '" }';
+            postString += '"size": "' + formData.size + '" }';
             
             console.log("Posting rule with string: " + postString);
             
@@ -1207,7 +1207,7 @@ angular.module('ma-app')
             postString += '"practice": "' + formData.practice + '", ';
             postString += '"tournament": "' + formData.tournament + '", ';
             postString += '"training": "' + formData.training + '", ';
-            postString += '"size": "' + formData.size._id + '" }';
+            postString += '"size": "' + formData.size + '" }';
             
             console.log("Posting rule with string: " + postString);
             
@@ -1227,6 +1227,17 @@ angular.module('ma-app')
                 console.log("Failed on attempt to update field:");
                 console.log(errResponse);
             });
+        };
+        
+        this.deleteField = function(field) {
+            //delete selected field and refresh the scope:
+            return $http({
+                url: baseURL + 'fields/' + field._id,
+                method: 'DELETE',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            })
         };
         
         this.addRule = function(formData) {
@@ -2956,6 +2967,21 @@ angular.module('ma-app')
             }, function(errResponse) {
                 console.log("Failed on attempt to open facility:");
                 console.log(errResponse);
+            });            
+        };
+        
+        this.reopenClosedFields = function(form) {
+            //todo: simple call to facilities/reopenFields/:facilityId  
+            var facilityId = form.entity._id;
+            
+            console.log("Attempting to open all closed fields in facility " + form.entity.name);
+            
+            return $http({
+                url: baseURL + 'facilities/reopenFields/' + facilityId,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                }
             });            
         };
         

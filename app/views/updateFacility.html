@@ -110,7 +110,7 @@
         </div>
     </form>
     <button ng-show="currentClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=openFacility(fuForm.entity)>Reopen Facility</button>
-    <button ng-show="partialClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=openFacility(fuForm.entity)>Reopen Closed Fields</button>
+    <button ng-show="partialClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=reopenClosedFields(fuForm.entity)>Reopen Closed Fields</button>
     <button ng-show="currentClosure(fuForm.entity)" type="button" class="btn btn-sm btn-info btn-custom" ng-click=updateFacilityClosure(fuForm.entity)>Update Closure</button>
     <button ng-show="currentShown && !futureShown && !currentClosure(fuForm.entity)" type="button" ng-click="closeFacility(fuForm.entity)" class="btn btn-sm btn-info btn-custom">Close Facility</button>
     <button ng-show="futureShown" type="submit" ng-click="closeFacility(fuForm.entity)" class="btn btn-sm btn-info btn-custom">Schedule Future Closure</button>
