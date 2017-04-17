@@ -1,0 +1,95 @@
+<div class="ngdialog-message">
+    <div class="">
+        <h3>Initiate Preseason Practice Bids</h3>
+    </div>
+    <div class="">&nbsp;</div>
+    <div class="">
+        <form class="form-horizontal" ng-submit="processPracticeBid()">
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="minage">Minimum Age Group</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Min Age</div>
+                        <select id="minage" class="form-control" ng-model="bidForm.minage" ng-options="agegroup._id as agegroup.name for agegroup in ageGroups"></select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="maxage">Maximum Age Group</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Max Age</div>
+                        <select id="maxage" class="form-control" ng-model="bidForm.maxage" ng-options="agegroup._id as agegroup.name for agegroup in ageGroups"></select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="startdate">Bid Start</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Bid Start</div>
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+                        <input type="date" id="startdate" class="form-control" ng-model="bidForm.startdate">
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-time"></i></div>
+                        <label class="sr-only" for="starttime">Start Time</label>
+                        <input type="time" id="starttime" class="form-control" ng-model="bidForm.starttime">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="options">Required Options</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100"># Options</div>
+                        <select id="options" class="form-control" ng-model="bidForm.options">
+                            <option value=""></option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="message">Message</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Message</div>
+                        <textarea id="message" class="form-control" ng-model="bidForm.message" rows="5"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding-bottom"> 
+                <label class="sr-only" for="message">Message</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100" style="border-right: 1px solid lightgray;">Send To</div>
+                        <label class="sr-only" for="coach">Coach</label>
+                        <div class="col-xs-3" style="text-align: center;">  
+                            <input type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-size="small" data-onstyle="success" data-offstyle="danger" ng-model="bidForm.coach" id="coach"> Coach 
+                        </div>
+                        <label class="sr-only" for="assistant">Assistant Coach</label>
+                        <div class="col-xs-3" style="text-align: center;">  
+                            <input type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-size="small" data-onstyle="success" data-offstyle="danger" ng-model="bidForm.assistant" id="assistant"> Assistant 
+                        </div>
+                        <label class="sr-only" for="manager">Manager</label>
+                        <div class="col-xs-3" style="text-align: center;">  
+                            <input type="checkbox" checked data-toggle="toggle" data-on="Yes" data-off="No" data-size="small" data-onstyle="success" data-offstyle="danger" ng-model="bidForm.manager" id="manager"> Manager 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-info">Add</button>
+            <button type="button" class="btn btn-default" ng-click=closeThisDialog("Cancel")>Cancel</button>
+        </form>
+    </div>
+    <div>&nbsp;</div>
+</div>

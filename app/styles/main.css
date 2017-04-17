@@ -46,6 +46,10 @@
     width: 105px; 
 }
 
+.input-group-addon.custom-width-120 { 
+    width: 120px; 
+}
+
 .input-group-addon.custom-width-45 { 
     width: 45px; 
 }

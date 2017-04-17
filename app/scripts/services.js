@@ -11,6 +11,7 @@ angular.module('ma-app')
         $rootScope.roles = {};   
         $rootScope.ageGroups = {};
         var events = {};
+        $rootScope.eventTypes = {};
         $rootScope.facilities = {}; 
         $rootScope.fields = {}; 
         $rootScope.fieldSizes = {};
@@ -30,6 +31,7 @@ angular.module('ma-app')
         var rolesLoaded = false;
         var ageGroupsLoaded = false;
         var eventsLoaded = false;
+        var eventTypesLoaded = false;
         var facilitiesLoaded = false;
         var fieldsLoaded = false;
         var fieldSizesLoaded = false;
@@ -68,6 +70,11 @@ angular.module('ma-app')
                     case "events" :
                         console.log("Setting events data to stale");
                         eventsLoaded = false;
+                        break;
+                    
+                    case "eventTypes" :
+                        console.log("Setting event type data to stale");
+                        eventTypesLoaded = false;
                         break;
                     
                     case "facilities" :
@@ -378,6 +385,22 @@ angular.module('ma-app')
                     console.log(response);
                     events = response.data;
                     eventsLoaded = true;
+                }); 
+            }
+            
+            if(!eventTypesLoaded) {
+                //retrieve events:
+                $http({
+                    url: baseURL + 'event_types/',
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("Retrieved the event types from the API: ");
+                    console.log(response);
+                    $rootScope.eventTypes = response.data;
+                    eventTypesLoaded = true;
                 }); 
             }
             
@@ -813,7 +836,26 @@ angular.module('ma-app')
             });
         };
         
-        var localRefreshAgeGroups = this.refreshAgeGroups;
+        var localRefreshAgeGroups = this.refreshAgeGroups; 
+                
+        this.refreshEventTypes = function() {
+            //retrieve event types:            
+            $http({
+                url: baseURL + 'event_types/',
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) { 
+                $rootScope.eventTypes = response.data;  
+                eventTypesLoaded = true;
+            }, function(errResponse) {
+                console.log("Error encountered when refreshing event types.");
+                console.log(errResponse);
+            });
+        };
+        
+        var localRefreshEventTypes = this.refreshEventTypes;
         
         this.refreshLeagues = function() {
             //retrieve leagues:
@@ -1180,6 +1222,20 @@ angular.module('ma-app')
                     console.log(facResponse);
                     localRefreshFacilities();
                     localRefreshFields();
+                    
+                    $http({
+                        url: baseURL + 'field_availabilities/initializeForField/' + response.data._id,
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json' 
+                        }
+                    }).then(function(response) {
+                        console.log("Successfully added field availability: ");
+                        console.log(response);
+                    }, function(errResponse) {
+                        console.log("Failed on attempt to create field availability:");
+                        console.log(errResponse);
+                    });
                 }, function(facErrResponse) {
                     console.log("Failed on attempt to add field to facility:");
                     console.log(facErrResponse);                    
@@ -1807,6 +1863,17 @@ angular.module('ma-app')
             }           
         }; 
         
+        this.deleteFacility = function(facility) {
+            //delete selected facility and refresh the scope:
+            return $http({
+                url: baseURL + 'facilities/' + facility._id,
+                method: 'DELETE',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            })
+        };
+        
         this.pickActiveUsers = function(users) {
             var active = [];
             for(var i = 0; i < users.length; i++) {
@@ -1818,6 +1885,71 @@ angular.module('ma-app')
         };
         
         var localPickActiveUsers = this.pickActiveUsers;
+        
+        this.addEventType = function(formData) {
+            //post rule:            
+            var postString = '{ "name": "' + formData.name + '", "priority": ' + formData.priority + ', "field_type": "' + formData.fieldtype + '"}';
+            
+            console.log("Posting event type with string: " + postString);
+            
+            $http({
+                url: baseURL + 'event_types/',
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: postString
+            }).then(function(response) {
+                console.log("Successfully added event type: ");
+                console.log(response);
+                localRefreshEventTypes();                 
+                ngDialog.close();
+            }, function(errResponse) {
+                console.log("Failed on attempt to add event type:");
+                console.log(errResponse);                                 
+                ngDialog.close();
+            });
+        };
+        
+        this.editEventType = function(formData) {          
+            var putString = '{ "name": "' + formData.name + '", "priority": ' + formData.priority + ', "field_type": "' + formData.fieldtype + '"}';
+                        
+            console.log("Updating event type with string: " + putString);
+            
+            $http({
+                url: baseURL + 'event_types/' + formData.id,
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json' 
+                },
+                data: putString
+            }).then(function(response) {
+                console.log("Successfully updated event type: ");
+                console.log(response);  
+                localRefreshEventTypes(); 
+            }, function(errResponse) {
+                console.log("Failed on attempt to update event type:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.deleteEventType = function(eventType) {
+            //delete selected event type and refresh the scope:
+            $http({
+                url: baseURL + 'event_types/' + eventType._id,
+                method: 'DELETE',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Successfully deleted event type: ");
+                console.log(response);  
+                localRefreshEventTypes(); 
+            }, function(errResponse) {
+                console.log("Failed on attempt to delete event type:");
+                console.log(errResponse);
+            });
+        };
     }])
 
     .service('userService', ['$http', 'baseURL', '$q', 'ngDialog', 'coreDataService', 'clubService', function($http,baseURL, $q, ngDialog, coreDataService, clubService) {

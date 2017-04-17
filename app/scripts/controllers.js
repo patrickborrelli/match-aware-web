@@ -560,6 +560,10 @@ angular.module('ma-app')
             return $rootScope.ageGroups.length > 0;
         };
         
+        $scope.areEventTypes = function() {
+            return $rootScope.eventTypes.length > 0;
+        };
+        
         $scope.areLeagues = function() {
             return $rootScope.leagues.length > 0;
         };
@@ -654,6 +658,57 @@ angular.module('ma-app')
         };
         
         
+        
+        //EVENT_TYPE
+        $scope.openAddEventType = function() {
+            $scope.eventTypeForm = {
+                name: '',
+                priority: 0,
+                fieldtype: ''
+            };
+            console.log("\n\nOpening dialog to add event type");
+            ngDialog.open({ template: 'views/addEventType.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
+        };
+        
+        $scope.addEventType = function() {
+            console.log("\n\nAdding event type");
+            $scope.eventTypeForm.name = $scope.eventTypeForm.name.toUpperCase();
+            console.log($scope.eventTypeForm);
+            coreDataService.addEventType($scope.eventTypeForm);  
+        };
+        
+        $scope.openEditEventType = function(eventType) {
+            console.log("\n\nOpening dialog to edit event type");
+            console.log(eventType);
+            
+            $scope.eventTypeForm = {
+                name: eventType.name,
+                priority: eventType.priority.toString(),
+                fieldtype: eventType.field_type,
+                id: eventType._id
+            };
+                
+            console.log("Current entries include: ");
+            console.log($scope.eventTypeForm);
+            ngDialog.open({ template: 'views/editEventType.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
+        };
+        
+        $scope.editEventType = function() {
+            console.log("\n\nEditing event type");
+            console.log($scope.eventTypeForm);
+            coreDataService.editEventType($scope.eventTypeForm);
+            ngDialog.close();
+        };
+        
+        $scope.deleteEventType = function(eventType) {
+            console.log("\n\nDeleting event type");
+            console.log(eventType);
+            coreDataService.deleteEventType(eventType);
+            ngDialog.close();
+        };
+        
+        
+        
         //FACILITY        
         $scope.openAddFacility = function() {
             console.log("\n\nOpening dialog to add facility");
@@ -735,8 +790,21 @@ angular.module('ma-app')
             ngDialog.close();
         };
         
-        //TODO: missing delete facility functionality
-        
+        $scope.deleteFacility = function(facility) {
+            console.log("\n\nDeleting facility " + facility.name);
+            console.log(facility);
+            coreDataService.deleteFacility(facility)
+                .then(function(response) {
+                    console.log("Successfully deleted facility: ");
+                    console.log(response);
+                    coreDataService.refreshFacilities();
+                    coreDataService.refreshFields();
+                }, function(errResponse) {
+                    console.log("Failed on attempt to delete facility:");
+                    console.log(errResponse);
+                });
+        };
+                
         $scope.openUpdateFacilityStatus = function(facility) {
             console.log("\n\nOpening dialog to change facility status");
             var currentClosure = null;
@@ -1275,8 +1343,7 @@ angular.module('ma-app')
         //TODO: missing delete        
         $scope.getUnitPrettyName = function(unit) {
             return coreDataService.getUnitPrettyName(unit);            
-        };
-                
+        };                
         
         
         
@@ -1361,6 +1428,30 @@ angular.module('ma-app')
             console.log("\n\nDeleting league");
             console.log(league);
             coreDataService.deleteLeague(league);
+        };
+        
+        
+        //PRESEASON BIDS
+        $scope.openInitiatePracticeBid = function() {
+            console.log("\n\nOpening dialog to initiate preseason practice bids");
+            
+            $scope.bidForm = {
+                minage: '',
+                maxage: '',
+                options: 0,
+                startdate: '',
+                starttime: '',
+                message: '',
+                coach: false,
+                assistant: false,
+                manager: false
+            };
+            ngDialog.open({ template: 'views/initiateBid.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
+        };
+        
+        $scope.processPracticeBid = function() {
+            console.log("Received preseason bid setup: ");
+            console.log($scope.bidForm);
         };
         
         
@@ -1626,8 +1717,7 @@ angular.module('ma-app')
         //TODO: add activate user and a mechanism to display inactive users
         //TODO: add edit user (for user details)
         
-        
-        
+                
         
         //USER INVITES
         $scope.sendInvite = function() {
