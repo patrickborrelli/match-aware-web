@@ -1452,6 +1452,8 @@ angular.module('ma-app')
         $scope.processPracticeBid = function() {
             console.log("Received preseason bid setup: ");
             console.log($scope.bidForm);
+            schedulingService.processPreseasonBidRequest();
+            ngDialog.close();
         };
         
         
