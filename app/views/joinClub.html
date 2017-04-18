@@ -15,7 +15,7 @@
             <div class="form-group">
                 <div class="input-group">
                     <div class="input-group-addon">Role</div>
-                    <select id="role" class="form-control" ng-model="join.selectedRole" ng-options="role as role.name for role in roles"></select> 
+                    <select id="role" class="form-control" ng-model="join.selectedRole" ng-options="role as role.pretty_name for role in roles"></select> 
                 </div>   
             </div>
             <button type="submit" class="btn btn-info">Submit</button>

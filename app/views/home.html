@@ -5,7 +5,21 @@
     </div>
 </div>
 
-<div class="row row-content" ng-show="userHasSingleClub() && !userHasMultipleClubs() && getCurrentRole() == 'CLUB_ADMIN' && loadRequests()">    
+<div class="row row-content" ng-show="userHasSingleClub() && userHasMultipleRoles() && !userHasMultipleClubs() && getCurrentRole().name == null">    
+    <div class="col-xs-12">
+        <h4>Welcome! Select a Role</h4>     
+        <form>
+            <div class="form-group">
+                <label class="sr-only" for="role">Current Role</label>
+                <div class="input-group">
+                    <select id="role" class="form-control" ng-model="roleForm.role" ng-options="clubRole.role as clubRole.role.pretty_name for clubRole in userClubRoles" ng-change="selectRole(roleForm)"></select> 
+                </div>                               
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row row-content" ng-show="userHasSingleClub() && !userHasMultipleClubs() && getCurrentRole() != null && getCurrentRole().name == 'CLUB_ADMIN' && loadRequests()">    
     <div class="col-xs-12">
         <h4>Club Administration</h4>
     </div>
@@ -47,7 +61,7 @@
                                         </div>
                                         <div class="media-body">
                                             <h3 class="media-heading">{{request.user.first_name}} {{request.user.last_name}}</h3>
-                                            <p>{{getRolePrettyName(request.role.name)}}<br />
+                                            <p>{{request.role.pretty_name)}}<br />
                                             {{request.user.email_address}}</p>            
                                         </div>
                                         <button type="button" class="btn btn-primary btn-sm" ng-click="acceptAccess(request)">Accept</button>
@@ -230,7 +244,7 @@
                                         <div class="media-body">
                                             <div class="col-xs-9">
                                                 <h3 class="media-heading">{{invite.sendToEmail}}</h3>
-                                                <p>{{getRolePrettyName(invite.role.name)}}<br />
+                                                <p>{{invite.role.pretty_name}}<br />
                                                 Invite Key: {{invite.invite_key}}<br />
                                                 Sent: {{getInviteSentDate(invite.invite_key)}}</p>
                                             </div>
@@ -275,7 +289,7 @@
                                 <label class="sr-only" for="sort">Filter By</label>
                                 <div class="input-group">
                                     <div class="input-group-addon">Filter By</div>
-                                    <select class="form-control"  id="filter">
+                                    <select class="form-control" id="filter">
                                         <option></option>
                                         <option>Travel</option>
                                         <option>Recreational</option>
@@ -428,7 +442,7 @@
     </div>
 </div>
 
-<div class="row row-content" ng-show="userHasSingleClub() && !userHasMultipleClubs() && getCurrentRole() == 'FIELD_ADMIN'">    
+<div class="row row-content" ng-show="userHasSingleClub() && !userHasMultipleClubs() && getCurrentRole() != null && getCurrentRole().name == 'FIELD_ADMIN'">    
     <div class="col-xs-12">
         <h4>Field Administration</h4>
     </div>

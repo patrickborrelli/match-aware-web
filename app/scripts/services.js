@@ -249,55 +249,7 @@ angular.module('ma-app')
         };
         
         var localGoogleMapURL = this.getGoogleMapURL;
-        
-        this.getRolePrettyName = function(roleName) {
-            var prettyName = roleName;
             
-            switch(roleName) {
-                case "CLUB_ADMIN":
-                    prettyName = "Club Administrator";
-                    break;
-                    
-                case "FIELD_ADMIN":
-                    prettyName = "Field Administrator";
-                    break;
-                    
-                case "REFEREE_ASSIGNOR":
-                    prettyName = "Referee Assignor";
-                    break;
-                    
-                case "TRAINING_ADMIN":
-                    prettyName = "Training Administrator";
-                    break;
-                    
-                case "COACH":
-                    prettyName = "Coach";
-                    break;
-                    
-                case "TRAINER":
-                    prettyName = "Trainer";
-                    break;
-                    
-                case "REFEREE":
-                    prettyName = "Referee";
-                    break;
-                    
-                case "PARENT":
-                    prettyName = "Parent";
-                    break;
-                    
-                case "PLAYER":
-                    prettyName = "Player";
-                    break;
-                    
-                default :
-                    prettyName = roleName;
-                    break;   
-            }
-            
-            return prettyName;
-        };
-        
         this.getUnitPrettyName = function(unit) {
             var prettyName = unit;
             
@@ -1952,14 +1904,14 @@ angular.module('ma-app')
         };
     }])
 
-    .service('userService', ['$http', 'baseURL', '$q', 'ngDialog', 'coreDataService', 'clubService', function($http,baseURL, $q, ngDialog, coreDataService, clubService) {
+    .service('userService', ['$http', '$rootScope', '$state', 'baseURL', '$q', 'ngDialog', 'coreDataService', 'clubService', function($http, $rootScope, $state, baseURL, $q, ngDialog, coreDataService, clubService) {
         var usersClubs = [];
         var userHasClub = false;
         var userHasMultipleClubs = false;
         var currentUser = {};
         var currentUserStale = false;
         var currentRolesStale = false;
-        var userClubRoles = [];
+        $rootScope.userClubRoles = {};
         
         var hasRole = false;
         var hasMultipleRoles = false;
@@ -1994,10 +1946,12 @@ angular.module('ma-app')
             } else if(roles.length > 1) {
                 hasRole = true;
                 hasMultipleRoles = true;
+                console.log("\n\nUSER has multiple roles.");
             } else {
                 hasRole = true;
                 hasMultipleRoles = false;
                 currentRole = roles[0];
+                console.log("\n\nUSER has one role.");
             }            
         };      
         
@@ -2057,9 +2011,9 @@ angular.module('ma-app')
                 
             } else {
                 if(promise) {
-                    response = $q.when(userClubRoles);
+                    response = $q.when($rootScope.userClubRoles);
                 } else {
-                    response = userClubRoles;
+                    response = $rootScope.userClubRoles;
                 }
                 return response;
             }            
@@ -2090,8 +2044,12 @@ angular.module('ma-app')
         var localSetCurrentRolesStale = this.setCurrentRolesStale;
         
         this.setUserClubRoles = function(clubRoles) {
-            userClubRoles = clubRoles;  
+            $rootScope.userClubRoles = clubRoles;  
             currentRolesStale = false;
+        };
+        
+        this.getUserClubRoles = function() {
+            return $rootScope.userClubRoles;
         };
         
         var localSetUserClubRoles = this.setUserClubRoles;
@@ -2102,6 +2060,10 @@ angular.module('ma-app')
         
         this.getUserHasMultipleClubs = function() {
             return userHasMultipleClubs;
+        };
+        
+        this.getUserHasMultipleRoles = function() {
+            return hasMultipleRoles;
         };
         
         this.getInviteByKey = function(inviteKey) {
@@ -2202,7 +2164,7 @@ angular.module('ma-app')
                     <div class="ngdialog-message">\
                     <div><h3>Access Request Creation Failed</h3></div>' +
                     '<div><p>Failed to send access request for ' + currentUser.first_name + ' ' + currentUser.last_name +
-                    ' - as ' + coreDataService.getRolePrettyName(formData.selectedRole.name);
+                    ' - as ' + formData.selectedRole.pretty_name;
 
                     if(teamId != null) {
                         message += ' with team ' + formData.selectedClub.name + ' ' + formData.selectedTeam.name +'</p></div>';
@@ -2239,7 +2201,7 @@ angular.module('ma-app')
                         <div class="ngdialog-message">\
                         <div><h3>Access Request Delivered</h3></div>' +
                         '<div><p>Successfully sent access request for ' + currentUser.first_name + ' ' + currentUser.last_name +
-                        ' - as ' + coreDataService.getRolePrettyName(formData.selectedRole.name);
+                        ' - as ' + formData.selectedRole.pretty_name;
 
                         if(teamId != null) {
                             message += ' with team ' + formData.selectedClub.name + ' ' + formData.selectedTeam.name +'</p></div>';
@@ -2256,7 +2218,7 @@ angular.module('ma-app')
                         <div class="ngdialog-message">\
                         <div><h3>Access Request Creation Failed</h3></div>' +
                         '<div><p>Failed to send access request for ' + currentUser.first_name + ' ' + currentUser.last_name +
-                        ' - as ' + coreDataService.getRolePrettyName(formData.selectedRole.name);
+                        ' - as ' + formData.selectedRole.pretty_name;
 
                         if(teamId != null) {
                             message += ' with team ' + formData.selectedClub.name + ' ' + formData.selectedTeam.name +'</p></div>';
@@ -2273,7 +2235,7 @@ angular.module('ma-app')
                     <div class="ngdialog-message">\
                     <div><h3>Access Request Creation Failed</h3></div>' +
                     '<div><p>Failed to send access request for ' + currentUser.first_name + ' ' + currentUser.last_name +
-                    ' - as ' + coreDataService.getRolePrettyName(formData.selectedRole.name) + '</p></div><div><p>' +  errResponse.data.err.message + '</p><p>' +
+                    ' - as ' + formData.selectedRole.pretty_name + '</p></div><div><p>' +  errResponse.data.err.message + '</p><p>' +
                         errResponse.data.err.name + '</p></div>';
 
                     if(teamId != null) {
@@ -2328,6 +2290,10 @@ angular.module('ma-app')
                     'content-type': 'application/json' 
                 }
             });
+        };
+        
+        this.getUsersClubs = function() {
+            return usersClubs;
         };
         
         this.cleanupLoggedOutUser = function() {
@@ -2479,12 +2445,13 @@ angular.module('ma-app')
             }        
         };        
                 
-        this.getCurrentRole = function() {
-            var name = null;
-            if(currentRole != null) {
-                name = currentRole.name;
-            }
-            return name;  
+        this.getCurrentRole = function() {            
+            return currentRole;  
+        };
+        
+        this.setCurrentRole = function(role) {
+            currentRole = role;
+            $state.go("app.home");
         };
         
         this.addUserToClubRole = function(user_Id, club_Id, role_Id) {
@@ -3117,6 +3084,11 @@ angular.module('ma-app')
             });            
         };
         
+        this.processPreseasonBidRequest = function(form) {
+            console.log("Begin processing of the preseason practice slot bid request");
+            
+        };
+        
     }])
 
     .service('datetimeService', [function() { 
@@ -3288,8 +3260,17 @@ angular.module('ma-app')
                         
                         //create an array of Club objects:
                         var userClubs = [];
+                        var userClubIds = [];
                         for(var i = 0; i < response.data.length; i++) {
-                            userClubs.push(response.data[i].club);
+                            console.log("Checking if " + response.data[i].club._id + "already exists");
+                            if(userClubIds.indexOf(response.data[i].club._id) == -1) {  
+                                console.log(response.data[i].club._id + "does not exist in");
+                                console.log(userClubIds);
+                                userClubs.push(response.data[i].club);
+                                userClubIds.push(response.data[i].club._id);
+                            } else {
+                                console.log(response.data[i].club._id + "already exists");
+                            }                           
                         }
                         
                         userService.populateUserRoles(userRoles);  

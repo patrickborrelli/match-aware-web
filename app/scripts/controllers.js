@@ -64,11 +64,12 @@ angular.module('ma-app')
         };
         
         $scope.getCurrentRole = function() {
-            var roleName = '';
-            if(authService.isUserAuthenticated() && userService.getCurrentRole != null) {
-                roleName = coreDataService.getRolePrettyName(userService.getCurrentRole());
+            var role = '';
+            if(authService.isUserAuthenticated() && userService.getCurrentRole() != null) {
+                console.log(userService.getCurrentRole())
+                role = userService.getCurrentRole();
             }
-            return roleName;
+            return role;
         };
     }])
 
@@ -325,7 +326,7 @@ angular.module('ma-app')
                         console.log("Found email address " + response.data[0].sendToEmail);
                         $scope.registration.email_address = response.data[0].sendToEmail;
                         $scope.registration.invite_key = $stateParams.inviteId;
-                        $scope.registration.role = coreDataService.getRolePrettyName(response.data[0].role.name);
+                        $scope.registration.role = response.data[0].role.pretty_name;
                         $scope.registration.club = response.data[0].club.name;
                         $scope.registration.roleId = response.data[0].role._id;
                         $scope.registration.clubId = response.data[0].club._id;
@@ -537,6 +538,11 @@ angular.module('ma-app')
         
         $scope.userHasMultipleClubs = function() {
             return userService.getUserHasMultipleClubs();
+        };
+        
+        $scope.userHasMultipleRoles = function() {
+            console.log("\n\n\nUser has multiple rows = " + userService.getUserHasMultipleRoles());
+            return userService.getUserHasMultipleRoles();
         };
         
         $scope.getGoogleEmbedURL = function(formattedAddress) {
@@ -1541,10 +1547,12 @@ angular.module('ma-app')
             return result;
         };
         
-        $scope.getRolePrettyName = function(roleName) {
-            return coreDataService.getRolePrettyName(roleName);            
+        $scope.selectRole = function(roleForm) {
+            console.log("A new role was selected: ");
+            console.log(roleForm);
+            userService.setCurrentRole(roleForm.role);
         };
-        
+                
         
         
         //RULES          
@@ -1761,6 +1769,6 @@ angular.module('ma-app')
             var hasRole = authService.userHasRoles();
             return hasRole;
         };
-    }])
+     }])
 ;
 
