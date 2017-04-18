@@ -71,6 +71,23 @@ angular.module('ma-app')
             }
             return role;
         };
+        
+        $scope.getCurrentRoleName = function() {
+            return userService.getCurrentRole().pretty_name;
+        };
+        
+        $scope.userHasMultipleClubs = function() {
+            return userService.getUserHasMultipleClubs();
+        };
+        
+        $scope.userHasMultipleRoles = function() {
+            return userService.getUserHasMultipleRoles();
+        };
+        
+        $scope.selectRoleById = function(role) {
+            console.log("Chose role with id: " + role._id);
+            userService.setCurrentRole(role);
+        };
     }])
 
     .controller('ClubController', ['$scope', 'ngDialog', '$state', 'clubService', 'authService', 'userService', 'coreDataService', function($scope, ngDialog, $state, clubService, authService, userService, coreDataService) {        
@@ -541,7 +558,6 @@ angular.module('ma-app')
         };
         
         $scope.userHasMultipleRoles = function() {
-            console.log("\n\n\nUser has multiple rows = " + userService.getUserHasMultipleRoles());
             return userService.getUserHasMultipleRoles();
         };
         
