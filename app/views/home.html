@@ -61,7 +61,7 @@
                                         </div>
                                         <div class="media-body">
                                             <h3 class="media-heading">{{request.user.first_name}} {{request.user.last_name}}</h3>
-                                            <p>{{request.role.pretty_name)}}<br />
+                                            <p>{{request.role.pretty_name}}<br />
                                             {{request.user.email_address}}</p>            
                                         </div>
                                         <button type="button" class="btn btn-primary btn-sm" ng-click="acceptAccess(request)">Accept</button>
@@ -556,10 +556,7 @@
                     </li>
                     <li role="presentation" ng-class="{active:faSubIsSelected(2)}">
                         <a ng-click="faSubSelect(2)" aria-controls="fieldsizes" role="tab">Field Sizes</a>
-                    </li>                    
-                    <li role="presentation" ng-class="{active:faSubIsSelected(3)}">
-                        <a ng-click="faSubSelect(3)" aria-controls="eventtypes" role="tab">Event Types</a>
-                    </li>
+                    </li>  
                 </ul>
                 <div class="tab-content">
                     <div id="tabContent" class="tab-pane fade in active" ng-show="faSubIsSelected(1)">
@@ -645,32 +642,6 @@
                                             </p>
                                             <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditFieldSize(fieldsize)">Edit</button>
                                             <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteFieldSize(fieldsize)">Delete</button>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div><div id="tabContent" class="tab-pane fade in active" ng-show="faSubIsSelected(3)">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <form class="form-inline">
-                                    <button type="button" class="btn btn-success" ng-click="openAddEventType()">Add Event Type</button>                  
-                                </form>
-                            </div>
-                        </div>
-                        <hr />
-                        <div class="row row-content">                    
-                            <div class="col-xs-12">
-                                <h4 ng-show="!areEventTypes()">No event types defined.</h4>
-                                <ul class="media-list" ng-show="areEventTypes()">
-                                    <li class="media" ng-repeat="eventtype in eventTypes" style="padding:10px; background: lightGray;">
-                                        
-                                        <div class="media-body">
-                                            <h3 class="media-heading" style="padding-top: 20px;">{{eventtype.name}}</h3>
-                                            <p>Field Type: {{eventtype.field_type}}<br />
-                                            Priority: {{eventtype.priority}}</p>
-                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditEventType(eventtype)">Edit</button>
-                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteEventType(eventtype)">Delete</button>   
                                         </div>
                                     </li>
                                 </ul>

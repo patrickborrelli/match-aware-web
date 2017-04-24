@@ -73,6 +73,7 @@ angular.module('ma-app')
         };
         
         $scope.getCurrentRoleName = function() {
+            
             return userService.getCurrentRole().pretty_name;
         };
         
@@ -678,57 +679,7 @@ angular.module('ma-app')
             coreDataService.deleteAgeGroup(ageGroup);
             ngDialog.close();
         };
-        
-        
-        
-        //EVENT_TYPE
-        $scope.openAddEventType = function() {
-            $scope.eventTypeForm = {
-                name: '',
-                priority: 0,
-                fieldtype: ''
-            };
-            console.log("\n\nOpening dialog to add event type");
-            ngDialog.open({ template: 'views/addEventType.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
-        };
-        
-        $scope.addEventType = function() {
-            console.log("\n\nAdding event type");
-            $scope.eventTypeForm.name = $scope.eventTypeForm.name.toUpperCase();
-            console.log($scope.eventTypeForm);
-            coreDataService.addEventType($scope.eventTypeForm);  
-        };
-        
-        $scope.openEditEventType = function(eventType) {
-            console.log("\n\nOpening dialog to edit event type");
-            console.log(eventType);
-            
-            $scope.eventTypeForm = {
-                name: eventType.name,
-                priority: eventType.priority.toString(),
-                fieldtype: eventType.field_type,
-                id: eventType._id
-            };
                 
-            console.log("Current entries include: ");
-            console.log($scope.eventTypeForm);
-            ngDialog.open({ template: 'views/editEventType.html', scope: $scope, className: 'ngdialog-theme-default custom-width-600', controller:"HomeController" });
-        };
-        
-        $scope.editEventType = function() {
-            console.log("\n\nEditing event type");
-            console.log($scope.eventTypeForm);
-            coreDataService.editEventType($scope.eventTypeForm);
-            ngDialog.close();
-        };
-        
-        $scope.deleteEventType = function(eventType) {
-            console.log("\n\nDeleting event type");
-            console.log(eventType);
-            coreDataService.deleteEventType(eventType);
-            ngDialog.close();
-        };
-        
         
         
         //FACILITY        
@@ -1318,11 +1269,6 @@ angular.module('ma-app')
         //FIELD SIZE        
         $scope.openAddFieldSize = function() {
             console.log("\n\nOpening dialog to add field size");
-            ngDialog.open({ template: 'views/addFieldSize.html', scope: $scope, className: 'ngdialog-theme-default custom-width-500', controller:"HomeController" });
-        };
-        
-        $scope.addFieldSize = function() {
-            console.log("\n\nAdding field size");
             $scope.fieldSizeForm = {
                 name: '',
                 unit: null,
@@ -1332,6 +1278,11 @@ angular.module('ma-app')
                 minwidth: '',
                 id: null                
             };
+            ngDialog.open({ template: 'views/addFieldSize.html', scope: $scope, className: 'ngdialog-theme-default custom-width-500', controller:"HomeController" });
+        };
+        
+        $scope.addFieldSize = function() {
+            console.log("\n\nAdding field size");            
             console.log($scope.fieldSizeForm);
             coreDataService.addFieldSize($scope.fieldSizeForm);
             ngDialog.close();
