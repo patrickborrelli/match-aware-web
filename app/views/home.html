@@ -536,6 +536,24 @@
                             </div>
                         </div>
                         <hr />
+                        <div class="row row-content">
+                            <div class="col-xs-12">
+                                <h4 ng-show="!areBids()">No current bid requests</h4>
+                                <ul class="media-list" ng-show="areBids()">
+                                    <li class="media" ng-repeat="bid in bids" style="padding:10px; background: lightGray;">
+                                        <div class="media-body">
+                                            <h3 class="media-heading">{{bid.name}}</h3>
+                                            <p>{{getPrettyDate(bid.start_date)}} - {{getPrettyDate(bid.end_date)}}<br />
+                                            {{bid.min_age.name}} - {{bid.max_age.name}}<br />
+                                            {{bid.message}}
+                                            </p>            
+                                        </div>
+                                        <button type="button" class="btn btn-primary btn-sm" ng-click="openEditBid(bid)">Edit</button>
+                                        <button type="button" class="btn btn-danger btn-sm" ng-click="deleteBid(bid)">Delete</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 

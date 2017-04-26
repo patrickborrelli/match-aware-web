@@ -583,6 +583,10 @@ angular.module('ma-app')
             return $rootScope.ageGroups.length > 0;
         };
         
+        $scope.areBids = function() {
+            return $rootScope.bids.length > 0;
+        };
+        
         $scope.areEventTypes = function() {
             return $rootScope.eventTypes.length > 0;
         };
@@ -1409,11 +1413,14 @@ angular.module('ma-app')
             console.log("\n\nOpening dialog to initiate preseason practice bids");
             
             $scope.bidForm = {
+                name: '',
                 minage: '',
                 maxage: '',
                 options: 0,
                 startdate: '',
                 starttime: '',
+                enddate: '',
+                endtime: '',
                 message: '',
                 coach: false,
                 assistant: false,
@@ -1423,10 +1430,51 @@ angular.module('ma-app')
         };
         
         $scope.processPracticeBid = function() {
-            console.log("Received preseason bid setup: ");
-            console.log($scope.bidForm);
-            schedulingService.processPreseasonBidRequest();
+            schedulingService.processPreseasonBidRequest($scope.bidForm);
             ngDialog.close();
+        };
+        
+        $scope.openEditBid = function(bid) {
+            console.log("\n\nOpening dialog to edit bid campaign");
+            console.log(bid);
+            
+            var start = new Date(bid.start_date);
+            var end = new Date(bid.end_date);
+            
+            $scope.bidForm = {
+                name: bid.name,
+                minage: bid.min_age._id,
+                maxage: bid.max_age._id,
+                options: bid.number_options.toString(),
+                startdate: start,
+                starttime: start,
+                enddate: end,
+                endtime: end,
+                message: bid.message,
+                coach: false,
+                assistant: false,
+                manager: false,
+                id: bid._id
+            };            
+            ngDialog.open({ template: 'views/editBid.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
+        };   
+        
+        $scope.editBid = function() {
+            console.log("\n\nEditing bid campaign");
+            console.log($scope.bidForm);
+            schedulingService.editBid($scope.bidForm);
+            
+            ngDialog.close();
+        };
+        
+        $scope.deleteBid = function(bid) {
+            console.log("\n\nDeleting bid campaign");
+            console.log(bid);
+            schedulingService.deleteBid(bid);
+        };
+        
+        $scope.getPrettyDate = function(datemillis) {
+            return datetimeService.getIsoDate(datemillis);
         };
         
         

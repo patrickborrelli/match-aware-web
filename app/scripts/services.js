@@ -10,6 +10,7 @@ angular.module('ma-app')
         $rootScope.clubs = {};
         $rootScope.roles = {};   
         $rootScope.ageGroups = {};
+        $rootScope.bids = {};
         var events = {};
         $rootScope.eventTypes = {};
         $rootScope.facilities = {}; 
@@ -30,6 +31,7 @@ angular.module('ma-app')
         var clubsLoaded = false;
         var rolesLoaded = false;
         var ageGroupsLoaded = false;
+        var bidsLoaded = false;
         var eventsLoaded = false;
         var eventTypesLoaded = false;
         var facilitiesLoaded = false;
@@ -217,6 +219,18 @@ angular.module('ma-app')
             userInvitesLoaded = false;  
             accessRequestsLoaded = false; 
         };
+        
+        this.getAgeGroupById = function(id) {
+            var group = null;
+            var groups = $rootScope.ageGroups;
+            for(var i = 0; i < groups.length; i++) {
+                if(groups[i]._id == id) {
+                    group = groups[i];
+                    break;
+                }
+            }            
+            return group;
+        };
                 
         this.getEvents = function() {
             return events;
@@ -321,6 +335,22 @@ angular.module('ma-app')
                     console.log(response);
                     $rootScope.ageGroups = response.data;
                     ageGroupsLoaded = true;
+                }); 
+            }
+            
+            if(!bidsLoaded) {
+                //retrieve bids:
+                $http({
+                    url: baseURL + 'bid_campaigns/',
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("Retrieved the bids from the API: ");
+                    console.log(response);
+                    $rootScope.bids = response.data;
+                    bidsLoaded = true;
                 }); 
             }
             
@@ -784,6 +814,23 @@ angular.module('ma-app')
                 ageGroupsLoaded = true;
             }, function(errResponse) {
                 console.log("Error encountered when refreshing age groups.");
+                console.log(errResponse);
+            });
+        };
+                
+        this.refreshBids = function() {
+            //retrieve bids:            
+            $http({
+                url: baseURL + 'bid_campaigns/',
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) { 
+                $rootScope.bids = response.data;  
+                bidsLoaded = true;
+            }, function(errResponse) {
+                console.log("Error encountered when refreshing bids.");
                 console.log(errResponse);
             });
         };
@@ -2816,7 +2863,7 @@ angular.module('ma-app')
         
     }])
     
-    .service('schedulingService', ['$http', 'baseURL', 'coreDataService', 'datetimeService', function($http, baseURL, coreDataService, datetimeService) {        
+    .service('schedulingService', ['$http', 'baseURL', '$q', 'coreDataService', 'datetimeService', 'userService', function($http, baseURL, $q, coreDataService, datetimeService, userService) {        
     
         this.closeField = function(form) {
             console.log("Attempting to close field " + form.entity.name);
@@ -3086,7 +3133,307 @@ angular.module('ma-app')
         
         this.processPreseasonBidRequest = function(form) {
             console.log("Begin processing of the preseason practice slot bid request");
+            console.log(form);
+            var promises = [];
             
+            var maxAG = coreDataService.getAgeGroupById(form.maxage);
+            var minAG = coreDataService.getAgeGroupById(form.minage);
+            
+            $http({
+                url: baseURL + 'teams/getTeamsInAgeRange/' + maxAG.birth_year + '/' + minAG.birth_year,
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Successfully retrieved teams: ");
+                console.log(response);    
+                
+                //now get all users associated with teams that should receive the bid request:
+                angular.forEach(response.data , function(team) {
+                    var promise = $http({
+                        url: baseURL + 'team_members/findTeamsMembers/' + team._id,
+                        method: 'GET',
+                        headers: {
+                            'content-type': 'application/json' 
+                        }
+                    });
+                    promises.push(promise);
+                });
+                
+                $q.all(promises).then(function(responses) {
+                    console.log("Successfully retrieved responses: ");
+                    console.log(responses);
+                    //iterate through all responses and add all appropriate users to an array of users:
+                    var recipients = buildUserArray(responses, form.coach, form.assistant, form.manager); 
+                    
+                    if(recipients.length > 0) {
+                        var recipString = "[";
+
+                        for(var i = 0; i < recipients.length; i++) {
+                            recipString += '"' + recipients[i] + '", ';
+                        }
+
+                        recipString = recipString.slice(0, -2);
+                        recipString += "]";
+                    }                       
+                    
+                    
+                    //now, create the bid campaign and save it:
+                    var postString = '{ "name": "' + form.name + '", "start_date": ' + (datetimeService.combineDateTime(form.startdate, form.starttime)).getTime() + ', ';
+                    postString += '"end_date": ' + (datetimeService.combineDateTime(form.enddate, form.endtime)).getTime() + ', ';
+                    postString += '"min_age": "' + form.minage + '", ';
+                    postString += '"max_age": "' + form.maxage + '", ';
+                    postString += '"number_options": ' + form.options + ', ';
+                    
+                    if(recipients.length > 0) {
+                        postString += '"message": "' + form.message + '", ';
+                        postString += '"recipients": ' + recipString + '}';
+                    } else {
+                        postString += '"message": "' + form.message + '"}';
+                    }
+                    
+                    console.log("Creating bid with string: ");
+                    console.log(postString);  
+                    
+                    $http({
+                        url: baseURL + 'bid_campaigns/' ,
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json' 
+                        },
+                        data: postString
+                    }).then(function(bidResponse) {
+                        console.log("Successfully created bid: ");
+                        console.log(bidResponse); 
+                        
+                        //last, create notifications for each recipient:
+                        var notificationPromises = [];
+                        var postNote = '';
+                        
+                        angular.forEach(recipients , function(recipient) {
+                            postNote = '{"type": "BID", "text": "' + form.message + '", "sender": "'+ userService.getCurrentUserId() + '", "recipient": "'+ recipient + '", "campaign": "' + bidResponse.data._id + '"}';
+                            
+                            var promise = $http({
+                                url: baseURL + 'notifications/',
+                                method: 'POST',
+                                headers: {
+                                    'content-type': 'application/json' 
+                                },
+                                data: postNote
+                            });
+                            notificationPromises.push(promise);
+                        });
+                        
+                        $q.all(notificationPromises).then(function(responses) {
+                            console.log("Successfully created notifications: ");
+                            console.log(responses); 
+                        }, function(errResponse) {
+                            console.log("Failed on attempt to create notifications for bid:");
+                            console.log(errResponse);
+                        });
+                        
+                        coreDataService.refreshBids();
+                    }, function(errResponse) {
+                        console.log("Failed on attempt to process preseason bid:");
+                        console.log(errResponse);
+                    });             
+                }, function(errResponse) {
+                    console.log("Failed on attempt to process preseason bid:");
+                    console.log(errResponse);
+                });
+                
+            }, function(errResponse) {
+                console.log("Failed on attempt to process preseason bid:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.editBid = function(form) {
+            console.log("Begin processing of the preseason practice slot bid update");
+            console.log(form);
+            var promises = [];
+            
+            var maxAG = coreDataService.getAgeGroupById(form.maxage);
+            var minAG = coreDataService.getAgeGroupById(form.minage);
+            
+            $http({
+                url: baseURL + 'teams/getTeamsInAgeRange/' + maxAG.birth_year + '/' + minAG.birth_year,
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Successfully retrieved teams: ");
+                console.log(response);    
+                
+                //now get all users associated with teams that should receive the bid request:
+                angular.forEach(response.data , function(team) {
+                    var promise = $http({
+                        url: baseURL + 'team_members/findTeamsMembers/' + team._id,
+                        method: 'GET',
+                        headers: {
+                            'content-type': 'application/json' 
+                        }
+                    });
+                    promises.push(promise);
+                });
+                
+                $q.all(promises).then(function(responses) {
+                    console.log("Successfully retrieved team members: ");
+                    console.log(responses);
+                    //iterate through all team members and add all appropriate users to an array of users:
+                    var recipients = buildUserArray(responses, form.coach, form.assistant, form.manager); 
+                    
+                    if(recipients.length > 0) {
+                        var recipString = "[";
+
+                        for(var i = 0; i < recipients.length; i++) {
+                            recipString += '"' + recipients[i] + '", ';
+                        }
+
+                        recipString = recipString.slice(0, -2);
+                        recipString += "]";
+                    }                       
+                    
+                    
+                    //now, create the bid campaign and save it:
+                    var postString = '{ "name": "' + form.name + '", "start_date": ' + (datetimeService.combineDateTime(form.startdate, form.starttime)).getTime() + ', ';
+                    postString += '"end_date": ' + (datetimeService.combineDateTime(form.enddate, form.endtime)).getTime() + ', ';
+                    postString += '"min_age": "' + form.minage + '", ';
+                    postString += '"max_age": "' + form.maxage + '", ';
+                    postString += '"number_options": ' + form.options + ', ';
+                    
+                    if(recipients.length > 0) {
+                        postString += '"message": "' + form.message + '", ';
+                        postString += '"recipients": ' + recipString + '}';
+                    } else {
+                        postString += '"message": "' + form.message + '"}';
+                    }
+                    
+                    console.log("Creating bid with string: ");
+                    console.log(postString);  
+                    
+                    $http({
+                        url: baseURL + 'bid_campaigns/' + form.id ,
+                        method: 'PUT',
+                        headers: {
+                            'content-type': 'application/json' 
+                        },
+                        data: postString
+                    }).then(function(bidResponse) {
+                        console.log("Successfully updated bid: ");
+                        console.log(bidResponse); 
+                        
+                        //delete any previous notifications for this bid campaign:
+                        $http({
+                            url: baseURL + 'notifications?campaign=' + bidResponse.data._id,
+                            method: 'DELETE',
+                            headers: {
+                                'content-type': 'application/json' 
+                            }
+                        }).then(function(response) {
+                            console.log("Deleted all previous notifications for this bid");
+                            console.log(response);
+                            
+                            //last, create notifications for each recipient:
+                            var notificationPromises = [];
+                            var postNote = '';
+
+                            angular.forEach(recipients , function(recipient) {
+                                postNote = '{"type": "BID", "text": "' + form.message + '", "sender": "'+ userService.getCurrentUserId() + '", "recipient": "'+ recipient + '", "campaign": "' + bidResponse.data._id + '"}';
+
+                                var promise = $http({
+                                    url: baseURL + 'notifications/',
+                                    method: 'POST',
+                                    headers: {
+                                        'content-type': 'application/json' 
+                                    },
+                                    data: postNote
+                                });
+                                notificationPromises.push(promise);
+                            });
+
+                            $q.all(notificationPromises).then(function(responses) {
+                                console.log("Successfully created notifications: ");
+                                console.log(responses); 
+
+                                //
+                            }, function(errResponse) {
+                                console.log("Failed on attempt to create notifications for bid:");
+                                console.log(errResponse);
+                            });
+
+                            coreDataService.refreshBids();
+                        }); 
+                        
+                    }, function(errResponse) {
+                        console.log("Failed on attempt to process preseason bid update:");
+                        console.log(errResponse);
+                    });             
+                }, function(errResponse) {
+                    console.log("Failed on attempt to process preseason bid update:");
+                    console.log(errResponse);
+                });
+                
+            }, function(errResponse) {
+                console.log("Failed on attempt to process preseason bid update:");
+                console.log(errResponse);
+            });
+        };
+        
+        this.deleteBid = function(bid) {
+            //delete selected bid and refresh the scope:
+            $http({
+                url: baseURL + 'bid_campaigns/' + bid._id,
+                method: 'DELETE',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Successfully deleted bid campaign: ");
+                console.log(response);  
+                coreDataService.refreshBids(); 
+                
+                //delete any notifications for this bid campaign:
+                $http({
+                    url: baseURL + 'notifications?campaign=' + bid._id,
+                    method: 'DELETE',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("Deleted all previous notifications for this bid");
+                    console.log(response);
+                }, function(errResponse) {
+                    console.log("Failed on attempt to delete notifications for bid campaign.");
+                    console.log(errResponse);
+                });
+                    
+            }, function(errResponse) {
+                console.log("Failed on attempt to delete bid campaign:");
+                console.log(errResponse);
+            });
+        };
+            
+        function buildUserArray(responses, coach, assistant, manager) {
+            var result = [];
+
+            for(var i = 0; i < responses.length; i++) {
+                for(var j = 0; j < responses[i].data.length; j++) {
+                    if(coach && responses[i].data[j].role.name == "COACH" ||
+                       assistant && responses[i].data[j].role.name == "ASSISTANT_COACH" ||
+                       manager && responses[i].data[j].role.name == "MANAGER" ) 
+                    {
+                        result.push(responses[i].data[j].member._id);
+                    }
+                }
+            }
+
+            console.log("Built array: ");
+            console.log(result);
+
+            return result;
         };
         
     }])
@@ -3134,13 +3481,21 @@ angular.module('ma-app')
                today.getDate() == sent.getDate()) {
                 dateString += 'Today ';                
             } else {
-                dateString += (sent.getMonth() + "/" + sent.getDate() + "/" + sent.getFullYear()) + " ";
+                dateString += ((sent.getMonth() + 1) + "/" + sent.getDate() + "/" + sent.getFullYear()) + " ";
             }
             
             //convert hours to am/pm
             var hour = sent.getHours() % 12;
+            var minutes;
             hour = hour ? hour : 12;
-            dateString += (hour + ":" + sent.getMinutes());
+            
+            if(sent.getMinutes() < 10) {
+                minutes = "0" + sent.getMinutes().toString();
+            } else {
+                minutes = sent.getMinutes();
+            }            
+            
+            dateString += (hour + ":" + minutes);
             if(isAm) {
                 dateString += "AM"; 
             } else {
