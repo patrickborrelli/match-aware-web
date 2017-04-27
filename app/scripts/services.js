@@ -20,7 +20,7 @@ angular.module('ma-app')
         $rootScope.leagues = {}; 
         $rootScope.leagueTypes = {};
         var messages = {};
-        var notifications = {};
+        $rootScope.notifications = {};
         var organizations = {};
         $rootScope.rules = {}; 
         $rootScope.teams = {};
@@ -192,7 +192,7 @@ angular.module('ma-app')
             $rootScope.leagues = {}; 
             $rootScope.leagueTypes = {};
             messages = {};
-            notifications = {};
+            $rootScope.notifications = {};
             organizations = {};
             $rootScope.rules = {}; 
             $rootScope.teams = {};
@@ -239,11 +239,7 @@ angular.module('ma-app')
         this.getMessages = function() {
             return messages;
         };
-        
-        this.getNotifications = function() {
-            return notifications;
-        };
-        
+                
         this.getOrganizations = function() {
             return organizations;
         };
@@ -509,10 +505,10 @@ angular.module('ma-app')
                 }); 
             }
             
-            if(!notificationsLoaded) {
+            if(!notificationsLoaded && curUser != null) {
                 //retrieve notifications:
                 $http({
-                    url: baseURL + 'notifications/',
+                    url: baseURL + 'notifications?recipient=' + curUser._id,
                     method: 'GET',
                     headers: {
                         'content-type': 'application/json' 
@@ -520,7 +516,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Retrieved the notifications from the API: ");
                     console.log(response);
-                    notifications = response.data;
+                    $rootScope.notifications = response.data;
                     notificationsLoaded = true;
                 }); 
             }
@@ -923,6 +919,22 @@ angular.module('ma-app')
         };
         
         var localRefreshFacilities = this.refreshFacilities;
+        
+        this.refreshNotifications = function(user) {
+            //retrieve notifications:
+            $http({
+                url: baseURL + 'notifications?recipient=' + user._id,
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then(function(response) {
+                console.log("Retrieved the notifications from the API: ");
+                console.log(response);
+                $rootScope.notifications = response.data;
+                notificationsLoaded = true;
+            });
+        };
         
         this.refreshFields = function() {
             $http({
@@ -2016,6 +2028,8 @@ angular.module('ma-app')
         this.getCurrentUser = function(promise) {
             var response = null;
             console.log("Attempting to get current user...currentUserStale: " + currentUserStale);
+            console.log("Current user is: ");
+            console.log(currentUser);
             if(currentUserStale) {
                 currentUserStale = false;
                 return $http({
@@ -3228,6 +3242,7 @@ angular.module('ma-app')
                         $q.all(notificationPromises).then(function(responses) {
                             console.log("Successfully created notifications: ");
                             console.log(responses); 
+                            coreDataService.refreshNotifications(userService.getCurrentUser());
                         }, function(errResponse) {
                             console.log("Failed on attempt to create notifications for bid:");
                             console.log(errResponse);
@@ -3356,8 +3371,8 @@ angular.module('ma-app')
 
                             $q.all(notificationPromises).then(function(responses) {
                                 console.log("Successfully created notifications: ");
-                                console.log(responses); 
-
+                                console.log(responses);                              
+                                coreDataService.refreshNotifications(userService.getCurrentUser());
                                 //
                             }, function(errResponse) {
                                 console.log("Failed on attempt to create notifications for bid:");
@@ -3405,6 +3420,7 @@ angular.module('ma-app')
                 }).then(function(response) {
                     console.log("Deleted all previous notifications for this bid");
                     console.log(response);
+                    coreDataService.refreshNotifications(userService.getCurrentUser());
                 }, function(errResponse) {
                     console.log("Failed on attempt to delete notifications for bid campaign.");
                     console.log(errResponse);

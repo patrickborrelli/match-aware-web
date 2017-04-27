@@ -671,3 +671,202 @@
         </div>
     </div>
  </div>
+
+<div class="row row-content" ng-show="userHasSingleClub() && !userHasMultipleClubs() && getCurrentRole() != null && getCurrentRole().name == 'COACH'">    
+    <div class="col-xs-12">
+        <h4>Coaching</h4>
+    </div>
+    <div class="col-xs-12">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" ng-class="{active:coachIsSelected(1)}">
+                <a ng-click="coachSelect(1); coachSubSelect(1)" aria-controls="notifications" role="tab">Notifications</a>
+            </li>
+            <li role="presentation" ng-class="{active:coachIsSelected(2)}">
+                <a ng-click="coachSelect(2); coachSubSelect(1)" aria-controls="schedule" role="tab">Schedule</a>
+            </li>
+            <li role="presentation" ng-class="{active:coachIsSelected(3)}">
+                <a ng-click="coachSelect(3); coachSubSelect(1)" aria-controls="teamadministration" role="tab">Team Administration</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            
+            <div id="tabContent" class="tab-pane fade in active" ng-show="coachIsSelected(1)">
+                <div class="row row-content">
+                    <div class="col-xs-12">
+                        <h4 ng-show="!areNotifications()">No current notifications</h4>
+                        <ul class="media-list" ng-show="areNotifications()">
+                            <li class="media" ng-repeat="notification in notifications" style="padding:10px; background: lightGray;">
+                                <div class="media-left media-top" >
+                                    <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{notification.submitter.profile_image_url}} alt="user photo">
+                                </div>
+                                <div ng-show="isBid(notification)" class="media-body">
+                                    <div class="media-body">
+                                        <h3 class="media-heading">BID - {{notification.campaign.name}}</h3>
+                                        <p>{{notification.campaign.message}}</p>            
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm" ng-click="acceptAccess(request)">Accept</button>
+                                    <button type="button" class="btn btn-danger btn-sm" ng-click="declineAccess(request)">Decline</button>
+                                </div>                                
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="tabContent" class="tab-pane fade in active" ng-show="coachIsSelected(2)">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" ng-class="{active:faSubIsSelected(1)}">
+                        <a ng-click="faSubSelect(1)" aria-controls="preseason" role="tab">Pre-Season</a>
+                    </li>
+                    <li role="presentation" ng-class="{active:faSubIsSelected(2)}">
+                        <a ng-click="faSubSelect(2)" aria-controls="pending" role="tab">Pending</a>
+                    </li>                    
+                    <li role="presentation" ng-class="{active:faSubIsSelected(3)}">
+                        <a ng-click="faSubSelect(3)" aria-controls="create" role="tab">Create Event</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="faSubIsSelected(1)">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form class="form-inline">
+                                    <button type="button" class="btn btn-success" ng-click="openInitiatePracticeBid()">Initiate Preseason Bid</button>                  
+                                </form>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row row-content">
+                            <div class="col-xs-12">
+                                <h4 ng-show="!areBids()">No current bid requests</h4>
+                                <ul class="media-list" ng-show="areBids()">
+                                    <li class="media" ng-repeat="bid in bids" style="padding:10px; background: lightGray;">
+                                        <div class="media-body">
+                                            <h3 class="media-heading">{{bid.name}}</h3>
+                                            <p>{{getPrettyDate(bid.start_date)}} - {{getPrettyDate(bid.end_date)}}<br />
+                                            {{bid.min_age.name}} - {{bid.max_age.name}}<br />
+                                            {{bid.message}}
+                                            </p>            
+                                        </div>
+                                        <button type="button" class="btn btn-primary btn-sm" ng-click="openEditBid(bid)">Edit</button>
+                                        <button type="button" class="btn btn-danger btn-sm" ng-click="deleteBid(bid)">Delete</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content">
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="faSubIsSelected(2)">
+                    </div>
+                </div>
+                
+                <div class="tab-content">
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="faSubIsSelected(3)">
+                    </div>
+                </div>               
+            </div>
+            <div id="tabContent" class="tab-pane fade in active" ng-show="coachIsSelected(3)">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" ng-class="{active:faSubIsSelected(1)}">
+                        <a ng-click="faSubSelect(1)" aria-controls="facilities" role="tab">Facilities</a>
+                    </li>
+                    <li role="presentation" ng-class="{active:faSubIsSelected(2)}">
+                        <a ng-click="faSubSelect(2)" aria-controls="fieldsizes" role="tab">Field Sizes</a>
+                    </li>  
+                </ul>
+                <div class="tab-content">
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="faSubIsSelected(1)">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form class="form-inline">
+                                    <button type="button" class="btn btn-success" ng-click="openAddFacility()">Add Facility</button>                  
+                                </form>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row row-content">                    
+                            <div class="col-xs-12">
+                                <h4 ng-show="!areFacilities()">No current facilities.</h4>
+                                <ul class="media-list" ng-show="areFacilities()">
+                                    <li class="media" ng-repeat="facility in facilities" style="padding:10px; background: lightGray;">
+                                        <div class="media-left media-top" >
+                                            <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{facility.club_affiliation.logo_url}} alt="club logo">
+                                        </div>
+                                        <div class="media-body">
+                                            <div class="col-xs-12 col-sm-7">
+                                                <h3 class="media-heading" style="padding-top: 5px;">{{facility.name}} - {{facility.short_name}}</h3>
+                                                <p>{{facility.address}}<br/>{{facility.city}}, {{facility.state}}  {{facility.postal_code}}</p>
+                                                <div class="btn-group-vertical">
+                                                    <button type="button" class="btn btn-xs btn-default" ng-click="openEditFacility(facility)">Edit</button>
+                                                    <button type="button" class="btn btn-xs btn-default" ng-click="deleteFacility(facility)">Delete</button> 
+                                                    <button type="button" class="btn btn-xs btn-default" data-toggle="collapse" data-target="#configSublist{{facility.short_name}}" aria-expanded="false" aria-controls="configSublist{{facility.short_name}}">Show/Hide Fields</button> 
+                                                    <button type="button" class="btn btn-xs btn-default" ng-click="openAddField(facility)">Add Field</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-5">
+                                                <div class="embed-responsive embed-responsive-16by9">
+                                                    <iframe frameborder="0" style="border:0" ng-src={{facility.google_map_string}} allowfullscreen></iframe>
+                                                </div>
+                                            </div>                                            
+                                        </div>
+                                        <ul class="media-list collapse" id="configSublist{{facility.short_name}}">
+                                            <h4 ng-show="!hasFields(facility)">No current fields.</h4>
+                                            <li class="media" ng-repeat="field in facility.fields" style="padding:10px; margin-top: 10px; margin-left:50px; background: Gainsboro;">
+                                                <div class="media-body">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 col-sm-5">
+                                                            <h3 class="media-heading" style="padding-top: 0px; margin-top:0px;">{{facility.name}} - {{field.name}}</h3>
+                                                            <button type="button" class="btn btn-xs btn-default" style="width: 50px;" ng-click="openEditField(field, facility)">Edit</button>
+                                                            <button type="button" class="btn btn-xs btn-default" style="width: 50px;" ng-click="deleteField(field, facility)">Delete</button>
+                                                        </div>  
+                                                        <div class="col-xs-12 col-sm-7">
+                                                            <h5 style="padding-top: 0px; margin-top:0px;"><span style="font-weight: bold;">Usage:</span> {{getFieldUsage(field)}}</h5>
+                                                            <h5 style="padding-top: 0px; margin-top:0px;"><span style="font-weight: bold;">Has Lights:</span> {{hasLights(field)}}</h5>
+                                                            <h5 style="padding-top: 0px; margin-top:0px;"><span style="font-weight: bold;">Size:</span> {{field.size.name}}</h5>
+                                                        </div>  
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tabContent" class="tab-pane fade in active" ng-show="faSubIsSelected(2)">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <form class="form-inline">
+                                    <button type="button" class="btn btn-success" ng-click="openAddFieldSize()">Add Field Size</button>                  
+                                </form>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row row-content">                    
+                            <div class="col-xs-12">
+                                <h4 ng-show="!areFieldSizes()">No field sizes defined.</h4>
+                                <ul class="media-list" ng-show="areFieldSizes()">
+                                    <li class="media" ng-repeat="fieldsize in fieldSizes" style="padding:10px; background: lightGray;">
+                                        <div class="media-left media-top" >
+                                            
+                                        </div>
+                                        <div class="media-body">
+                                            <h3 class="media-heading" style="padding-top: 20px;">{{fieldsize.name}}</h3>
+                                            <p>
+                                                Minimum Size: {{fieldsize.min_width}} x {{fieldsize.min_length}} {{getUnitPrettyName(fieldsize.unit)}}<br />
+                                                Maximum Size: {{fieldsize.max_width}} x {{fieldsize.max_length}} {{getUnitPrettyName(fieldsize.unit)}}
+                                            </p>
+                                            <button type="button" class="btn btn-xs btn-primary" style="width: 50px;" ng-click="openEditFieldSize(fieldsize)">Edit</button>
+                                            <button type="button" class="btn btn-xs btn-danger" style="width: 50px;"ng-click="deleteFieldSize(fieldsize)">Delete</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ </div>

@@ -366,7 +366,9 @@ angular.module('ma-app')
         $scope.tab = 1;
         $scope.subTab = 1;       
         $scope.faTab = 1;
-        $scope.faSubTab = 1;
+        $scope.faSubTab = 1;             
+        $scope.coachTab = 1;
+        $scope.coachSubTab = 1;
         
         $scope.select = function (setTab) {
             $scope.tab = setTab;
@@ -382,7 +384,15 @@ angular.module('ma-app')
         
         $scope.faSubSelect = function (setTab) {
             $scope.faSubTab = setTab;
-        };        
+        };   
+        
+        $scope.coachSelect = function (setTab) {
+            $scope.coachTab = setTab;
+        };
+        
+        $scope.coachSubSelect = function (setTab) {
+            $scope.coachSubTab = setTab;
+        };      
 
         $scope.isSelected = function (checkTab) {
             return ($scope.tab === checkTab);
@@ -398,7 +408,15 @@ angular.module('ma-app')
         
         $scope.faSubIsSelected = function (checkTab) {
             return ($scope.faSubTab === checkTab);
-        };        
+        }; 
+        
+        $scope.coachIsSelected = function (checkTab) {
+            return ($scope.coachTab === checkTab);
+        };
+        
+        $scope.coachSubIsSelected = function (checkTab) {
+            return ($scope.coachSubTab === checkTab);
+        };       
         
         //initialize all form data:
         $scope.addressHidden = false;        
@@ -593,6 +611,10 @@ angular.module('ma-app')
         
         $scope.areLeagues = function() {
             return $rootScope.leagues.length > 0;
+        };
+        
+        $scope.areNotifications = function() {
+            return $rootScope.notifications.length > 0;
         };
         
         $scope.areRules = function() {
@@ -1320,8 +1342,7 @@ angular.module('ma-app')
         //TODO: missing delete        
         $scope.getUnitPrettyName = function(unit) {
             return coreDataService.getUnitPrettyName(unit);            
-        };                
-        
+        };   
         
         
         //LEAGUES        
@@ -1405,6 +1426,16 @@ angular.module('ma-app')
             console.log("\n\nDeleting league");
             console.log(league);
             coreDataService.deleteLeague(league);
+        };
+        
+        
+        //NOTIFICATIONS
+        $scope.isBid = function(notification) {
+            var result = false;
+            if(notification.type == "BID") {
+                result = true;
+            }
+            return result;
         };
         
         
