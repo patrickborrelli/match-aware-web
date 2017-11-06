@@ -689,8 +689,7 @@
             </li>
         </ul>
 
-        <div class="tab-content">
-            
+        <div class="tab-content">            
             <div id="tabContent" class="tab-pane fade in active" ng-show="coachIsSelected(1)">
                 <div class="row row-content">
                     <div class="col-xs-12">
@@ -698,15 +697,15 @@
                         <ul class="media-list" ng-show="areNotifications()">
                             <li class="media" ng-repeat="notification in notifications" style="padding:10px; background: lightGray;">
                                 <div class="media-left media-top" >
-                                    <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{notification.submitter.profile_image_url}} alt="user photo">
+                                    <img class="media-object img-thumbnail" style="width: 75px;" ng-src={{notification.sender.profile_image_url}} alt="user photo">
                                 </div>
                                 <div ng-show="isBid(notification)" class="media-body">
                                     <div class="media-body">
                                         <h3 class="media-heading">BID - {{notification.campaign.name}}</h3>
                                         <p>{{notification.campaign.message}}</p>            
                                     </div>
-                                    <button type="button" class="btn btn-primary btn-sm" ng-click="acceptAccess(request)">Accept</button>
-                                    <button type="button" class="btn btn-danger btn-sm" ng-click="declineAccess(request)">Decline</button>
+                                    <button type="button" class="btn btn-primary btn-sm" ng-click="respondToBid(notification.campaign)">Respond</button>
+                                    <button type="button" class="btn btn-danger btn-sm" ng-click="deleteNotification(notification)">Delete</button>
                                 </div>                                
                             </li>
                         </ul>

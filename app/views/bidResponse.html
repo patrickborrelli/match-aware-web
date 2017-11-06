@@ -1,0 +1,143 @@
+<div class="ngdialog-message">
+    <div class="">
+        <h3>Submit Preseason Practice Bids</h3>
+    </div>
+    <div class="">&nbsp;</div>
+    <div class="">
+        <form class="form-horizontal" ng-submit="submitPracticeBid()">            
+            <div class="form-group custom-padding">
+                <label class="sr-only" for="name">Name</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Name</div>
+                        <input type="text" class="form-control" id="name" placeholder="i.e., Spring Practice Spots" ng-model="bidSubmitForm.name" disabled> 
+                    </div> 
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="option1">Option One</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Day</div>
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+                        <select id="options" class="form-control" ng-model="bidSubmitForm.option1day">
+                            <option value="MONDAY">Mon</option>
+                            <option value="TUESDAY">Tue</option>
+                            <option value="WEDNESDAY">Wed</option>
+                            <option value="THURSDAY">Thu</option>
+                            <option value="FRIDAY">Fri</option>
+                            <option value="SATURDAY">Sat</option>
+                            <option value="SUNDAY">Sun</option>
+                        </select>
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-time"></i></div>
+                        <label class="sr-only" for="starttime">Start Time</label>
+                        <input type="time" id="start" class="form-control" ng-model="bidSubmitForm.option1time">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="option2">Option Two</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Day</div>
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+                        <select id="options" class="form-control" ng-model="bidSubmitForm.option2day">
+                            <option value="MONDAY">Mon</option>
+                            <option value="TUESDAY">Tue</option>
+                            <option value="WEDNESDAY">Wed</option>
+                            <option value="THURSDAY">Thu</option>
+                            <option value="FRIDAY">Fri</option>
+                            <option value="SATURDAY">Sat</option>
+                            <option value="SUNDAY">Sun</option>
+                        </select>
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-time"></i></div>
+                        <label class="sr-only" for="starttime">Start Time</label>
+                        <input type="time" id="start" class="form-control" ng-model="bidSubmitForm.option2time">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="option3">Option Three</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Day</div>
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+                        <select id="options" class="form-control" ng-model="bidSubmitForm.option3day">
+                            <option value="MONDAY">Mon</option>
+                            <option value="TUESDAY">Tue</option>
+                            <option value="WEDNESDAY">Wed</option>
+                            <option value="THURSDAY">Thu</option>
+                            <option value="FRIDAY">Fri</option>
+                            <option value="SATURDAY">Sat</option>
+                            <option value="SUNDAY">Sun</option>
+                        </select>
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-time"></i></div>
+                        <label class="sr-only" for="starttime">Start Time</label>
+                        <input type="time" id="start" class="form-control" ng-model="bidSubmitForm.option3time">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="option4">Option Four</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Day</div>
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+                        <select id="options" class="form-control" ng-model="bidSubmitForm.option4day">
+                            <option value="MONDAY">Mon</option>
+                            <option value="TUESDAY">Tue</option>
+                            <option value="WEDNESDAY">Wed</option>
+                            <option value="THURSDAY">Thu</option>
+                            <option value="FRIDAY">Fri</option>
+                            <option value="SATURDAY">Sat</option>
+                            <option value="SUNDAY">Sun</option>
+                        </select>
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-time"></i></div>
+                        <label class="sr-only" for="starttime">Start Time</label>
+                        <input type="time" id="start" class="form-control" ng-model="bidSubmitForm.option4time">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
+                <label class="sr-only" for="option5">Option Five</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Day</div>
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
+                        <select id="options" class="form-control" ng-model="bidSubmitForm.option5day">
+                            <option value="MONDAY">Mon</option>
+                            <option value="TUESDAY">Tue</option>
+                            <option value="WEDNESDAY">Wed</option>
+                            <option value="THURSDAY">Thu</option>
+                            <option value="FRIDAY">Fri</option>
+                            <option value="SATURDAY">Sat</option>
+                            <option value="SUNDAY">Sun</option>
+                        </select>
+                        <div class="input-group-addon"><i class="glyphicon glyphicon-time"></i></div>
+                        <label class="sr-only" for="starttime">Start Time</label>
+                        <input type="time" id="start" class="form-control" ng-model="bidSubmitForm.option5time">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding-bottom"> 
+                <label class="sr-only" for="comments">Comments</label>
+                <div class="col-xs-12">  
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100">Comments</div>
+                        <textarea id="message" class="form-control" ng-model="bidSubmitForm.comments" rows="5"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-info">Submit</button>
+            <button type="button" class="btn btn-default" ng-click=closeThisDialog("Cancel")>Cancel</button>
+        </form>
+    </div>
+    <div>&nbsp;</div>
+</div>

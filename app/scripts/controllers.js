@@ -705,8 +705,8 @@ angular.module('ma-app')
             coreDataService.deleteAgeGroup(ageGroup);
             ngDialog.close();
         };
-                
         
+            
         
         //FACILITY        
         $scope.openAddFacility = function() {
@@ -1506,6 +1506,12 @@ angular.module('ma-app')
         
         $scope.getPrettyDate = function(datemillis) {
             return datetimeService.getIsoDate(datemillis);
+        };
+        
+        $scope.respondToBid = function(bid) {
+            console.log("Open dialog to respond to bid:");
+            console.log(bid);
+            ngDialog.open({ template: 'views/bidResponse.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
         };
         
         

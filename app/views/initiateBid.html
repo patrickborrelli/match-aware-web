@@ -16,21 +16,31 @@
             </div>
             
             <div class="form-group custom-padding"> 
-                <label class="sr-only" for="minage">Minimum Age Group</label>
-                <div class="col-xs-12">  
+                <div class="col-xs-12 col-sm-4 custom-padding">  
+                    <label class="sr-only" for="minage">Minimum Age Group</label>
                     <div class="input-group">
                         <div class="input-group-addon custom-width-100">Min Age</div>
                         <select id="minage" class="form-control" ng-model="bidForm.minage" ng-options="agegroup._id as agegroup.name for agegroup in ageGroups"></select>
                     </div>
                 </div>
-            </div>
-            
-            <div class="form-group custom-padding"> 
-                <label class="sr-only" for="maxage">Maximum Age Group</label>
-                <div class="col-xs-12">  
+                <div class="col-xs-12 col-sm-4 custom-padding">  
+                    <label class="sr-only" for="maxage">Maximum Age Group</label> 
                     <div class="input-group">
                         <div class="input-group-addon custom-width-100">Max Age</div>
                         <select id="maxage" class="form-control" ng-model="bidForm.maxage" ng-options="agegroup._id as agegroup.name for agegroup in ageGroups"></select>
+                    </div>
+                </div> 
+                <div class="col-xs-12 col-sm-4 custom-padding"> 
+                    <label class="sr-only" for="options">Required Options</label>
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100"># Options</div>
+                        <select id="options" class="form-control" ng-model="bidForm.options">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -61,24 +71,7 @@
                         <input type="time" id="endtime" class="form-control" ng-model="bidForm.endtime">
                     </div>
                 </div>
-            </div>
-            
-            <div class="form-group custom-padding"> 
-                <label class="sr-only" for="options">Required Options</label>
-                <div class="col-xs-12">  
-                    <div class="input-group">
-                        <div class="input-group-addon custom-width-100"># Options</div>
-                        <select id="options" class="form-control" ng-model="bidForm.options">
-                            <option value=""></option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+            </div> 
             
             <div class="form-group custom-padding"> 
                 <label class="sr-only" for="message">Message</label>
