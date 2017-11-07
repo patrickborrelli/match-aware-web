@@ -1549,53 +1549,58 @@ angular.module('ma-app')
             userService.updateUserRoles(user, $scope.myUser)
                 .then(function(response) {
                     console.log("added new user roles");
-                    console.log(response); 
-                    userService.setCurrentRolesStale();
-                    //retrieve user's club_roles:
-                    userService.retrieveUserRoles(true)
-                        .then(function(response) {
-                            console.log("Retrieved the user's club_roles: " );
-                            console.log(response);
+                    console.log(response);
+                    if(user._id == userService.getCurrentUserId()) {
+                        console.log("Adding a role for the current user: " + userService.getCurrentUser.getFullName());
 
-                            userService.setUserClubRoles(response.data);
+                        //only need to perform this if changing roles for the CURRENT USER
+                        userService.setCurrentRolesStale();
+                        //retrieve user's club_roles:
+                        userService.retrieveUserRoles(true)
+                            .then(function(response) {
+                                console.log("Retrieved the user's club_roles: " );
+                                console.log(response);
 
-                            //create an array of Role objects:
-                            var userRoles = [];
-                            for(var i = 0; i < response.data.length; i++) {
-                                userRoles.push(response.data[i].role);
-                            }
+                                userService.setUserClubRoles(response.data);
 
-                            //create an array of Club objects:
-                            var userClubs = [];
-                            var userClubIds = [];
-                            for(var i = 0; i < response.data.length; i++) {
-                                console.log("Checking club: ");
-                                console.log(response.data[i].club);
-                                if(userClubIds.indexOf(response.data[i].club._id) < 0) {
-                                    console.log("No duplicate, adding club");
-                                    userClubs.push(response.data[i].club);
-                                    userClubIds.push(response.data[i].club._id);
-                                } else {
-                                    console.log("Duplicate club: ");
+                                //create an array of Role objects:
+                                var userRoles = [];
+                                for(var i = 0; i < response.data.length; i++) {
+                                    userRoles.push(response.data[i].role);
+                                }
+
+                                //create an array of Club objects:
+                                var userClubs = [];
+                                var userClubIds = [];
+                                for(var i = 0; i < response.data.length; i++) {
+                                    console.log("Checking club: ");
                                     console.log(response.data[i].club);
-                                }   
-                            }
+                                    if(userClubIds.indexOf(response.data[i].club._id) < 0) {
+                                        console.log("No duplicate, adding club");
+                                        userClubs.push(response.data[i].club);
+                                        userClubIds.push(response.data[i].club._id);
+                                    } else {
+                                        console.log("Duplicate club: ");
+                                        console.log(response.data[i].club);
+                                    }   
+                                }
 
-                            userService.populateUserRoles(userRoles);
-                            userService.populateUsersClubs(userClubs);
+                                userService.populateUserRoles(userRoles);
+                                userService.populateUsersClubs(userClubs);
 
-                            //do app data load:
-                            coreDataService.refreshClubUsersAndWait(clubService.getCurrentClubId())
-                                .then(function(response) {
-                                    console.log("Retrieved the users from the API: ");
-                                    console.log(response);
-                                    $rootScope.users = response.data;
-                                    coreDataService.setUsersLoaded(true);
-                                });
-                    }, function(errResponse) {
-                        console.log("Failed in attempt to retrieve users club_roles.");
-                        console.log(errResponse);
-                    });
+                        }, function(errResponse) {
+                            console.log("Failed in attempt to retrieve users club_roles.");
+                            console.log(errResponse);
+                        });
+                    }
+                    //in either case, update users:
+                    coreDataService.refreshClubUsersAndWait(clubService.getCurrentClubId())
+                        .then(function(response) {
+                            console.log("Retrieved the users from the API: ");
+                            console.log(response);
+                            $rootScope.users = response.data;
+                            coreDataService.setUsersLoaded(true);
+                        });
                 }, function(errResponse) {
                     console.log("failed to add new user roles");
                     console.log(errResponse);
