@@ -1567,11 +1567,21 @@ angular.module('ma-app')
 
                             //create an array of Club objects:
                             var userClubs = [];
+                            var userClubIds = [];
                             for(var i = 0; i < response.data.length; i++) {
-                                userClubs.push(response.data[i].club);
+                                console.log("Checking club: ");
+                                console.log(response.data[i].club);
+                                if(userClubIds.indexOf(response.data[i].club._id) < 0) {
+                                    console.log("No duplicate, adding club");
+                                    userClubs.push(response.data[i].club);
+                                    userClubIds.push(response.data[i].club._id);
+                                } else {
+                                    console.log("Duplicate club: ");
+                                    console.log(response.data[i].club);
+                                }   
                             }
 
-                            userService.populateUserRoles(userRoles);  
+                            userService.populateUserRoles(userRoles);
                             userService.populateUsersClubs(userClubs);
 
                             //do app data load:
