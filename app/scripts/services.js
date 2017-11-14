@@ -10,6 +10,7 @@ angular.module('ma-app')
         $rootScope.clubs = {};
         $rootScope.roles = {};   
         $rootScope.ageGroups = {};
+        $rootScope.coaches = {};
         $rootScope.bids = {};
         var events = {};
         $rootScope.eventTypes = {};
@@ -31,6 +32,7 @@ angular.module('ma-app')
         var clubsLoaded = false;
         var rolesLoaded = false;
         var ageGroupsLoaded = false;
+        var coachesLoaded = false;
         var bidsLoaded = false;
         var eventsLoaded = false;
         var eventTypesLoaded = false;
@@ -67,6 +69,11 @@ angular.module('ma-app')
                     case "age groups" :
                         console.log("Setting age group data to stale");
                         ageGroupsLoaded = false;
+                        break;
+                    
+                    case "coaches" :
+                        console.log("Setting coach data to stale");
+                        coachesLoaded = false;
                         break;
                     
                     case "events" :
@@ -159,6 +166,7 @@ angular.module('ma-app')
             clubsLoaded = false;
             rolesLoaded = false;
             ageGroupsLoaded = false;
+            coachesLoaded = false;
             eventsLoaded = false;
             facilitiesLoaded = false;
             fieldsLoaded = false;
@@ -184,6 +192,7 @@ angular.module('ma-app')
             $rootScope.clubs = {};
             $rootScope.roles = {};   
             $rootScope.ageGroups = {};
+            $rootScope.coaches = {};
             events = {};
             $rootScope.facilities = {}; 
             $rootScope.fields = {}; 
@@ -203,6 +212,7 @@ angular.module('ma-app')
             clubsLoaded = false;
             rolesLoaded = false;
             ageGroupsLoaded = false;
+            coachesLoaded = false;
             eventsLoaded = false;
             facilitiesLoaded = false;
             fieldsLoaded = false;
@@ -332,6 +342,24 @@ angular.module('ma-app')
                     $rootScope.ageGroups = response.data;
                     ageGroupsLoaded = true;
                 }); 
+            }
+            
+            if(!coachesLoaded) {
+                //retrieve coaches:
+                if(curClubId != null && curClubId != '') {
+                    $http({
+                        url: baseURL + 'club_roles/findClubCoaches/' + curClubId,
+                        method: 'GET',
+                        headers: {
+                            'content-type': 'application/json' 
+                        }
+                    }).then(function(response) {
+                        console.log("Retrieved the coaches from the API: ");
+                        console.log(response);
+                        $rootScope.coaches = response.data;
+                        coachesLoaded = true;
+                    }); 
+                }
             }
             
             if(!bidsLoaded) {
@@ -2698,6 +2726,7 @@ angular.module('ma-app')
         this.addTeam = function(formData) {            
             //add team object, then add team to league if one is specified:
             var leagueAdd = false;
+            var headCoach = false;
             var postString = '{ "name": "' + formData.name + '", ';
             
             if(formData.gender != null && formData.gender != '') {
@@ -2710,6 +2739,10 @@ angular.module('ma-app')
             
             if(formData.league != null && formData.league != '') {
                 leagueAdd = true;
+            }
+            
+            if(formData.headcoach != null && formData.headcoach != '') {
+                headCoach = true;
             }
             
             postString += '"club": "' + currentClub._id + '" }';
