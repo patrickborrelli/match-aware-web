@@ -2696,7 +2696,7 @@ angular.module('ma-app')
         
       }])
 
-    .service('clubService', ['$http', 'baseURL', 'ngDialog', '$state', 'coreDataService', function($http, baseURL, ngDialog, $state, coreDataService) {        
+    .service('clubService', ['$http', 'baseURL', '$q', 'ngDialog', '$state', 'coreDataService', function($http, baseURL, $q, ngDialog, $state, coreDataService) {        
         var currentClub = null;
         var currentClubId = '';
         
@@ -2749,14 +2749,16 @@ angular.module('ma-app')
             
             console.log("Creating team with string: " + postString);
             
-            $http({
+            var promise = $http({
                 url: baseURL + 'teams/',
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json' 
                 },
                 data: postString
-            }).then(function(response) {
+            });
+            
+            $q.when(promise).then(function(response) {
                 console.log("Created team successfully: ");
                 console.log(response);
                 //now add team to the league if there is one:
@@ -2775,6 +2777,34 @@ angular.module('ma-app')
                         console.log("Failure entering team into league: ");
                         console.log(leagueErr);
                     });
+                }
+                
+                //and if there is a head coach, add the team role:
+                if(headCoach) {
+                    var rolePromise = $http({
+                        url: baseURL + 'roles/?name=COACH',
+                        method: 'GET',
+                        headers: {
+                            'content-type': 'application/json' 
+                        }
+                    });
+                     
+                    $q.when(rolePromise).then(function(roleResponse) {
+                        $http({
+                            url: baseURL + 'team_members/',
+                            method: 'POST',
+                            headers: {
+                                'content-type': 'application/json' 
+                            },
+                            data: '{ "team": "' + response.data._id + '", "member": "' + formData.headcoach + '", "role": "' + roleResponse.data[0]._id + '" }'
+                        }).then(function(coachResponse) {
+                            console.log("Successfully added coach to team: ");
+                            console.log(coachResponse);
+                        }, function(coachErr) {
+                            console.log("Failure added coach to team: ");
+                            console.log(coachErr);
+                        });
+                    });                    
                 }
                 coreDataService.refreshTeams(currentClub._id);
             }, function(errResponse) {
