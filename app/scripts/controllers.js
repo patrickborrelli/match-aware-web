@@ -1713,7 +1713,8 @@ angular.module('ma-app')
                 ageGroup: '',
                 gender: '',
                 league: '',
-                teamId: ''
+                teamId: '',
+                headcoach: ''
             };
             
             console.log("\n\nOpening dialog to add team");
