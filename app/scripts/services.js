@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('ma-app')
-    .constant("baseURL","https://matchaware-rest.herokuapp.com/")
+    //.constant("baseURL","https://matchaware-rest.herokuapp.com/")
+    .constant("baseURL","http://localhost:3000/")
     .constant("googleGeocodeKey", "key=AIzaSyCpClStUy156rFgjGJsYLBdKfBUEBZ1iLU")
     .constant("googleGeolocateBaseURL", "https://maps.googleapis.com/maps/api/geocode/json?")
     .constant("googleMapsBaseURL", "https://www.google.com/maps/embed/v1/place?")
@@ -1989,6 +1990,14 @@ angular.module('ma-app')
                 console.log(errResponse);
             });
         };
+        
+        this.getEventTypeByName = function(eventTypeName) {
+            for(var i = 0; i < $rootScope.eventTypes.length; i++) {
+                if(String($rootScope.eventTypes[i].name) == String(eventTypeName)) {
+                    return $rootScope.eventTypes[i];
+                }
+            }  
+        };
     }])
 
     .service('userService', ['$http', '$rootScope', '$state', 'baseURL', '$q', 'ngDialog', 'coreDataService', 'clubService', function($http, $rootScope, $state, baseURL, $q, ngDialog, coreDataService, clubService) {
@@ -3296,6 +3305,16 @@ angular.module('ma-app')
             });
         };
         
+        this.processPreseaonBidResponse = function(form) {
+            console.log("Handling bid response:");
+            console.log(form);
+            //asynchronously create events for each option
+            //then create a bid response with those option pointers
+            var eventtype = coreDataService.getEventTypeByName("PRACTICE");
+            
+            
+        };
+        
         this.editBid = function(form) {
             console.log("Begin processing of the preseason practice slot bid update");
             console.log(form);
@@ -3577,6 +3596,45 @@ angular.module('ma-app')
             var militaryTime = '0000';
             console.log("Received time: " + time);
             return militaryTime;
+        };
+        
+        this.getDateAsString = function(time) {
+            var date = new Date(time);
+            var dateString;
+            console.log("Retrieving date as String from " + time);
+            
+            dateString = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+            return dateString;            
+        };
+        
+        this.getTimeAsString = function(time) {
+            var date = new Date(time);
+            var timeString;            
+            var isAm = true;
+            
+            if(date.getHours() >= 12) {
+                isAm = false;
+            }
+            
+            //convert hours to am/pm
+            var hour = date.getHours() % 12;
+            var minutes;
+            hour = hour ? hour : 12;
+            
+            if(date.getMinutes() < 10) {
+                minutes = "0" + date.getMinutes().toString();
+            } else {
+                minutes = date.getMinutes();
+            }            
+            
+            timeString = (hour + ":" + minutes);
+            if(isAm) {
+                timeString += "AM"; 
+            } else {
+                timeString += "PM";
+            } 
+            
+            return timeString;            
         };
         
         function isEquivalent(value, target) {

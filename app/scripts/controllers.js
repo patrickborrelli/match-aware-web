@@ -1508,10 +1508,36 @@ angular.module('ma-app')
             return datetimeService.getIsoDate(datemillis);
         };
         
-        $scope.respondToBid = function(bid) {
+        $scope.openRespondToBid = function(bid) {
             console.log("Open dialog to respond to bid:");
             console.log(bid);
+            //populate form:
+            $scope.bidSubmitForm = {
+                name: bid.name,
+                options: bid.number_options,
+                message: bid.message,
+                enddate: datetimeService.getDateAsString(bid.end_date),
+                endtime: datetimeService.getTimeAsString(bid.end_date),
+                id: bid._id,
+                sessions: 1
+            }; 
             ngDialog.open({ template: 'views/bidResponse.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
+        };
+        
+        $scope.submitPracticeBid = function() {
+            console.log("Handling bid response:");
+            console.log($scope.bidSubmitForm);
+            schedulingService.processPreseaonBidResponse($scope.bidSubmitForm);
+            ngDialog.close();
+        };
+        
+        $scope.moreThan = function(options, current) {
+            console.log("Comparing " + options + " to " + current);
+            if(parseInt(options) >= parseInt(current)) {
+                return true;
+            } else { 
+                return false; 
+            }
         };
         
         
