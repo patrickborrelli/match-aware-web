@@ -7,7 +7,7 @@ angular.module('ma-app')
     .constant("googleGeolocateBaseURL", "https://maps.googleapis.com/maps/api/geocode/json?")
     .constant("googleMapsBaseURL", "https://www.google.com/maps/embed/v1/place?")
 
-    .service('coreDataService', ['$http', '$rootScope', 'baseURL', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', 'ngDialog', 'datetimeService', function($http, $rootScope, baseURL, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL, ngDialog, datetimeService) {
+    .service('coreDataService', ['$http', '$rootScope', 'baseURL', '$q', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', 'ngDialog', 'datetimeService', function($http, $rootScope, baseURL, $q, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL, ngDialog, datetimeService) {
         $rootScope.clubs = {};
         $rootScope.roles = {};   
         $rootScope.ageGroups = {};
@@ -1992,11 +1992,16 @@ angular.module('ma-app')
         };
         
         this.getEventTypeByName = function(eventTypeName) {
+            var eventtype = null;
+            
             for(var i = 0; i < $rootScope.eventTypes.length; i++) {
                 if(String($rootScope.eventTypes[i].name) == String(eventTypeName)) {
-                    return $rootScope.eventTypes[i];
+                    eventtype = $rootScope.eventTypes[i];
                 }
             }  
+            
+            return eventtype;
+            
         };
     }])
 
@@ -3231,7 +3236,20 @@ angular.module('ma-app')
 
                         recipString = recipString.slice(0, -2);
                         recipString += "]";
-                    }                       
+                    }      
+                    
+                    var teamRecipients = buildTeamUserArray(responses, form.coach, form.assistant, form.manager);
+                    
+                    if(teamRecipients.length > 0) {
+                        var teamRecipString = "[";
+
+                        for(var i = 0; i < teamRecipients.length; i++) {
+                            teamRecipString += '"' + teamRecipients[i] + '", ';
+                        }
+
+                        teamRecipString = teamRecipString.slice(0, -2);
+                        teamRecipString += "]";
+                    }
                     
                     
                     //now, create the bid campaign and save it:
@@ -3308,10 +3326,29 @@ angular.module('ma-app')
         this.processPreseaonBidResponse = function(form) {
             console.log("Handling bid response:");
             console.log(form);
-            //asynchronously create events for each option
-            //then create a bid response with those option pointers
-            var eventtype = coreDataService.getEventTypeByName("PRACTICE");
+            var promises = [];
+            var promise;
             
+            var eventtype = coreDataService.getEventTypeByName("PRACTICE_BID");
+            
+            /**
+             * asynchronously create events for each option,
+             * then create a bid response with those option pointers
+             */
+            for(var i = 0; i < form.options; i++) {
+                var dataString = ;
+                promise = $http({
+                    url: baseURL + 'events/',
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json' 
+                    },
+                    data: dataString
+                });
+                promises.push(promise);
+            }
+            
+                      
             
         };
         
