@@ -1740,6 +1740,10 @@ angular.module('ma-app')
                 teamId: team._id
             };  
             
+            if(team.headcoach != null && team.headcoach != '') {
+                $scope.teamForm.headcoach = team.headcoach._id;
+            }
+            
             console.log("teamForm contains: ");
             console.log($scope.teamForm);
                 
