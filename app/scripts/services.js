@@ -842,6 +842,27 @@ angular.module('ma-app')
                 console.log(errResponse);
             });
         };
+        
+        this.refreshClubCoaches = function() {
+            //retrieve coaches:
+            if(curClubId != null && curClubId != '') {
+                $http({
+                    url: baseURL + 'club_roles/findClubCoaches/' + curClubId,
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json' 
+                    }
+                }).then(function(response) {
+                    console.log("Retrieved the coaches from the API: ");
+                    console.log(response);
+                    $rootScope.coaches = response.data;
+                    coachesLoaded = true;
+                }, function(errResponse) {
+                    console.log("Error encountered when refreshing club coaches.");
+                    console.log(errResponse);
+                }); 
+            }            
+        };
                 
         this.refreshBids = function() {
             //retrieve bids:            
