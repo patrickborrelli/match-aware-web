@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('ma-app')
-    .constant("baseURL","https://matchaware-rest.herokuapp.com/")
+    //.constant("baseURL","https://matchaware-rest.herokuapp.com/")
+    .constant("baseURL","http://localhost:3000/")
     .constant("googleGeocodeKey", "key=AIzaSyCpClStUy156rFgjGJsYLBdKfBUEBZ1iLU")
     .constant("googleGeolocateBaseURL", "https://maps.googleapis.com/maps/api/geocode/json?")
     .constant("googleMapsBaseURL", "https://www.google.com/maps/embed/v1/place?")
 
-    .service('coreDataService', ['$http', '$rootScope', 'baseURL', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', 'ngDialog', 'datetimeService', function($http, $rootScope, baseURL, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL, ngDialog, datetimeService) {
+    .service('coreDataService', ['$http', '$rootScope', 'baseURL', '$q', 'googleGeolocateBaseURL', 'googleGeocodeKey', 'googleMapsBaseURL', 'ngDialog', 'datetimeService', function($http, $rootScope, baseURL, $q, googleGeolocateBaseURL, googleGeocodeKey, googleMapsBaseURL, ngDialog, datetimeService) {
         $rootScope.clubs = {};
         $rootScope.roles = {};   
         $rootScope.ageGroups = {};
@@ -1989,6 +1990,19 @@ angular.module('ma-app')
                 console.log(errResponse);
             });
         };
+        
+        this.getEventTypeByName = function(eventTypeName) {
+            var eventtype = null;
+            
+            for(var i = 0; i < $rootScope.eventTypes.length; i++) {
+                if(String($rootScope.eventTypes[i].name) == String(eventTypeName)) {
+                    eventtype = $rootScope.eventTypes[i];
+                }
+            }  
+            
+            return eventtype;
+            
+        };
     }])
 
     .service('userService', ['$http', '$rootScope', '$state', 'baseURL', '$q', 'ngDialog', 'coreDataService', 'clubService', function($http, $rootScope, $state, baseURL, $q, ngDialog, coreDataService, clubService) {
@@ -3222,7 +3236,20 @@ angular.module('ma-app')
 
                         recipString = recipString.slice(0, -2);
                         recipString += "]";
-                    }                       
+                    }      
+                    
+                    var teamRecipients = buildTeamUserArray(responses, form.coach, form.assistant, form.manager);
+                    
+                    if(teamRecipients.length > 0) {
+                        var teamRecipString = "[";
+
+                        for(var i = 0; i < teamRecipients.length; i++) {
+                            teamRecipString += '"' + teamRecipients[i] + '", ';
+                        }
+
+                        teamRecipString = teamRecipString.slice(0, -2);
+                        teamRecipString += "]";
+                    }
                     
                     
                     //now, create the bid campaign and save it:
@@ -3294,6 +3321,35 @@ angular.module('ma-app')
                 console.log("Failed on attempt to process preseason bid:");
                 console.log(errResponse);
             });
+        };
+        
+        this.processPreseaonBidResponse = function(form) {
+            console.log("Handling bid response:");
+            console.log(form);
+            var promises = [];
+            var promise;
+            
+            var eventtype = coreDataService.getEventTypeByName("PRACTICE_BID");
+            
+            /**
+             * asynchronously create events for each option,
+             * then create a bid response with those option pointers
+             */
+            for(var i = 0; i < form.options; i++) {
+                var dataString = ;
+                promise = $http({
+                    url: baseURL + 'events/',
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json' 
+                    },
+                    data: dataString
+                });
+                promises.push(promise);
+            }
+            
+                      
+            
         };
         
         this.editBid = function(form) {
@@ -3577,6 +3633,45 @@ angular.module('ma-app')
             var militaryTime = '0000';
             console.log("Received time: " + time);
             return militaryTime;
+        };
+        
+        this.getDateAsString = function(time) {
+            var date = new Date(time);
+            var dateString;
+            console.log("Retrieving date as String from " + time);
+            
+            dateString = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+            return dateString;            
+        };
+        
+        this.getTimeAsString = function(time) {
+            var date = new Date(time);
+            var timeString;            
+            var isAm = true;
+            
+            if(date.getHours() >= 12) {
+                isAm = false;
+            }
+            
+            //convert hours to am/pm
+            var hour = date.getHours() % 12;
+            var minutes;
+            hour = hour ? hour : 12;
+            
+            if(date.getMinutes() < 10) {
+                minutes = "0" + date.getMinutes().toString();
+            } else {
+                minutes = date.getMinutes();
+            }            
+            
+            timeString = (hour + ":" + minutes);
+            if(isAm) {
+                timeString += "AM"; 
+            } else {
+                timeString += "PM";
+            } 
+            
+            return timeString;            
         };
         
         function isEquivalent(value, target) {

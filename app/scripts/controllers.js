@@ -1508,10 +1508,67 @@ angular.module('ma-app')
             return datetimeService.getIsoDate(datemillis);
         };
         
-        $scope.respondToBid = function(bid) {
+        $scope.openRespondToBid = function(bid) {
             console.log("Open dialog to respond to bid:");
             console.log(bid);
+            //populate form:
+            $scope.bidSubmitForm = {
+                name: bid.name,
+                options: bid.number_options,
+                message: bid.message,
+                enddate: datetimeService.getDateAsString(bid.end_date),
+                endtime: datetimeService.getTimeAsString(bid.end_date),
+                id: bid._id,
+                sessions: 1
+            }; 
             ngDialog.open({ template: 'views/bidResponse.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
+        };
+        
+        $scope.submitPracticeBid = function() {
+            console.log("Handling bid response:");
+            console.log($scope.bidSubmitForm);
+            var len = $scope.bidSubmitForm.options;
+            
+            //before submission, add all days and times to a collection:
+            var options = [];
+            var option = {day: $scope.bidSubmitForm.option1day, time: $scope.bidSubmitForm.option1time};
+            options.push(option);
+            
+            if(len >= 2) {
+                option = {day: $scope.bidSubmitForm.option2day, time: $scope.bidSubmitForm.option2time};
+                options.push(option);
+            }
+            
+            if(len >= 3) {
+                option = {day: $scope.bidSubmitForm.option3day, time: $scope.bidSubmitForm.option3time};
+                options.push(option);
+            }
+            
+            if(len >= 4) {
+                option = {day: $scope.bidSubmitForm.option4day, time: $scope.bidSubmitForm.option4time};
+                options.push(option);
+            }
+            
+            if(len >= 5) {
+                option = {day: $scope.bidSubmitForm.option5day, time: $scope.bidSubmitForm.option5time};
+                options.push(option);
+            }
+            
+            console.log("Built options:" + options);
+            $scope.bidSubmitForm.bidoptions = options;
+            console.log($scope.bidSubmitForm);            
+            
+            schedulingService.processPreseaonBidResponse($scope.bidSubmitForm);
+            ngDialog.close();
+        };
+        
+        $scope.moreThan = function(options, current) {
+            console.log("Comparing " + options + " to " + current);
+            if(parseInt(options) >= parseInt(current)) {
+                return true;
+            } else { 
+                return false; 
+            }
         };
         
         

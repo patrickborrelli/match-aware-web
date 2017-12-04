@@ -1,6 +1,8 @@
 <div class="ngdialog-message">
     <div class="">
         <h3>Submit Preseason Practice Bids</h3>
+        <p>{{bidSubmitForm.message}}</p>
+        <p><span style="font-weight: bold;">Deadline:</span> {{bidSubmitForm.enddate}} by {{bidSubmitForm.endtime}}</p>
     </div>
     <div class="">&nbsp;</div>
     <div class="">
@@ -16,12 +18,26 @@
             </div>
             
             <div class="form-group custom-padding"> 
+                <label class="sr-only" for="sessions">Requested Sessions</label>
+                <div class="col-xs-12"> 
+                    <div class="input-group">
+                        <div class="input-group-addon custom-width-100"># Sessions</div>
+                        <select id="sessions" class="form-control" ng-model="bidSubmitForm.sessions">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group custom-padding"> 
                 <label class="sr-only" for="option1">Option One</label>
                 <div class="col-xs-12">  
                     <div class="input-group">
                         <div class="input-group-addon custom-width-100">Day</div>
                         <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
-                        <select id="options" class="form-control" ng-model="bidSubmitForm.option1day">
+                        <select id="option1" class="form-control" ng-model="bidSubmitForm.option1day">
                             <option value="MONDAY">Mon</option>
                             <option value="TUESDAY">Tue</option>
                             <option value="WEDNESDAY">Wed</option>
@@ -37,13 +53,13 @@
                 </div>
             </div>
             
-            <div class="form-group custom-padding"> 
+            <div class="form-group custom-padding" ng-if="moreThan(bidSubmitForm.options, 2)"> 
                 <label class="sr-only" for="option2">Option Two</label>
                 <div class="col-xs-12">  
                     <div class="input-group">
                         <div class="input-group-addon custom-width-100">Day</div>
                         <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
-                        <select id="options" class="form-control" ng-model="bidSubmitForm.option2day">
+                        <select id="option2" class="form-control" ng-model="bidSubmitForm.option2day">
                             <option value="MONDAY">Mon</option>
                             <option value="TUESDAY">Tue</option>
                             <option value="WEDNESDAY">Wed</option>
@@ -59,13 +75,13 @@
                 </div>
             </div>
             
-            <div class="form-group custom-padding"> 
+            <div class="form-group custom-padding" ng-if="moreThan(bidSubmitForm.options, 3)">
                 <label class="sr-only" for="option3">Option Three</label>
                 <div class="col-xs-12">  
                     <div class="input-group">
                         <div class="input-group-addon custom-width-100">Day</div>
                         <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
-                        <select id="options" class="form-control" ng-model="bidSubmitForm.option3day">
+                        <select id="option3" class="form-control" ng-model="bidSubmitForm.option3day">
                             <option value="MONDAY">Mon</option>
                             <option value="TUESDAY">Tue</option>
                             <option value="WEDNESDAY">Wed</option>
@@ -81,13 +97,13 @@
                 </div>
             </div>
             
-            <div class="form-group custom-padding"> 
+            <div class="form-group custom-padding" ng-if="moreThan(bidSubmitForm.options, 4)">
                 <label class="sr-only" for="option4">Option Four</label>
                 <div class="col-xs-12">  
                     <div class="input-group">
                         <div class="input-group-addon custom-width-100">Day</div>
                         <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
-                        <select id="options" class="form-control" ng-model="bidSubmitForm.option4day">
+                        <select id="option4" class="form-control" ng-model="bidSubmitForm.option4day">
                             <option value="MONDAY">Mon</option>
                             <option value="TUESDAY">Tue</option>
                             <option value="WEDNESDAY">Wed</option>
@@ -103,13 +119,13 @@
                 </div>
             </div>
             
-            <div class="form-group custom-padding"> 
+            <div class="form-group custom-padding" ng-if="moreThan(bidSubmitForm.options, 5)">
                 <label class="sr-only" for="option5">Option Five</label>
                 <div class="col-xs-12">  
                     <div class="input-group">
                         <div class="input-group-addon custom-width-100">Day</div>
                         <div class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></div>
-                        <select id="options" class="form-control" ng-model="bidSubmitForm.option5day">
+                        <select id="option5" class="form-control" ng-model="bidSubmitForm.option5day">
                             <option value="MONDAY">Mon</option>
                             <option value="TUESDAY">Tue</option>
                             <option value="WEDNESDAY">Wed</option>
