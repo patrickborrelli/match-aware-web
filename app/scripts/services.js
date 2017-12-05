@@ -3252,26 +3252,12 @@ angular.module('ma-app')
                         var recipString = "[";
 
                         for(var i = 0; i < recipients.length; i++) {
-                            recipString += '"' + recipients[i] + '", ';
+                            recipString += '"' + recipients[i].member._id + '", ';
                         }
 
                         recipString = recipString.slice(0, -2);
                         recipString += "]";
-                    }      
-                    
-                    var teamRecipients = buildTeamUserArray(responses, form.coach, form.assistant, form.manager);
-                    
-                    if(teamRecipients.length > 0) {
-                        var teamRecipString = "[";
-
-                        for(var i = 0; i < teamRecipients.length; i++) {
-                            teamRecipString += '"' + teamRecipients[i] + '", ';
-                        }
-
-                        teamRecipString = teamRecipString.slice(0, -2);
-                        teamRecipString += "]";
-                    }
-                    
+                    }                          
                     
                     //now, create the bid campaign and save it:
                     var postString = '{ "name": "' + form.name + '", "start_date": ' + (datetimeService.combineDateTime(form.startdate, form.starttime)).getTime() + ', ';
@@ -3306,7 +3292,8 @@ angular.module('ma-app')
                         var postNote = '';
                         
                         angular.forEach(recipients , function(recipient) {
-                            postNote = '{"type": "BID", "text": "' + form.message + '", "sender": "'+ userService.getCurrentUserId() + '", "recipient": "'+ recipient + '", "campaign": "' + bidResponse.data._id + '"}';
+                            console.log(recipient);
+                            postNote = '{"type": "BID", "text": "' + form.message + '", "sender": "'+ userService.getCurrentUserId() + '", "recipient": "'+ recipient.member._id + '", "team_recipient": "' + recipient._id + '" ,"campaign": "' + bidResponse.data._id + '"}';
                             
                             var promise = $http({
                                 url: baseURL + 'notifications/',
@@ -3355,7 +3342,8 @@ angular.module('ma-app')
             /**
              * asynchronously create events for each option,
              * then create a bid response with those option pointers
-             */
+             
+            
             for(var i = 0; i < form.options; i++) {
                 var dataString = ;
                 promise = $http({
@@ -3368,7 +3356,7 @@ angular.module('ma-app')
                 });
                 promises.push(promise);
             }
-            
+            */
                       
             
         };
@@ -3413,7 +3401,7 @@ angular.module('ma-app')
                         var recipString = "[";
 
                         for(var i = 0; i < recipients.length; i++) {
-                            recipString += '"' + recipients[i] + '", ';
+                            recipString += '"' + recipients[i].member._id + '", ';
                         }
 
                         recipString = recipString.slice(0, -2);
@@ -3465,7 +3453,7 @@ angular.module('ma-app')
                             var postNote = '';
 
                             angular.forEach(recipients , function(recipient) {
-                                postNote = '{"type": "BID", "text": "' + form.message + '", "sender": "'+ userService.getCurrentUserId() + '", "recipient": "'+ recipient + '", "campaign": "' + bidResponse.data._id + '"}';
+                                postNote = '{"type": "BID", "text": "' + form.message + '", "sender": "'+ userService.getCurrentUserId() + '", "recipient": "'+ recipient.member._id + '", "team_recipient": "' + recipient._id + '" ,"campaign": "' + bidResponse.data._id + '"}';
 
                                 var promise = $http({
                                     url: baseURL + 'notifications/',
@@ -3504,7 +3492,7 @@ angular.module('ma-app')
                 console.log("Failed on attempt to process preseason bid update:");
                 console.log(errResponse);
             });
-        };
+        b  };
         
         this.deleteBid = function(bid) {
             //delete selected bid and refresh the scope:
@@ -3550,7 +3538,7 @@ angular.module('ma-app')
                        assistant && responses[i].data[j].role.name == "ASSISTANT_COACH" ||
                        manager && responses[i].data[j].role.name == "MANAGER" ) 
                     {
-                        result.push(responses[i].data[j].member._id);
+                        result.push(responses[i].data[j]);
                     }
                 }
             }

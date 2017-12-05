@@ -1508,18 +1508,20 @@ angular.module('ma-app')
             return datetimeService.getIsoDate(datemillis);
         };
         
-        $scope.openRespondToBid = function(bid) {
-            console.log("Open dialog to respond to bid:");
-            console.log(bid);
+        $scope.openRespondToBid = function(notification) {
+            console.log("Open dialog to respond to bid notification:");
+            console.log(notification);
             //populate form:
             $scope.bidSubmitForm = {
-                name: bid.name,
-                options: bid.number_options,
-                message: bid.message,
-                enddate: datetimeService.getDateAsString(bid.end_date),
-                endtime: datetimeService.getTimeAsString(bid.end_date),
-                id: bid._id,
-                sessions: 1
+                name: notification.campaign.name,
+                options: notification.campaign.number_options,
+                message: notification.campaign.message,
+                enddate: datetimeService.getDateAsString(notification.campaign.end_date),
+                endtime: datetimeService.getTimeAsString(notification.campaign.end_date),
+                id: notification.campaign._id,
+                sessions: 1,
+                team: notification.team_recipient.team.name,
+                ageGroup: notification.team_recipient.team.age_group.name
             }; 
             ngDialog.open({ template: 'views/bidResponse.html', scope: $scope, className: 'ngdialog-theme-default custom-width-800', controller:"HomeController" });
         };
